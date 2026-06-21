@@ -72,8 +72,6 @@ const stats = [
   { label: "Serving Since", value: 2013, suffix: "", icon: "calendar" },
 ];
 
-const trustItems = ["Freshly Baked", "Premium Ingredients", "Custom Designs", "On-Time Delivery", "100% Satisfaction"];
-
 function StatIcon({ type }: { type: string }) {
   if (type === "people") {
     return (
@@ -240,11 +238,15 @@ export function ReviewsSection() {
   useEffect(() => {
     const carousel = carouselRef.current;
 
-    if (!carousel) {
+    if (!carousel || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
 
     const intervalId = window.setInterval(() => {
+      if (carousel.matches(":hover") || carousel.contains(document.activeElement)) {
+        return;
+      }
+
       const firstCard = carousel.querySelector<HTMLElement>(".review-card");
       const cardStep = firstCard ? firstCard.offsetWidth + 18 : carousel.clientWidth;
       const maxScroll = carousel.scrollWidth - carousel.clientWidth;
@@ -276,7 +278,6 @@ export function ReviewsSection() {
           <h2 id="reviews-heading" className="font-heading">
             Loved by Thousands of Happy Customers
           </h2>
-          <p>Serving Sweet Happiness Since 2013 | 5000+ Happy Clients | 25000+ Unique Cake Designs</p>
         </div>
 
         <div className="reviews-stats" aria-label="Chocobee Cake Studio customer statistics">
@@ -299,21 +300,6 @@ export function ReviewsSection() {
           ))}
         </div>
 
-        <div className="trust-strip reveal" aria-label="Trust highlights">
-          {trustItems.map((item) => (
-            <span key={item}>{item}</span>
-          ))}
-        </div>
-
-        <div className="reviews-cta reveal">
-          <h3 className="font-heading">Ready to Create Your Dream Cake?</h3>
-          <div>
-            <a href="https://wa.me/" target="_blank" rel="noreferrer">
-              Order on WhatsApp
-            </a>
-            <a href="#treats">View Cake Gallery</a>
-          </div>
-        </div>
       </div>
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />

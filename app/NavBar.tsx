@@ -1,11 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const navItems = [
   {
     label: "Home",
+    href: "/",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M4 11.5 12 5l8 6.5V20h-5v-5.5H9V20H4Z" />
@@ -13,8 +15,18 @@ const navItems = [
     ),
   },
   {
-    label: "Cakes",
-    href: "#treats",
+    label: "About",
+    href: "/about",
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" />
+        <path d="M4.5 20c1.1-3.5 3.8-5.3 7.5-5.3s6.4 1.8 7.5 5.3" />
+      </svg>
+    ),
+  },
+  {
+    label: "Cakes & Cookies",
+    href: "/gallery",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M7 11h10l-1 9H8Z" />
@@ -23,15 +35,8 @@ const navItems = [
     ),
   },
   {
-    label: "Why Us",
-    icon: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z" />
-      </svg>
-    ),
-  },
-  {
     label: "Contact",
+    href: "/contact",
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M4 7h16v11H4Z" />
@@ -74,7 +79,7 @@ export function NavBar() {
           hasScrolled ? "min-h-20 py-2" : "min-h-32 py-3"
         }`}
       >
-        <a href="#home" className="flex min-w-0 items-center gap-3" aria-label="Chocobee Cake Studio home">
+        <Link href="/" className="flex min-w-0 items-center gap-3" aria-label="Chocobee Cake Studio home">
           <span className={`nav-logo-frame ${hasScrolled ? "nav-logo-frame-scrolled" : ""}`}>
             <Image
               src="/Images/CB_logo.png"
@@ -85,23 +90,23 @@ export function NavBar() {
               className="nav-logo-image"
             />
           </span>
-        </a>
+        </Link>
 
         <div className="hidden items-center gap-9 md:flex">
           {navItems.map((item) => (
-            <a
+            <Link
               key={item.label}
-              href={item.href ?? `#${item.label === "Home" ? "home" : item.label.toLowerCase().replace(" ", "-")}`}
+              href={item.href}
               className="nav-menu-link text-sm font-semibold text-[#5D4037] transition hover:text-[#c87488]"
             >
               <span className="nav-menu-icon">{item.icon}</span>
               {item.label}
-            </a>
+            </Link>
           ))}
         </div>
 
-        <a
-          href="#contact"
+        <Link
+          href="/contact"
           className={`site-navbar-cta rounded-full bg-[#be1919] text-sm font-bold text-white shadow-[0_12px_22px_rgba(190,25,25,0.28)] transition hover:-translate-y-0.5 hover:bg-[#a91515] ${
             hasScrolled ? "px-3 py-2 sm:px-4" : "px-4 py-2.5 sm:px-5"
           }`}
@@ -114,7 +119,7 @@ export function NavBar() {
             </svg>
           </span>
           Custom Orders
-        </a>
+        </Link>
       </nav>
     </header>
   );

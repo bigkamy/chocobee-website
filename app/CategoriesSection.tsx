@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 const categories = [
   {
@@ -34,52 +34,10 @@ const categories = [
     image: "https://images.unsplash.com/photo-1621303837174-89787a7d4729?auto=format&fit=crop&w=900&q=85",
     alt: "Pink celebration cake with buttercream details",
   },
-  {
-    title: "Baby Shower Cakes",
-    description: "Sweet pastel cakes with tiny toppers, soft florals, and charming welcome-baby details.",
-    image: "https://images.unsplash.com/photo-1535141192574-5d4897c12636?auto=format&fit=crop&w=900&q=85",
-    alt: "Pastel cake with delicate decorations",
-  },
 ];
 
 export function CategoriesSection() {
-  const carouselRef = useRef<HTMLDivElement>(null);
   const [loaded, setLoaded] = useState(() => categories.map(() => false));
-
-  useEffect(() => {
-    const carousel = carouselRef.current;
-
-    if (!carousel) {
-      return;
-    }
-
-    const intervalId = window.setInterval(() => {
-      const firstCard = carousel.querySelector<HTMLElement>(".category-card");
-      const cardStep = firstCard ? firstCard.offsetWidth + 22 : carousel.clientWidth * 0.86;
-      const maxScroll = carousel.scrollWidth - carousel.clientWidth;
-      const shouldLoop = carousel.scrollLeft + cardStep >= maxScroll - 8;
-
-      carousel.scrollTo({
-        left: shouldLoop ? 0 : carousel.scrollLeft + cardStep,
-        behavior: "smooth",
-      });
-    }, 3200);
-
-    return () => window.clearInterval(intervalId);
-  }, []);
-
-  function scrollCategories(direction: "previous" | "next") {
-    const carousel = carouselRef.current;
-
-    if (!carousel) {
-      return;
-    }
-
-    carousel.scrollBy({
-      left: direction === "next" ? carousel.clientWidth * 0.86 : -carousel.clientWidth * 0.86,
-      behavior: "smooth",
-    });
-  }
 
   return (
     <section id="categories" className="categories-section">
@@ -93,54 +51,42 @@ export function CategoriesSection() {
           </p>
         </div>
 
-        <div className="categories-carousel-wrap">
-          <button
-            type="button"
-            className="categories-carousel-control categories-carousel-control-prev"
-            onClick={() => scrollCategories("previous")}
-            aria-label="Previous category"
-          >
-            <span aria-hidden="true">‹</span>
-          </button>
+        <div className="categories-grid-static">
+          {categories.map((category, index) => (
+            <article className="category-card reveal" key={category.title}>
+              <div className={`category-image-shell ${loaded[index] ? "category-image-loaded" : ""}`}>
+                <Image
+                  src={category.image}
+                  alt={category.alt}
+                  width={900}
+                  height={720}
+                  sizes="(max-width: 640px) 86vw, (max-width: 1024px) 42vw, 360px"
+                  className="category-image"
+                  onLoad={() =>
+                    setLoaded((currentLoaded) =>
+                      currentLoaded.map((isLoaded, itemIndex) => (itemIndex === index ? true : isLoaded)),
+                    )
+                  }
+                />
+              </div>
 
-          <div className="categories-carousel" ref={carouselRef}>
-            {categories.map((category, index) => (
-              <article className="category-card reveal" key={category.title}>
-                <div className={`category-image-shell ${loaded[index] ? "category-image-loaded" : ""}`}>
-                  <Image
-                    src={category.image}
-                    alt={category.alt}
-                    width={900}
-                    height={720}
-                    sizes="(max-width: 640px) 86vw, (max-width: 1024px) 42vw, 360px"
-                    className="category-image"
-                    onLoad={() =>
-                      setLoaded((currentLoaded) =>
-                        currentLoaded.map((isLoaded, itemIndex) => (itemIndex === index ? true : isLoaded)),
-                      )
-                    }
-                  />
+              <div className="category-card-heading">{category.title}</div>
+              <span className="category-card-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z" />
+                </svg>
+              </span>
+
+              <div className="category-content">
+                <div className="category-desc-wrap">
+                  <p>{category.description}</p>
                 </div>
-
-                <div className="category-card-heading">{category.title}</div>
-
-                <div className="category-content">
-                  <a href="#contact" className="category-more">
-                    Explore More
-                  </a>
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            className="categories-carousel-control categories-carousel-control-next"
-            onClick={() => scrollCategories("next")}
-            aria-label="Next category"
-          >
-            <span aria-hidden="true">›</span>
-          </button>
+                <a href="#contact" className="category-more">
+                  Explore More
+                </a>
+              </div>
+            </article>
+          ))}
         </div>
       </div>
     </section>

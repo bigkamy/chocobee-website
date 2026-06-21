@@ -32,6 +32,16 @@ export default function RootLayout({
       className={`${poppins.variable} ${pacifico.variable} h-full scroll-smooth antialiased`}
     >
       <body suppressHydrationWarning className="min-h-full flex flex-col">
+        <div className="bakery-icon-layer" aria-hidden="true">
+          <span className="bakery-icon bakery-icon-cupcake bakery-icon-1" />
+          <span className="bakery-icon bakery-icon-cookie bakery-icon-2" />
+          <span className="bakery-icon bakery-icon-cake bakery-icon-3" />
+          <span className="bakery-icon bakery-icon-whisk bakery-icon-4" />
+          <span className="bakery-icon bakery-icon-rolling-pin bakery-icon-5" />
+          <span className="bakery-icon bakery-icon-heart bakery-icon-6" />
+          <span className="bakery-icon bakery-icon-cupcake bakery-icon-7" />
+          <span className="bakery-icon bakery-icon-cookie bakery-icon-8" />
+        </div>
         {children}
       </body>
     </html>
