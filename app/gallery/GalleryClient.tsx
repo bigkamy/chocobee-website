@@ -1,128 +1,92 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Footer } from "../Footer";
 import { NavBar } from "../NavBar";
 
-type Category =
-  | "All"
-  | "Birthday Cakes"
-  | "Wedding Cakes"
-  | "Kids Theme Cakes"
-  | "Designer Cakes"
-  | "Cookies";
+type Category = string;
 
 type GalleryItem = {
-  id: number;
+  id: string;
   title: string;
-  image: string;
-  category: Exclude<Category, "All">;
+  slug: string;
+  imageUrl: string;
+  description?: string | null;
+  category: string;
+  categorySlug?: string | null;
+  categoryIds?: string[];
+  categorySlugs?: string[];
+  featured?: boolean;
+  altText: string;
 };
 
-const categories: Category[] = [
+type GalleryApiItem = Omit<GalleryItem, "category"> & {
+  category?: string | { name?: string; slug?: string };
+};
+
+const fallbackCategories: Category[] = [
   "All",
   "Birthday Cakes",
   "Wedding Cakes",
-  "Kids Theme Cakes",
   "Designer Cakes",
-  "Cookies",
+  "Kids Cakes",
+  "Cookies"
 ];
 
 const galleryItems: GalleryItem[] = [
   {
-    id: 1,
+    id: "blush-birthday-bloom",
     title: "Blush Birthday Bloom",
+    slug: "blush-birthday-bloom",
     category: "Birthday Cakes",
-    image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=85",
+    categorySlug: "birthday-cakes",
+    imageUrl: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=85",
+    altText: "Blush birthday cake",
   },
   {
-    id: 2,
+    id: "royal-wedding-lace",
     title: "Royal Wedding Lace",
+    slug: "royal-wedding-lace",
     category: "Wedding Cakes",
-    image: "https://images.unsplash.com/photo-1535254973040-607b474cb50d?auto=format&fit=crop&w=900&q=85",
+    categorySlug: "wedding-cakes",
+    imageUrl: "https://images.unsplash.com/photo-1535254973040-607b474cb50d?auto=format&fit=crop&w=900&q=85",
+    altText: "Royal wedding lace cake",
   },
   {
-    id: 3,
+    id: "little-star-theme-cake",
     title: "Little Star Theme Cake",
-    category: "Kids Theme Cakes",
-    image: "https://images.unsplash.com/photo-1604413191066-4dd20bedf486?auto=format&fit=crop&w=900&q=85",
+    slug: "little-star-theme-cake",
+    category: "Kids Cakes",
+    categorySlug: "kids-cakes",
+    imageUrl: "https://images.unsplash.com/photo-1604413191066-4dd20bedf486?auto=format&fit=crop&w=900&q=85",
+    altText: "Little star theme cake",
   },
   {
-    id: 4,
+    id: "chocolate-couture",
     title: "Chocolate Couture",
+    slug: "chocolate-couture",
     category: "Designer Cakes",
-    image: "https://images.unsplash.com/photo-1602351447937-745cb720612f?auto=format&fit=crop&w=900&q=85",
+    categorySlug: "designer-cakes",
+    imageUrl: "https://images.unsplash.com/photo-1602351447937-745cb720612f?auto=format&fit=crop&w=900&q=85",
+    altText: "Chocolate designer cake",
   },
   {
-    id: 5,
+    id: "honey-butter-cookies",
     title: "Honey Butter Cookies",
+    slug: "honey-butter-cookies",
     category: "Cookies",
-    image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: 6,
-    title: "Berry Celebration Cake",
-    category: "Birthday Cakes",
-    image: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: 7,
-    title: "Ivory Floral Wedding",
-    category: "Wedding Cakes",
-    image: "https://images.unsplash.com/photo-1621303837174-89787a7d4729?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: 8,
-    title: "Candy Castle Cake",
-    category: "Kids Theme Cakes",
-    image: "https://images.unsplash.com/photo-1558301211-0d8c8ddee6ec?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: 9,
-    title: "Gold Drip Signature",
-    category: "Designer Cakes",
-    image: "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: 10,
-    title: "Classic Choco Chip Box",
-    category: "Cookies",
-    image: "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: 11,
-    title: "Pastel Rosette Cake",
-    category: "Birthday Cakes",
-    image: "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: 12,
-    title: "Pearl Anniversary Tier",
-    category: "Wedding Cakes",
-    image: "https://images.unsplash.com/photo-1542826438-bd32f43d626f?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: 13,
-    title: "Dreamy Unicorn Theme",
-    category: "Kids Theme Cakes",
-    image: "https://images.unsplash.com/photo-1626803775151-61d756612f97?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: 14,
-    title: "Velvet Designer Slice",
-    category: "Designer Cakes",
-    image: "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: 15,
-    title: "Celebration Cookie Set",
-    category: "Cookies",
-    image: "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=900&q=85",
+    categorySlug: "cookies",
+    imageUrl: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=900&q=85",
+    altText: "Honey butter cookies",
   },
 ];
 
 const initialVisible = 9;
+
+function toSlug(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
 
 function CakeIcon() {
   return (
@@ -170,13 +134,78 @@ function WhatsAppIcon() {
 
 export function GalleryClient() {
   const [activeCategory, setActiveCategory] = useState<Category>("All");
+  const [categories, setCategories] = useState<Category[]>(fallbackCategories);
+  const [items, setItems] = useState<GalleryItem[]>(galleryItems);
   const [visibleCount, setVisibleCount] = useState(initialVisible);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadCategories() {
+      try {
+        const response = await fetch("/api/categories", { cache: "no-store" });
+        if (!response.ok) return;
+        const data = (await response.json()) as { categories?: Array<{ name: string }> };
+        const names = data.categories?.map((category) => category.name).filter(Boolean) ?? [];
+
+        if (isMounted && names.length) {
+          setCategories(["All", ...names]);
+        }
+      } catch {
+        setCategories(fallbackCategories);
+      }
+    }
+
+    loadCategories();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadImages() {
+      try {
+        const selectedCategory = categories.find((category) => category === activeCategory);
+        const categoryParam = activeCategory === "All" ? "" : `?category=${encodeURIComponent(toSlug(selectedCategory ?? ""))}`;
+        const response = await fetch(`/api/gallery${categoryParam}`, { cache: "no-store" });
+        if (!response.ok) return;
+        const data = (await response.json()) as { images?: GalleryApiItem[] };
+        const nextItems =
+          data.images?.map((image) => {
+            const categoryObject = typeof image.category === "object" ? image.category : null;
+            const categoryLabel = typeof image.category === "string" ? image.category : null;
+            const primarySlug = categoryObject?.slug ?? image.categorySlug ?? image.categorySlugs?.[0] ?? "";
+            const matchedCategory = categories.find((category) => toSlug(category) === primarySlug);
+            return {
+              ...image,
+              category: categoryObject?.name ?? matchedCategory ?? categoryLabel ?? primarySlug ?? "Gallery",
+              categorySlug: primarySlug,
+            };
+          }) ?? [];
+
+        if (isMounted && nextItems.length) {
+          setItems(nextItems);
+        }
+      } catch {
+        setItems(galleryItems);
+      }
+    }
+
+    loadImages();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [activeCategory, categories]);
 
   const filteredItems = useMemo(() => {
     return activeCategory === "All"
-      ? galleryItems
-      : galleryItems.filter((item) => item.category === activeCategory);
-  }, [activeCategory]);
+      ? items
+      : items.filter((item) => item.category === activeCategory || item.categorySlugs?.includes(toSlug(activeCategory)));
+  }, [activeCategory, items]);
 
   const visibleItems = filteredItems.slice(0, visibleCount);
 
@@ -250,8 +279,8 @@ export function GalleryClient() {
                   >
                     <div className="relative aspect-[4/5] overflow-hidden">
                       <Image
-                        src={item.image}
-                        alt={item.title}
+                        src={item.imageUrl}
+                        alt={item.altText || item.title}
                         fill
                         sizes="(min-width: 1536px) 18vw, (min-width: 1280px) 25vw, (min-width: 640px) 45vw, 100vw"
                         className="object-cover transition duration-500 group-hover:scale-110"
@@ -272,6 +301,9 @@ export function GalleryClient() {
                     <div className="p-4">
                       <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#be1919]">{item.category}</p>
                       <h3 className="mt-2 text-lg font-extrabold text-[#5d4037]">{item.title}</h3>
+                      <a href={`/cakes/${item.slug}`} className="mt-3 inline-flex text-sm font-extrabold text-[#be1919]">
+                        View Details
+                      </a>
                     </div>
                   </article>
                 ))}

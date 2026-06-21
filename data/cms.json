@@ -1,0 +1,115 @@
+{
+  "categories": [
+    {
+      "id": "birthday-cakes",
+      "name": "Birthday Cakes",
+      "slug": "birthday-cakes",
+      "description": "Custom birthday cakes for joyful celebrations.",
+      "displayOrder": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "wedding-cakes",
+      "name": "Wedding Cakes",
+      "slug": "wedding-cakes",
+      "description": "Elegant wedding cakes with premium finishes.",
+      "displayOrder": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "designer-cakes",
+      "name": "Designer Cakes",
+      "slug": "designer-cakes",
+      "description": "Creative designer cakes for special themes.",
+      "displayOrder": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "kids-cakes",
+      "name": "Kids Cakes",
+      "slug": "kids-cakes",
+      "description": "Fun kids cakes with colorful theme designs.",
+      "displayOrder": 4,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "cookies",
+      "name": "Cookies",
+      "slug": "cookies",
+      "description": "Handcrafted cookies for gifting and dessert tables.",
+      "displayOrder": 5,
+      "status": "ACTIVE"
+    }
+  ],
+  "galleryImages": [
+    {
+      "id": "chocolate-truffle-cake",
+      "title": "Chocolate Truffle Cake",
+      "slug": "chocolate-truffle-cake",
+      "description": "Rich chocolate truffle cake finished for birthdays and premium celebrations.",
+      "imageUrl": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=85",
+      "categoryId": "birthday-cakes",
+      "categorySlug": "birthday-cakes",
+      "categoryIds": [
+        "birthday-cakes"
+      ],
+      "categorySlugs": [
+        "birthday-cakes"
+      ],
+      "tags": "chocolate, birthday, truffle",
+      "seoTitle": "Chocolate Truffle Cake | Chocobee Cake Studio",
+      "metaDescription": "Explore a premium chocolate truffle cake design by Chocobee Cake Studio.",
+      "altText": "Chocolate truffle birthday cake by Chocobee Cake Studio",
+      "keywords": "chocolate cake, truffle cake, birthday cake",
+      "featured": true,
+      "status": "ACTIVE",
+      "createdAt": "2026-06-21T16:11:40.987Z"
+    },
+    {
+      "id": "royal-wedding-lace-cake",
+      "title": "Royal Wedding Lace Cake",
+      "slug": "royal-wedding-lace-cake",
+      "description": "Elegant wedding cake with soft lace-inspired detailing.",
+      "imageUrl": "https://images.unsplash.com/photo-1535254973040-607b474cb50d?auto=format&fit=crop&w=900&q=85",
+      "categoryId": "wedding-cakes",
+      "categorySlug": "wedding-cakes",
+      "categoryIds": [
+        "wedding-cakes"
+      ],
+      "categorySlugs": [
+        "wedding-cakes"
+      ],
+      "tags": "wedding, lace, elegant",
+      "seoTitle": "Royal Wedding Lace Cake | Chocobee Cake Studio",
+      "metaDescription": "View a premium lace-style wedding cake design from Chocobee Cake Studio.",
+      "altText": "Royal wedding lace cake design",
+      "keywords": "wedding cake, lace cake, designer wedding cake",
+      "featured": true,
+      "status": "ACTIVE",
+      "createdAt": "2026-06-21T16:11:40.987Z"
+    },
+    {
+      "id": "kids-candy-theme-cake",
+      "title": "Kids Candy Theme Cake",
+      "slug": "kids-candy-theme-cake",
+      "description": "A colorful candy theme cake made for kids parties.",
+      "imageUrl": "https://images.unsplash.com/photo-1558301211-0d8c8ddee6ec?auto=format&fit=crop&w=900&q=85",
+      "categoryId": "kids-cakes",
+      "categorySlug": "kids-cakes",
+      "categoryIds": [
+        "kids-cakes"
+      ],
+      "categorySlugs": [
+        "kids-cakes"
+      ],
+      "tags": "kids, candy, birthday",
+      "seoTitle": "Kids Candy Theme Cake | Chocobee Cake Studio",
+      "metaDescription": "Discover a colorful kids candy theme cake by Chocobee Cake Studio.",
+      "altText": "Kids candy theme cake",
+      "keywords": "kids cake, theme cake, candy cake",
+      "featured": false,
+      "status": "ACTIVE",
+      "createdAt": "2026-06-21T16:11:40.987Z"
+    }
+  ]
+}

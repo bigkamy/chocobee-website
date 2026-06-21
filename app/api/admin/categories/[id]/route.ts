@@ -1,0 +1,21 @@
+import { NextResponse } from "next/server";
+import { categorySchema } from "@/lib/admin/validators";
+import { deleteLocalCategory, updateLocalCategory } from "@/lib/local-cms";
+
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const parsed = categorySchema.partial().safeParse(await request.json());
+
+  if (!parsed.success) {
+    return NextResponse.json({ error: "Validation failed.", issues: parsed.error.flatten() }, { status: 422 });
+  }
+
+  const item = await updateLocalCategory(id, parsed.data);
+  return NextResponse.json({ item });
+}
+
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  await deleteLocalCategory(id);
+  return NextResponse.json({ ok: true });
+}

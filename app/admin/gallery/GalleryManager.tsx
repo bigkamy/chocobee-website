@@ -1,0 +1,469 @@
+"use client";
+
+import Image from "next/image";
+import { FormEvent, useMemo, useState } from "react";
+
+type Category = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+type GalleryImage = {
+  id: string;
+  title: string;
+  slug: string;
+  description?: string | null;
+  imageUrl: string;
+  categoryId?: string | null;
+  categorySlug?: string | null;
+  categoryIds?: string[];
+  categorySlugs?: string[];
+  tags?: string | null;
+  seoTitle?: string | null;
+  metaDescription?: string | null;
+  altText: string;
+  keywords?: string | null;
+  featured: boolean;
+  status: "ACTIVE" | "INACTIVE";
+};
+
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+export function GalleryManager({
+  initialCategories,
+  initialImages,
+}: {
+  initialCategories: Category[];
+  initialImages: GalleryImage[];
+}) {
+  const [images, setImages] = useState(initialImages);
+  const [editing, setEditing] = useState<GalleryImage | null>(null);
+  const selectedEditingCategories = editing?.categoryIds ?? (editing?.categoryId ? [editing.categoryId] : []);
+  const [imageUrl, setImageUrl] = useState(editing?.imageUrl ?? "");
+  const [preview, setPreview] = useState(editing?.imageUrl ?? "");
+  const [query, setQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [message, setMessage] = useState("");
+  const [isCategoryListOpen, setIsCategoryListOpen] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+
+  const filteredImages = useMemo(() => {
+    const q = query.toLowerCase().trim();
+    return images
+      .filter((image) =>
+        categoryFilter === "all" ? true : image.categoryId === categoryFilter || image.categoryIds?.includes(categoryFilter),
+      )
+      .filter((image) =>
+        q ? [image.title, image.tags, image.keywords].filter(Boolean).some((value) => value?.toLowerCase().includes(q)) : true,
+      );
+  }, [categoryFilter, images, query]);
+
+  async function refreshImages() {
+    const response = await fetch("/api/admin/gallery", { cache: "no-store" });
+    const data = (await response.json()) as { items?: GalleryImage[] };
+    setImages(data.items ?? []);
+  }
+
+  async function publishGallery() {
+    await refreshImages();
+    setMessage("Image gallery published to the live website.");
+  }
+
+  function startEditing(image: GalleryImage) {
+    setEditing(image);
+    setImageUrl(image.imageUrl);
+    setPreview(image.imageUrl);
+    setIsCategoryListOpen(false);
+    setUploadStatus("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function saveImage(payload: Partial<GalleryImage>, id?: string) {
+    const response = await fetch(id ? `/api/admin/gallery/${id}` : "/api/admin/gallery", {
+      method: id ? "PATCH" : "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      setMessage("Could not save image. Please check all required fields.");
+      return false;
+    }
+
+    await refreshImages();
+    return true;
+  }
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const title = String(form.get("title") ?? "");
+    const slug = String(form.get("slug") || slugify(title));
+    const categoryIds = form.getAll("categoryIds").map(String).filter(Boolean);
+    const payload = {
+      title,
+      slug,
+      description: String(form.get("description") ?? ""),
+      imageUrl,
+      categoryId: categoryIds[0] ?? "",
+      categoryIds,
+      tags: String(form.get("tags") ?? ""),
+      seoTitle: String(form.get("seoTitle") || `${title} | Chocobee Cake Studio`),
+      metaDescription: String(form.get("metaDescription") ?? ""),
+      altText: String(form.get("altText") || title),
+      keywords: String(form.get("keywords") ?? ""),
+      featured: form.get("featured") === "on",
+      status: String(form.get("status") ?? "ACTIVE") as GalleryImage["status"],
+    };
+
+    const saved = await saveImage(payload, editing?.id);
+    if (!saved) return;
+
+    event.currentTarget.reset();
+    setEditing(null);
+    setImageUrl("");
+    setPreview("");
+    setIsCategoryListOpen(false);
+    setUploadStatus("");
+    setMessage(editing ? "Image updated." : "Image added.");
+  }
+
+  async function handleImageUpload(file?: File) {
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadStatus("Uploading image...");
+
+    const body = new FormData();
+    body.append("file", file);
+
+    const response = await fetch("/api/admin/upload", {
+      method: "POST",
+      body,
+    });
+
+    const data = (await response.json()) as { imageUrl?: string; error?: string };
+    setIsUploading(false);
+
+    if (!response.ok || !data.imageUrl) {
+      setUploadStatus(data.error ?? "Image upload failed.");
+      return;
+    }
+
+    setImageUrl(data.imageUrl);
+    setPreview(data.imageUrl);
+    setUploadStatus("Image uploaded.");
+  }
+
+  async function clearSelectedImage() {
+    const isUnsavedUploadedImage = imageUrl.startsWith("/uploads/cakes/") && imageUrl !== editing?.imageUrl;
+
+    if (isUnsavedUploadedImage) {
+      await fetch("/api/admin/upload", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl }),
+      });
+    }
+
+    setImageUrl("");
+    setPreview("");
+    setUploadStatus(editing ? "Image cleared. Submit update to save this change." : "Image removed from the form.");
+  }
+
+  async function updateImageQuick(id: string, payload: Partial<Pick<GalleryImage, "categoryId" | "categoryIds" | "featured" | "status">>) {
+    const current = images.find((image) => image.id === id);
+    if (!current) return;
+
+    await saveImage(
+      {
+        title: current.title,
+        slug: current.slug,
+        description: current.description ?? "",
+        imageUrl: current.imageUrl,
+        categoryId: current.categoryId ?? "",
+        categoryIds: current.categoryIds ?? (current.categoryId ? [current.categoryId] : []),
+        tags: current.tags ?? "",
+        seoTitle: current.seoTitle ?? "",
+        metaDescription: current.metaDescription ?? "",
+        altText: current.altText,
+        keywords: current.keywords ?? "",
+        featured: current.featured,
+        status: current.status,
+        ...payload,
+      },
+      id,
+    );
+    setMessage("Image updated.");
+  }
+
+  async function deleteImage(id: string) {
+    const current = images.find((image) => image.id === id);
+    await fetch(`/api/admin/gallery/${id}`, { method: "DELETE" });
+    if (current?.imageUrl.startsWith("/uploads/cakes/")) {
+      await fetch("/api/admin/upload", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl: current.imageUrl }),
+      });
+    }
+    setMessage("Image removed.");
+    await refreshImages();
+  }
+
+  return (
+    <main className="admin-page">
+      <header className="admin-page-header">
+        <div>
+          <p>Gallery Images</p>
+          <h1>Cake Image Gallery Control System</h1>
+        </div>
+        <div className="admin-header-actions">
+          <button type="button" className="admin-publish-button" onClick={() => void publishGallery()}>
+            Publish Gallery
+          </button>
+          <a href="/gallery" className="admin-outline-button">
+            View Website Gallery
+          </a>
+        </div>
+      </header>
+
+      <section className="admin-gallery-control-layout">
+        <div className="admin-gallery-left-panel">
+          <article className="admin-resource-card">
+            <h2>Search and Filter</h2>
+            <div className="admin-category-form admin-gallery-filter-row">
+              <label>
+                Search Images
+                <input value={query} onChange={(event) => setQuery(event.currentTarget.value)} placeholder="Search by cake name or tag" />
+              </label>
+              <label>
+                Filter Category
+                <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.currentTarget.value)}>
+                  <option value="all">All Categories</option>
+                  {initialCategories.map((category) => (
+                    <option value={category.id} key={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+          </article>
+
+          <section className="admin-gallery-table-card">
+            <div className="admin-gallery-table-heading">
+              <div>
+                <h2>Uploaded Cake Images</h2>
+                <p>{filteredImages.length} images found</p>
+              </div>
+            </div>
+
+            <div className="admin-gallery-rows">
+              {filteredImages.map((image) => (
+                <article className="admin-gallery-row" key={image.id}>
+                  <div className="admin-gallery-thumb">
+                    <Image src={image.imageUrl} alt={image.altText} fill sizes="88px" className="object-cover" />
+                  </div>
+
+                  <div className="admin-gallery-row-title">
+                    <h2>{image.title}</h2>
+                    <p>/cakes/{image.slug}</p>
+                    <small>{image.description}</small>
+                  </div>
+
+                  <label>
+                    Category
+                    <select
+                      value={image.categoryId ?? ""}
+                      onChange={(event) =>
+                        updateImageQuick(image.id, {
+                          categoryId: event.currentTarget.value,
+                          categoryIds: event.currentTarget.value ? [event.currentTarget.value] : [],
+                        })
+                      }
+                    >
+                      <option value="">No category</option>
+                      {initialCategories.map((category) => (
+                        <option value={category.id} key={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label>
+                    Featured
+                    <select value={image.featured ? "yes" : "no"} onChange={(event) => updateImageQuick(image.id, { featured: event.currentTarget.value === "yes" })}>
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
+                    </select>
+                  </label>
+
+                  <label>
+                    Visibility
+                    <select value={image.status} onChange={(event) => updateImageQuick(image.id, { status: event.currentTarget.value as GalleryImage["status"] })}>
+                      <option value="ACTIVE">Show</option>
+                      <option value="INACTIVE">Hide</option>
+                    </select>
+                  </label>
+
+                  <div className="admin-gallery-row-actions">
+                    <a href={`/cakes/${image.slug}`} target="_blank" rel="noreferrer">
+                      View
+                    </a>
+                    <button type="button" onClick={() => startEditing(image)}>
+                      Edit
+                    </button>
+                    <button type="button" onClick={() => deleteImage(image.id)}>
+                      Remove
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
+        </div>
+
+        <form key={editing?.id ?? "new-image"} onSubmit={handleSubmit} className="admin-resource-card admin-category-form admin-gallery-form-panel">
+          <h2>{editing ? "Edit Cake Image" : "Add Cake Image"}</h2>
+          <label>
+            Image URL
+            <input
+              name="imageUrl"
+              value={imageUrl}
+              placeholder="Cloudinary image URL"
+              required
+              onChange={(event) => {
+                setImageUrl(event.currentTarget.value);
+                setPreview(event.currentTarget.value);
+              }}
+            />
+          </label>
+          <div className="admin-upload-control">
+            <label>
+              Upload Image
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(event) => {
+                  void handleImageUpload(event.currentTarget.files?.[0]);
+                  event.currentTarget.value = "";
+                }}
+              />
+            </label>
+            {imageUrl ? (
+              <button type="button" className="admin-upload-delete" onClick={() => void clearSelectedImage()}>
+                Delete Image
+              </button>
+            ) : null}
+          </div>
+          {uploadStatus ? <p className="admin-upload-status">{uploadStatus}</p> : null}
+          {isUploading ? <p className="admin-upload-status">Please wait while the cake image is saved.</p> : null}
+          {preview ? (
+            <div className="admin-gallery-preview">
+              <Image src={preview} alt="Cake preview" fill sizes="320px" className="object-cover" />
+            </div>
+          ) : null}
+          <label>
+            Cake Title
+            <input name="title" defaultValue={editing?.title} placeholder="Chocolate Truffle Cake" required />
+          </label>
+          <label>
+            URL Slug
+            <input name="slug" defaultValue={editing?.slug} placeholder="chocolate-truffle-cake" required />
+          </label>
+          <div className="admin-category-field">
+            <button
+              type="button"
+              className="admin-category-toggle"
+              onClick={() => setIsCategoryListOpen((isOpen) => !isOpen)}
+              aria-expanded={isCategoryListOpen}
+              aria-controls="admin-image-category-list"
+            >
+              <span>Category</span>
+              <span>{isCategoryListOpen ? "Hide list" : `${selectedEditingCategories.length || "No"} selected`}</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true" className={isCategoryListOpen ? "admin-category-chevron-open" : ""}>
+                <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
+              </svg>
+            </button>
+            {isCategoryListOpen ? (
+              <div className="admin-category-checklist" id="admin-image-category-list" role="group" aria-label="Select cake categories">
+                {initialCategories.map((category) => {
+                  return (
+                    <label className="admin-category-check-option" key={category.id}>
+                      <input name="categoryIds" type="checkbox" value={category.id} defaultChecked={selectedEditingCategories.includes(category.id)} />
+                      <span>{category.name}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            ) : (
+              selectedEditingCategories.map((categoryId) => <input key={categoryId} name="categoryIds" type="hidden" value={categoryId} />)
+            )}
+          </div>
+          <label>
+            Short Description
+            <textarea name="description" defaultValue={editing?.description ?? ""} placeholder="Short cake description" />
+          </label>
+          <label>
+            Tags
+            <input name="tags" defaultValue={editing?.tags ?? ""} placeholder="chocolate, birthday, kids" />
+          </label>
+          <label>
+            SEO Title
+            <input name="seoTitle" defaultValue={editing?.seoTitle ?? ""} placeholder="Meta title" />
+          </label>
+          <label>
+            Meta Description
+            <textarea name="metaDescription" defaultValue={editing?.metaDescription ?? ""} placeholder="SEO meta description" />
+          </label>
+          <label>
+            Image Alt Text
+            <input name="altText" defaultValue={editing?.altText ?? ""} placeholder="Describe the cake image" required />
+          </label>
+          <label>
+            Keywords
+            <input name="keywords" defaultValue={editing?.keywords ?? ""} placeholder="cake, birthday cake, custom cake" />
+          </label>
+          <label>
+            Status
+            <select name="status" defaultValue={editing?.status ?? "ACTIVE"}>
+              <option value="ACTIVE">Show Image</option>
+              <option value="INACTIVE">Hide Image</option>
+            </select>
+          </label>
+          <label className="admin-checkbox-label">
+            <input name="featured" type="checkbox" defaultChecked={editing?.featured ?? false} />
+            Featured Image
+          </label>
+          <button type="submit">{editing ? "Update Image" : "Add Image"}</button>
+          {editing ? (
+            <button
+              type="button"
+              className="admin-secondary-button"
+              onClick={() => {
+                setEditing(null);
+                setImageUrl("");
+                setPreview("");
+                setIsCategoryListOpen(false);
+                setUploadStatus("");
+              }}
+            >
+              Cancel Edit
+            </button>
+          ) : null}
+          {message ? <p role="status">{message}</p> : null}
+        </form>
+      </section>
+    </main>
+  );
+}
