@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3D Image Slider</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <!-- Main carousel area -->
+    <section class="slider-panel">
+      <div class="slider-actions">
+        <button class="nav-btn" id="prevBtn" aria-label="Previous slide">←</button>
+        <button class="nav-btn" id="nextBtn" aria-label="Next slide">→</button>
+      </div>
+
+      <div class="carousel-wrap">
+        <div class="carousel" id="carousel">
+          <div class="slide active">
+            <img src="https://images.unsplash.com/photo-1483695028939-5bb13f8648b0?auto=format&fit=crop&w=900&q=80" alt="Cake 1" />
+          </div>
+          <div class="slide">
+            <img src="https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=900&q=80" alt="Cake 2" />
+          </div>
+          <div class="slide">
+            <img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=900&q=80" alt="Cake 3" />
+          </div>
+          <div class="slide">
+            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=900&q=80" alt="Cake 4" />
+          </div>
+          <div class="slide">
+            <img src="https://images.unsplash.com/photo-1519345182560-3f2917c472ef?auto=format&fit=crop&w=900&q=80" alt="Cake 5" />
+          </div>
+          <div class="slide">
+            <img src="https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=900&q=80" alt="Cake 6" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Settings sidebar -->
+    <aside class="settings-panel">
+      <h3>Slider Settings</h3>
+      <div class="control-group">
+        <label for="spacingRange">Slider spacing</label>
+        <input id="spacingRange" type="range" min="90" max="220" value="140" />
+      </div>
+      <div class="control-group">
+        <label for="widthRange">Slider width</label>
+        <input id="widthRange" type="range" min="55" max="100" value="80" />
+      </div>
+      <div class="control-group checkbox-group">
+        <label for="autoSlideToggle">Auto slide</label>
+        <input id="autoSlideToggle" type="checkbox" checked />
+      </div>
+    </aside>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
