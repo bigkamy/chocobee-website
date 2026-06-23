@@ -19,6 +19,7 @@ type GalleryImage = {
   categorySlug?: string | null;
   categoryIds?: string[];
   categorySlugs?: string[];
+  homeGroups?: string[];
   tags?: string | null;
   seoTitle?: string | null;
   metaDescription?: string | null;
@@ -28,12 +29,43 @@ type GalleryImage = {
   status: "ACTIVE" | "INACTIVE";
 };
 
+const homeGalleryGroups = ["Recent Designs", "Most Viewed", "Top on Demand"] as const;
+
 function slugify(value: string) {
   return value
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function EyeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M2.8 12s3.3-6 9.2-6 9.2 6 9.2 6-3.3 6-9.2 6-9.2-6-9.2-6Z" />
+      <path d="M12 14.8a2.8 2.8 0 1 0 0-5.6 2.8 2.8 0 0 0 0 5.6Z" />
+    </svg>
+  );
+}
+
+function EditIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m4 20 4.6-1.3L19.3 8a2.4 2.4 0 0 0-3.4-3.4L5.3 15.3 4 20Z" />
+      <path d="m14 6 4 4" />
+    </svg>
+  );
+}
+
+function TrashIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 7h16" />
+      <path d="M9 7V5h6v2" />
+      <path d="m6 7 1 14h10l1-14" />
+      <path d="M10 11v6M14 11v6" />
+    </svg>
+  );
 }
 
 export function GalleryManager({
@@ -46,6 +78,7 @@ export function GalleryManager({
   const [images, setImages] = useState(initialImages);
   const [editing, setEditing] = useState<GalleryImage | null>(null);
   const selectedEditingCategories = editing?.categoryIds ?? (editing?.categoryId ? [editing.categoryId] : []);
+  const selectedEditingHomeGroups = editing?.homeGroups ?? [];
   const [imageUrl, setImageUrl] = useState(editing?.imageUrl ?? "");
   const [preview, setPreview] = useState(editing?.imageUrl ?? "");
   const [query, setQuery] = useState("");
@@ -54,6 +87,7 @@ export function GalleryManager({
   const [isCategoryListOpen, setIsCategoryListOpen] = useState(false);
   const [uploadStatus, setUploadStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [formVersion, setFormVersion] = useState(0);
 
   const filteredImages = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -66,10 +100,17 @@ export function GalleryManager({
       );
   }, [categoryFilter, images, query]);
 
-  async function refreshImages() {
+  async function refreshImages(preserveImage?: GalleryImage) {
     const response = await fetch("/api/admin/gallery", { cache: "no-store" });
     const data = (await response.json()) as { items?: GalleryImage[] };
-    setImages(data.items ?? []);
+    const nextImages = data.items ?? [];
+
+    if (!preserveImage || nextImages.some((image) => image.id === preserveImage.id)) {
+      setImages(nextImages);
+      return;
+    }
+
+    setImages([preserveImage, ...nextImages]);
   }
 
   async function publishGallery() {
@@ -86,20 +127,41 @@ export function GalleryManager({
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function resetImageForm(statusMessage?: string) {
+    setEditing(null);
+    setImageUrl("");
+    setPreview("");
+    setIsCategoryListOpen(false);
+    setUploadStatus("");
+    setIsUploading(false);
+    setFormVersion((version) => version + 1);
+    if (statusMessage) {
+      setMessage(statusMessage);
+    }
+  }
+
   async function saveImage(payload: Partial<GalleryImage>, id?: string) {
     const response = await fetch(id ? `/api/admin/gallery/${id}` : "/api/admin/gallery", {
       method: id ? "PATCH" : "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
+    const data = (await response.json().catch(() => null)) as { item?: GalleryImage; error?: string } | null;
 
-    if (!response.ok) {
+    if (!response.ok || !data?.item) {
       setMessage("Could not save image. Please check all required fields.");
-      return false;
+      return null;
     }
 
-    await refreshImages();
-    return true;
+    const savedImage = data.item;
+
+    setImages((currentImages) => {
+      const withoutSavedImage = currentImages.filter((image) => image.id !== savedImage.id);
+      return [savedImage, ...withoutSavedImage];
+    });
+
+    void refreshImages(savedImage);
+    return savedImage;
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -108,6 +170,7 @@ export function GalleryManager({
     const title = String(form.get("title") ?? "");
     const slug = String(form.get("slug") || slugify(title));
     const categoryIds = form.getAll("categoryIds").map(String).filter(Boolean);
+    const homeGroups = form.getAll("homeGroups").map(String).filter(Boolean);
     const payload = {
       title,
       slug,
@@ -115,6 +178,7 @@ export function GalleryManager({
       imageUrl,
       categoryId: categoryIds[0] ?? "",
       categoryIds,
+      homeGroups,
       tags: String(form.get("tags") ?? ""),
       seoTitle: String(form.get("seoTitle") || `${title} | Chocobee Cake Studio`),
       metaDescription: String(form.get("metaDescription") ?? ""),
@@ -127,13 +191,12 @@ export function GalleryManager({
     const saved = await saveImage(payload, editing?.id);
     if (!saved) return;
 
-    event.currentTarget.reset();
-    setEditing(null);
-    setImageUrl("");
-    setPreview("");
-    setIsCategoryListOpen(false);
-    setUploadStatus("");
-    setMessage(editing ? "Image updated." : "Image added.");
+    resetImageForm(editing ? "Image updated." : "Image added.");
+    if (!editing) {
+      setQuery("");
+      setCategoryFilter("all");
+      window.alert("Cake image has been uploaded successfully");
+    }
   }
 
   async function handleImageUpload(file?: File) {
@@ -164,6 +227,9 @@ export function GalleryManager({
   }
 
   async function clearSelectedImage() {
+    const confirmed = window.confirm("Remove this selected image from the form? Unsaved uploaded files may be deleted.");
+    if (!confirmed) return;
+
     const isUnsavedUploadedImage = imageUrl.startsWith("/uploads/cakes/") && imageUrl !== editing?.imageUrl;
 
     if (isUnsavedUploadedImage) {
@@ -191,6 +257,7 @@ export function GalleryManager({
         imageUrl: current.imageUrl,
         categoryId: current.categoryId ?? "",
         categoryIds: current.categoryIds ?? (current.categoryId ? [current.categoryId] : []),
+        homeGroups: current.homeGroups ?? [],
         tags: current.tags ?? "",
         seoTitle: current.seoTitle ?? "",
         metaDescription: current.metaDescription ?? "",
@@ -207,6 +274,9 @@ export function GalleryManager({
 
   async function deleteImage(id: string) {
     const current = images.find((image) => image.id === id);
+    const confirmed = window.confirm(`Delete ${current?.title ?? "this image"}? This action cannot be undone.`);
+    if (!confirmed) return;
+
     await fetch(`/api/admin/gallery/${id}`, { method: "DELETE" });
     if (current?.imageUrl.startsWith("/uploads/cakes/")) {
       await fetch("/api/admin/upload", {
@@ -280,6 +350,17 @@ export function GalleryManager({
                     <small>{image.description}</small>
                   </div>
 
+                  <div className="admin-gallery-home-groups" aria-label={`Home page gallery groups for ${image.title}`}>
+                    <span>Home Page</span>
+                    <div>
+                      {image.homeGroups?.length ? (
+                        image.homeGroups.map((group) => <strong key={group}>{group}</strong>)
+                      ) : (
+                        <em>Not on homepage</em>
+                      )}
+                    </div>
+                  </div>
+
                   <label>
                     Category
                     <select
@@ -300,31 +381,33 @@ export function GalleryManager({
                     </select>
                   </label>
 
-                  <label>
-                    Featured
-                    <select value={image.featured ? "yes" : "no"} onChange={(event) => updateImageQuick(image.id, { featured: event.currentTarget.value === "yes" })}>
-                      <option value="yes">Yes</option>
-                      <option value="no">No</option>
-                    </select>
-                  </label>
+                  <div className="admin-gallery-row-stacked-controls">
+                    <label>
+                      Featured
+                      <select value={image.featured ? "yes" : "no"} onChange={(event) => updateImageQuick(image.id, { featured: event.currentTarget.value === "yes" })}>
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                      </select>
+                    </label>
 
-                  <label>
-                    Visibility
-                    <select value={image.status} onChange={(event) => updateImageQuick(image.id, { status: event.currentTarget.value as GalleryImage["status"] })}>
-                      <option value="ACTIVE">Show</option>
-                      <option value="INACTIVE">Hide</option>
-                    </select>
-                  </label>
+                    <label>
+                      Visibility
+                      <select value={image.status} onChange={(event) => updateImageQuick(image.id, { status: event.currentTarget.value as GalleryImage["status"] })}>
+                        <option value="ACTIVE">Show</option>
+                        <option value="INACTIVE">Hide</option>
+                      </select>
+                    </label>
+                  </div>
 
                   <div className="admin-gallery-row-actions">
-                    <a href={`/cakes/${image.slug}`} target="_blank" rel="noreferrer">
-                      View
+                    <a href={`/cakes/${image.slug}`} target="_blank" rel="noreferrer" aria-label={`View ${image.title}`} title="View">
+                      <EyeIcon />
                     </a>
-                    <button type="button" onClick={() => startEditing(image)}>
-                      Edit
+                    <button type="button" onClick={() => startEditing(image)} aria-label={`Edit ${image.title}`} title="Edit">
+                      <EditIcon />
                     </button>
-                    <button type="button" onClick={() => deleteImage(image.id)}>
-                      Remove
+                    <button type="button" onClick={() => deleteImage(image.id)} aria-label={`Remove ${image.title}`} title="Remove">
+                      <TrashIcon />
                     </button>
                   </div>
                 </article>
@@ -333,7 +416,7 @@ export function GalleryManager({
           </section>
         </div>
 
-        <form key={editing?.id ?? "new-image"} onSubmit={handleSubmit} className="admin-resource-card admin-category-form admin-gallery-form-panel">
+        <form key={editing?.id ?? `new-image-${formVersion}`} onSubmit={handleSubmit} className="admin-resource-card admin-category-form admin-gallery-form-panel">
           <h2>{editing ? "Edit Cake Image" : "Add Cake Image"}</h2>
           <label>
             Image URL
@@ -410,6 +493,20 @@ export function GalleryManager({
               selectedEditingCategories.map((categoryId) => <input key={categoryId} name="categoryIds" type="hidden" value={categoryId} />)
             )}
           </div>
+          <div className="admin-category-field">
+            <button type="button" className="admin-category-toggle" aria-expanded="true" aria-controls="admin-home-gallery-group-list">
+              <span>Home Page Cake Gallery</span>
+              <span>{selectedEditingHomeGroups.length || "No"} selected</span>
+            </button>
+            <div className="admin-category-checklist" id="admin-home-gallery-group-list" role="group" aria-label="Select home page cake gallery groups">
+              {homeGalleryGroups.map((group) => (
+                <label className="admin-category-check-option" key={group}>
+                  <input name="homeGroups" type="checkbox" value={group} defaultChecked={selectedEditingHomeGroups.includes(group)} />
+                  <span>{group}</span>
+                </label>
+              ))}
+            </div>
+          </div>
           <label>
             Short Description
             <textarea name="description" defaultValue={editing?.description ?? ""} placeholder="Short cake description" />
@@ -451,11 +548,7 @@ export function GalleryManager({
               type="button"
               className="admin-secondary-button"
               onClick={() => {
-                setEditing(null);
-                setImageUrl("");
-                setPreview("");
-                setIsCategoryListOpen(false);
-                setUploadStatus("");
+                resetImageForm();
               }}
             >
               Cancel Edit

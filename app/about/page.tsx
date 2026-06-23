@@ -95,7 +95,7 @@ export default function AboutPage() {
     <>
       <NavBar />
       <main className="about-page-shell min-h-screen bg-[#fff5f0] pt-32 text-[#5d4037]">
-      <section className="px-5 py-16 sm:px-8 lg:px-10">
+      <section className="px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-center">
             <div>
@@ -130,7 +130,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-white/45 px-5 py-16 backdrop-blur-[1px] sm:px-8 lg:px-10">
+      <section className="bg-white/45 px-5 py-20 backdrop-blur-[1px] sm:px-8 lg:px-10 lg:py-24">
         <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-[2rem] bg-[#ffe8ee]">
             <Image
@@ -165,7 +165,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="px-5 py-16 sm:px-8 lg:px-10">
+      <section className="px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-sm font-extrabold uppercase tracking-[0.28em] text-[#be1919]">Our Team</p>
@@ -192,7 +192,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-white/45 px-5 py-16 backdrop-blur-[1px] sm:px-8 lg:px-10">
+      <section className="bg-white/45 px-5 py-20 backdrop-blur-[1px] sm:px-8 lg:px-10 lg:py-24">
         <div className="mx-auto max-w-7xl">
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-sm font-extrabold uppercase tracking-[0.28em] text-[#be1919]">Why Choose Us</p>
@@ -214,7 +214,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="px-5 py-16 sm:px-8 lg:px-10">
+      <section className="px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
         <div className="mx-auto max-w-5xl rounded-[2rem] bg-[linear-gradient(135deg,#be1919,#7f1512)] px-6 py-12 text-center text-white shadow-[0_24px_70px_rgba(190,25,25,0.24)] sm:px-10">
           <h2 className="font-heading text-4xl leading-tight sm:text-5xl">Let&apos;s Create Something Sweet Together</h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-white/86">

@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import { Footer } from "../Footer";
 import { NavBar } from "../NavBar";
 
 type Category = string;
@@ -218,7 +217,7 @@ export function GalleryClient() {
     <>
       <NavBar />
       <main className="min-h-screen bg-[#fff5f0] text-[#5d4037]">
-      <section className="relative overflow-hidden px-4 pb-10 pt-44 sm:px-6 lg:px-8 lg:pb-14 lg:pt-48">
+      <section className="relative overflow-hidden px-4 pb-16 pt-48 sm:px-6 lg:px-8 lg:pb-20 lg:pt-56">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_8%,rgba(255,183,197,0.5),transparent_20rem),radial-gradient(circle_at_92%_15%,rgba(255,215,0,0.22),transparent_18rem),linear-gradient(120deg,rgba(255,255,255,0.58),transparent)]" />
         <div className="relative mx-auto max-w-7xl">
           <div className="mb-8 text-center">
@@ -333,7 +332,6 @@ export function GalleryClient() {
         <WhatsAppIcon />
       </a>
       </main>
-      <Footer />
     </>
   );
 }

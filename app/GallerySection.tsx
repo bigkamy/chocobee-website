@@ -5,7 +5,17 @@ import { useMemo, useState } from "react";
 
 const filters = ["All", "Recent Designs", "Most Viewed", "Top on Demand"] as const;
 
-const galleryImages = [
+type HomeGalleryImage = {
+  src: string;
+  alt: string;
+  label: string;
+  slug?: string | null;
+  width?: number | null;
+  height?: number | null;
+  groups: string[];
+};
+
+const defaultGalleryImages: HomeGalleryImage[] = [
   {
     src: "https://images.unsplash.com/photo-1621303837174-89787a7d4729?auto=format&fit=crop&w=900&q=85",
     alt: "Pink designer cake with buttercream decorations",
@@ -136,28 +146,31 @@ const galleryImages = [
 
 type Filter = (typeof filters)[number];
 
-export function GallerySection() {
+type GallerySectionProps = {
+  eyebrow?: string | null;
+  title?: string | null;
+  ctaLabel?: string | null;
+  ctaHref?: string | null;
+  images?: HomeGalleryImage[] | null;
+};
+
+export function GallerySection({ eyebrow, title, ctaLabel, ctaHref, images }: GallerySectionProps) {
   const [activeFilter, setActiveFilter] = useState<Filter>("All");
-  const [wishlistCounts, setWishlistCounts] = useState(() => galleryImages.map((_, index) => 84 + index * 7));
+  const [wishlistCounts, setWishlistCounts] = useState<Record<string, number>>({});
+  const galleryImages = useMemo(() => (images?.length ? images : defaultGalleryImages), [images]);
   const visibleImages = useMemo(
     () =>
       activeFilter === "All"
         ? galleryImages
         : galleryImages.filter((image) => image.groups.includes(activeFilter)),
-    [activeFilter],
+    [activeFilter, galleryImages],
   );
 
   function handleWishlist(label: string) {
-    const imageIndex = galleryImages.findIndex((image) => image.label === label);
-
-    if (imageIndex < 0) {
-      return;
-    }
-
-    setWishlistCounts((counts) => counts.map((count, index) => (index === imageIndex ? count + 1 : count)));
+    setWishlistCounts((counts) => ({ ...counts, [label]: (counts[label] ?? 0) + 1 }));
   }
 
-  async function handleShare(image: (typeof galleryImages)[number]) {
+  async function handleShare(image: HomeGalleryImage) {
     const shareData = {
       title: `${image.label} by Chocobee Cake Studio`,
       text: `Take a look at this ${image.label.toLowerCase()} design from Chocobee Cake Studio.`,
@@ -180,9 +193,9 @@ export function GallerySection() {
     <section id="gallery" className="gallery-section" aria-labelledby="gallery-heading">
       <div className="gallery-inner">
         <div className="gallery-heading reveal">
-          <p>From Our Studio</p>
+          <p>{eyebrow ?? "From Our Studio"}</p>
           <h2 id="gallery-heading" className="font-heading">
-            Cake Gallery
+            {title ?? "Cake Gallery"}
           </h2>
         </div>
 
@@ -206,9 +219,9 @@ export function GallerySection() {
               <Image
                 src={image.src}
                 alt={image.alt}
-                width={900}
-                height={760}
-                sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 31vw"
+                width={image.width ?? 900}
+                height={image.height ?? 760}
+                sizes="(max-width: 640px) 92vw, (max-width: 1024px) 23vw, 18vw"
                 className="gallery-image"
               />
               <div className="gallery-card-actions" aria-label={`${image.label} engagement actions`}>
@@ -216,7 +229,7 @@ export function GallerySection() {
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M12 20s-7.5-4.4-9.2-9.4C1.6 7.2 3.8 4 7.3 4c2 0 3.5 1 4.7 2.6C13.2 5 14.8 4 16.8 4c3.5 0 5.7 3.2 4.5 6.6C19.5 15.6 12 20 12 20Z" />
                   </svg>
-                  <span>{wishlistCounts[galleryImages.findIndex((item) => item.label === image.label)]}</span>
+                  <span>{(wishlistCounts[image.label] ?? 84 + index * 7).toLocaleString()}</span>
                 </button>
                 <button type="button" onClick={() => void handleShare(image)} aria-label={`Share ${image.label}`}>
                   <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -237,7 +250,7 @@ export function GallerySection() {
         </div>
 
         <div className="gallery-cta reveal">
-          <a href="#contact">Visit Gallery</a>
+          <a href={ctaHref ?? "#contact"}>{ctaLabel ?? "Visit Gallery"}</a>
         </div>
       </div>
     </section>

@@ -2,9 +2,10 @@ import Link from "next/link";
 
 const adminLinks = [
   { label: "Dashboard", href: "/admin" },
+  { label: "Home Page", href: "/admin/home-page" },
   { label: "Categories", href: "/admin/categories" },
   { label: "Gallery", href: "/admin/gallery" },
-  { label: "SEO Manager", href: "/admin/gallery" },
+  { label: "Footer", href: "/admin/footer" },
   { label: "About", href: "/admin/about" },
   { label: "Team Members", href: "/admin/team" },
   { label: "Contact", href: "/admin/contact" },

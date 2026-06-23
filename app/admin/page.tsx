@@ -7,8 +7,10 @@ const metrics = [
 ];
 
 const quickActions = [
+  ["Manage Home Page", "/admin/home-page"],
   ["Add Category", "/admin/categories"],
   ["Upload Gallery Images", "/admin/gallery"],
+  ["Control Footer", "/admin/footer"],
   ["Edit About Page", "/admin/about"],
   ["Manage Team Members", "/admin/team"],
   ["Update Contact Details", "/admin/contact"],

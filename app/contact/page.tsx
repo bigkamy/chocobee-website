@@ -68,7 +68,7 @@ export default function ContactPage() {
     <>
       <NavBar />
       <main className="min-h-screen bg-[#fff5f0] text-[#5d4037]">
-      <section className="relative overflow-hidden px-5 pb-10 pt-44 sm:px-8 lg:px-10 lg:pt-48">
+      <section className="relative overflow-hidden px-5 pb-16 pt-48 sm:px-8 lg:px-10 lg:pb-20 lg:pt-56">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_12%,rgba(255,183,197,0.38),transparent_18rem),radial-gradient(circle_at_88%_10%,rgba(255,215,0,0.2),transparent_20rem)]" />
 
         <div className="relative mx-auto max-w-7xl">

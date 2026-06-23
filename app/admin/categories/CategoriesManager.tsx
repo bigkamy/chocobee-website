@@ -61,6 +61,12 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
   }
 
   async function deleteCategory(id: string) {
+    const category = categories.find((item) => item.id === id);
+    const confirmed = window.confirm(
+      `Delete ${category?.name ?? "this category"}? This action cannot be undone and may affect related gallery images.`,
+    );
+    if (!confirmed) return;
+
     await fetch(`/api/admin/categories/${id}`, { method: "DELETE" });
     setMessage("Category deleted.");
     await loadCategories();

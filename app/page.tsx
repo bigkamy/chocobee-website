@@ -4,9 +4,14 @@ import { Footer } from "./Footer";
 import { GallerySection } from "./GallerySection";
 import { NavBar } from "./NavBar";
 import { ReviewsSection } from "./ReviewsSection";
+import { getPublicImageDimensions } from "@/lib/image-dimensions";
+import { listLocalGalleryImages, listLocalHomePageSections, type CmsHomePageSection } from "@/lib/local-cms";
+
+export const dynamic = "force-dynamic";
 
 const whyChooseUs = [
   {
+    id: "baked-fresh",
     title: "Baked Fresh",
     text: "Small-batch cakes, cupcakes, and fillings made with premium ingredients.",
     icon: (
@@ -17,6 +22,7 @@ const whyChooseUs = [
     ),
   },
   {
+    id: "custom-magic",
     title: "Custom Magic",
     text: "Colors, toppers, flavors, and themes designed around your celebration.",
     icon: (
@@ -27,6 +33,7 @@ const whyChooseUs = [
     ),
   },
   {
+    id: "party-ready",
     title: "Party Ready",
     text: "Neat packaging, careful timing, and desserts that photograph beautifully.",
     icon: (
@@ -53,39 +60,94 @@ function DecorativeSprinkles() {
   );
 }
 
-export default function Home() {
+function getWhyUsCards(section?: CmsHomePageSection) {
+  const activeCards = section?.whyCards
+    ?.filter((card) => card.status === "ACTIVE")
+    .sort((a, b) => a.displayOrder - b.displayOrder || a.title.localeCompare(b.title));
+
+  return activeCards?.length
+    ? activeCards.map((card, index) => ({
+        ...card,
+        icon: whyChooseUs[index % whyChooseUs.length].icon,
+      }))
+    : whyChooseUs;
+}
+
+function findSection(sections: CmsHomePageSection[], sectionKey: string) {
+  return sections.find((section) => section.sectionKey === sectionKey);
+}
+
+function renderHeroTitle(title: string) {
+  const highlightedName = "Neha Panwar";
+  const nameStart = title.indexOf(highlightedName);
+
+  if (nameStart < 0) return title;
+
+  return (
+    <>
+      {title.slice(0, nameStart)}
+      <span className="text-[#be1919]">{highlightedName}</span>
+      {title.slice(nameStart + highlightedName.length)}
+    </>
+  );
+}
+
+export default async function Home() {
+  const homeSections = await listLocalHomePageSections({ activeOnly: true });
+  const homeGalleryImages = await Promise.all(
+    (await listLocalGalleryImages())
+      .filter((image) => image.homeGroups?.length)
+      .map(async (image) => {
+        const dimensions = await getPublicImageDimensions(image.imageUrl);
+
+        return {
+          src: image.imageUrl,
+          alt: image.altText,
+          label: image.title,
+          slug: image.slug,
+          width: dimensions?.width ?? null,
+          height: dimensions?.height ?? null,
+          groups: image.homeGroups ?? [],
+        };
+      }),
+  );
+  const heroSection = findSection(homeSections, "hero");
+  const whyUsSection = findSection(homeSections, "why-us");
+  const categoriesSection = findSection(homeSections, "categories");
+  const gallerySection = findSection(homeSections, "gallery");
+  const reviewsSection = findSection(homeSections, "reviews");
+  const whyUsCards = getWhyUsCards(whyUsSection);
+
   return (
     <main className="site-shell min-h-screen overflow-hidden text-[#5D4037]">
       <DecorativeSprinkles />
 
       <NavBar />
 
+      {heroSection ? (
       <section id="home" className="relative pt-28 sm:pt-32">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-0 sm:px-8 md:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:pb-0">
           <div className="reveal relative z-10 mx-auto max-w-2xl text-center md:mx-0 md:text-left">
             <h1 className="font-heading text-[2.35rem] leading-[0.95] text-[#5D4037] sm:text-[3.35rem] lg:text-[4.1rem]">
-              <span className="whitespace-nowrap">Meet the Chef</span>
-              <br />
-              <span className="whitespace-nowrap text-[#be1919]">Neha Panwar</span>
+              {renderHeroTitle(heroSection.title)}
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-base leading-8 text-[#715044] sm:text-lg md:mx-0">
-              Serving since 2013, Chef Neha Panwar has created 25,000+ unique cake designs, delighting 5,000+
-              happy clients with exceptional creativity, premium quality, and a passion for crafting memorable
-              celebrations truly unforgettable.
+              {heroSection.content ??
+                "Serving since 2013, Chef Neha Panwar has created 25,000+ unique cake designs, delighting 5,000+ happy clients with exceptional creativity, premium quality, and a passion for crafting memorable celebrations truly unforgettable."}
             </p>
 
             <div className="mt-8 flex flex-col items-center gap-5 sm:flex-row sm:gap-7 md:items-start">
               <a
-                href="/about"
+                href={heroSection.ctaHref ?? "/about"}
                 className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#be1919] px-8 text-sm font-bold text-white shadow-[0_18px_30px_rgba(190,25,25,0.28)] transition hover:-translate-y-1 hover:bg-[#a91515]"
               >
-                Know More
+                {heroSection.ctaLabel ?? "Know More"}
               </a>
               <a
-                href="/gallery"
+                href={heroSection.secondaryCtaHref ?? "/gallery"}
                 className="inline-flex min-h-12 items-center justify-center rounded-full border-2 border-[#be1919] bg-white/55 px-8 text-sm font-bold text-[#be1919] transition hover:-translate-y-1 hover:bg-[#fff2ba]"
               >
-                Explore our Treat
+                {heroSection.secondaryCtaLabel ?? "Explore our Treat"}
               </a>
             </div>
 
@@ -95,8 +157,8 @@ export default function Home() {
             <div className="hero-glow" aria-hidden="true" />
             <div className="floating-cupcake">
               <Image
-                src="/Images/neha.png?v=2"
-                alt="Chocobee Cake Studio feature"
+                src={heroSection.imageUrl || "/Images/neha.png?v=2"}
+                alt={heroSection.imageAlt || "Chocobee Cake Studio feature"}
                 width={712}
                 height={1058}
                 priority
@@ -110,10 +172,12 @@ export default function Home() {
           </div>
         </div>
       </section>
+      ) : null}
 
+      {whyUsSection ? (
       <section id="why-us" className="relative z-[80] mx-auto -mt-10 -mb-14 max-w-7xl px-5 pb-0 sm:-mt-14 sm:-mb-16 sm:px-8 lg:-mt-16 lg:-mb-20 lg:px-10">
         <div className="reveal grid gap-4 rounded-[28px] border border-white/80 bg-white/62 p-4 shadow-[0_20px_55px_rgba(93,64,55,0.1)] backdrop-blur md:grid-cols-3">
-          {whyChooseUs.map((item, index) => (
+          {whyUsCards.map((item, index) => (
             <article key={item.title} className={`why-card why-card-${index + 1}`}>
               <span className="why-icon">{item.icon}</span>
               <div>
@@ -124,12 +188,30 @@ export default function Home() {
           ))}
         </div>
       </section>
+      ) : null}
 
-      <CategoriesSection />
+      {categoriesSection ? (
+        <CategoriesSection
+          eyebrow={categoriesSection.subtitle}
+          title={categoriesSection.title}
+          content={categoriesSection.content}
+          ctaLabel={categoriesSection.ctaLabel}
+          ctaHref={categoriesSection.ctaHref}
+          cards={categoriesSection.categoryCards}
+        />
+      ) : null}
 
-      <GallerySection />
+      {gallerySection ? (
+        <GallerySection
+          eyebrow={gallerySection.subtitle}
+          title={gallerySection.title}
+          ctaLabel={gallerySection.ctaLabel}
+          ctaHref={gallerySection.ctaHref}
+          images={homeGalleryImages}
+        />
+      ) : null}
 
-      <ReviewsSection />
+      {reviewsSection ? <ReviewsSection /> : null}
 
       <Footer />
     </main>

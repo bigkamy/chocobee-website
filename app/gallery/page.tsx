@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Footer } from "../Footer";
 import { GalleryClient } from "./GalleryClient";
 
 export const metadata: Metadata = {
@@ -8,5 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default function GalleryPage() {
-  return <GalleryClient />;
+  return (
+    <>
+      <GalleryClient />
+      <Footer />
+    </>
+  );
 }
