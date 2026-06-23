@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { readJsonBody } from "@/lib/api-json";
 import { gallerySchema } from "@/lib/admin/validators";
 import { createLocalGalleryImage, listAllLocalGalleryImages } from "@/lib/local-cms";
 
@@ -8,7 +9,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const parsed = gallerySchema.safeParse(await request.json());
+  const body = await readJsonBody(request);
+  if (body.response) return body.response;
+
+  const parsed = gallerySchema.safeParse(body.data);
 
   if (!parsed.success) {
     return NextResponse.json({ error: "Validation failed.", issues: parsed.error.flatten() }, { status: 422 });

@@ -8,12 +8,16 @@ export const dynamic = "force-dynamic";
 
 const uploadDir = path.join(process.cwd(), "public", "uploads", "cakes");
 const publicPrefix = "/uploads/cakes/";
+const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const maxUploadBytes = 5 * 1024 * 1024;
 
 function getSafeExtension(file: File) {
   const extension = path.extname(file.name).toLowerCase();
   if ([".jpg", ".jpeg", ".png", ".webp", ".gif"].includes(extension)) return extension;
-  const mimeExtension = file.type.split("/")[1];
-  return mimeExtension ? `.${mimeExtension.replace("jpeg", "jpg")}` : ".jpg";
+  if (file.type === "image/png") return ".png";
+  if (file.type === "image/webp") return ".webp";
+  if (file.type === "image/gif") return ".gif";
+  return ".jpg";
 }
 
 function resolveUploadedPath(imageUrl: string) {
@@ -33,8 +37,12 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Please select an image file." }, { status: 422 });
   }
 
-  if (!file.type.startsWith("image/")) {
-    return NextResponse.json({ error: "Only image files are allowed." }, { status: 422 });
+  if (!allowedImageTypes.has(file.type)) {
+    return NextResponse.json({ error: "Only JPG, PNG, WebP, and GIF images are allowed." }, { status: 422 });
+  }
+
+  if (file.size > maxUploadBytes) {
+    return NextResponse.json({ error: "Image must be 5MB or smaller." }, { status: 422 });
   }
 
   await mkdir(uploadDir, { recursive: true });

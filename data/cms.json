@@ -6,7 +6,8 @@
       "slug": "birthday-cakes",
       "description": "Custom birthday cakes for joyful celebrations.",
       "displayOrder": 1,
-      "status": "ACTIVE"
+      "status": "ACTIVE",
+      "subcategoryCtas": []
     },
     {
       "id": "wedding-cakes",
@@ -14,7 +15,8 @@
       "slug": "wedding-cakes",
       "description": "Elegant wedding cakes with premium finishes.",
       "displayOrder": 2,
-      "status": "ACTIVE"
+      "status": "ACTIVE",
+      "subcategoryCtas": []
     },
     {
       "id": "designer-cakes",
@@ -22,7 +24,8 @@
       "slug": "designer-cakes",
       "description": "Creative designer cakes for special themes.",
       "displayOrder": 3,
-      "status": "ACTIVE"
+      "status": "ACTIVE",
+      "subcategoryCtas": []
     },
     {
       "id": "kids-cakes",
@@ -30,7 +33,8 @@
       "slug": "kids-cakes",
       "description": "Fun kids cakes with colorful theme designs.",
       "displayOrder": 4,
-      "status": "ACTIVE"
+      "status": "ACTIVE",
+      "subcategoryCtas": []
     },
     {
       "id": "cookies",
@@ -38,7 +42,8 @@
       "slug": "cookies",
       "description": "Handcrafted cookies for gifting and dessert tables.",
       "displayOrder": 5,
-      "status": "ACTIVE"
+      "status": "ACTIVE",
+      "subcategoryCtas": []
     }
   ],
   "galleryImages": [
@@ -67,7 +72,8 @@
       "keywords": "chocolate cake, truffle cake, birthday cake",
       "featured": true,
       "status": "ACTIVE",
-      "createdAt": "2026-06-23T02:35:32.371Z"
+      "createdAt": "2026-06-23T10:26:05.388Z",
+      "subcategoryCtaIds": []
     },
     {
       "id": "royal-wedding-lace-cake",
@@ -94,7 +100,8 @@
       "keywords": "wedding cake, lace cake, designer wedding cake",
       "featured": true,
       "status": "ACTIVE",
-      "createdAt": "2026-06-23T02:35:32.371Z"
+      "createdAt": "2026-06-23T10:26:05.388Z",
+      "subcategoryCtaIds": []
     },
     {
       "id": "kids-candy-theme-cake",
@@ -120,7 +127,8 @@
       "keywords": "kids cake, theme cake, candy cake",
       "featured": false,
       "status": "ACTIVE",
-      "createdAt": "2026-06-23T02:35:32.371Z"
+      "createdAt": "2026-06-23T10:26:05.388Z",
+      "subcategoryCtaIds": []
     }
   ],
   "homePageSections": [
@@ -139,7 +147,7 @@
       "secondaryCtaHref": "/gallery",
       "displayOrder": 1,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T02:35:32.371Z",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
       "categoryCards": [],
       "whyCards": []
     },
@@ -158,7 +166,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 2,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T02:35:32.371Z",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
       "whyCards": [
         {
           "id": "baked-fresh",
@@ -267,7 +275,7 @@
       ],
       "displayOrder": 3,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T02:35:32.371Z",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
       "whyCards": []
     },
     {
@@ -285,7 +293,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 4,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T02:35:32.371Z",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
       "categoryCards": [],
       "whyCards": []
     },
@@ -304,9 +312,522 @@
       "secondaryCtaHref": null,
       "displayOrder": 5,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T02:35:32.371Z",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
       "categoryCards": [],
       "whyCards": []
+    }
+  ],
+  "aboutPageSections": [
+    {
+      "id": "story",
+      "sectionKey": "story",
+      "sectionType": "story",
+      "label": "Our Story",
+      "eyebrow": "Our Story",
+      "title": "Designed with care, baked with purpose.",
+      "subtitle": "",
+      "content": "Chocobee Cake Studio has been serving sweet happiness since 2013, creating 25,000+ unique cake designs for 5,000+ happy clients. We specialize in custom cakes, theme cakes, designer celebration cakes, cupcakes, and dessert moments that feel deeply personal. Every order is treated as a story: your theme, your colors, your flavor memories, and the joy you want your guests to feel.",
+      "imageUrl": null,
+      "imageAlt": null,
+      "ctaLabel": null,
+      "ctaHref": null,
+      "secondaryCtaLabel": null,
+      "secondaryCtaHref": null,
+      "displayOrder": 1,
+      "status": "ACTIVE",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "items": [
+        {
+          "id": "designer-celebration-cakes",
+          "label": "Slider Image",
+          "title": "Designer Celebration Cakes",
+          "imageUrl": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=85",
+          "imageAlt": "Designer Celebration Cakes",
+          "displayOrder": 1,
+          "status": "ACTIVE",
+          "subtitle": null,
+          "content": null,
+          "href": null
+        },
+        {
+          "id": "wedding-cake-finishes",
+          "label": "Slider Image",
+          "title": "Wedding Cake Finishes",
+          "imageUrl": "https://images.unsplash.com/photo-1535254973040-607b474cb50d?auto=format&fit=crop&w=900&q=85",
+          "imageAlt": "Wedding Cake Finishes",
+          "displayOrder": 2,
+          "status": "ACTIVE",
+          "subtitle": null,
+          "content": null,
+          "href": null
+        },
+        {
+          "id": "pastel-party-cakes",
+          "label": "Slider Image",
+          "title": "Pastel Party Cakes",
+          "imageUrl": "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=900&q=85",
+          "imageAlt": "Pastel Party Cakes",
+          "displayOrder": 3,
+          "status": "ACTIVE",
+          "subtitle": null,
+          "content": null,
+          "href": null
+        },
+        {
+          "id": "cupcake-gift-boxes",
+          "label": "Slider Image",
+          "title": "Cupcake Gift Boxes",
+          "imageUrl": "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&w=900&q=85",
+          "imageAlt": "Cupcake Gift Boxes",
+          "displayOrder": 4,
+          "status": "ACTIVE",
+          "subtitle": null,
+          "content": null,
+          "href": null
+        },
+        {
+          "id": "chocolate-signature-cakes",
+          "label": "Slider Image",
+          "title": "Chocolate Signature Cakes",
+          "imageUrl": "https://images.unsplash.com/photo-1602351447937-745cb720612f?auto=format&fit=crop&w=900&q=85",
+          "imageAlt": "Chocolate Signature Cakes",
+          "displayOrder": 5,
+          "status": "ACTIVE",
+          "subtitle": null,
+          "content": null,
+          "href": null
+        },
+        {
+          "id": "handcrafted-cookies",
+          "label": "Slider Image",
+          "title": "Handcrafted Cookies",
+          "imageUrl": "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=900&q=85",
+          "imageAlt": "Handcrafted Cookies",
+          "displayOrder": 6,
+          "status": "ACTIVE",
+          "subtitle": null,
+          "content": null,
+          "href": null
+        }
+      ]
+    },
+    {
+      "id": "chef",
+      "sectionKey": "chef",
+      "sectionType": "chef",
+      "label": "Meet the Chef",
+      "eyebrow": "Meet the Chef",
+      "title": "Neha Panwar",
+      "subtitle": "",
+      "content": "Chef Neha Panwar leads Chocobee Cake Studio with a passion for creative storytelling through cake. Her journey is rooted in listening carefully to each client, translating ideas into elegant edible designs, and delivering cakes that taste as beautiful as they look. Her expertise in theme detailing, premium finishes, and customer-first service has helped make thousands of celebrations truly unforgettable.",
+      "imageUrl": "/Images/neha.png",
+      "imageAlt": "Chef Neha Panwar",
+      "ctaLabel": null,
+      "ctaHref": null,
+      "secondaryCtaLabel": null,
+      "secondaryCtaHref": null,
+      "displayOrder": 2,
+      "status": "ACTIVE",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "items": [
+        {
+          "id": "years",
+          "label": "Stat",
+          "title": "11+",
+          "subtitle": "Years of Experience",
+          "displayOrder": 1,
+          "status": "ACTIVE",
+          "content": null,
+          "imageUrl": null,
+          "imageAlt": "11+",
+          "href": null
+        },
+        {
+          "id": "designs",
+          "label": "Stat",
+          "title": "25,000+",
+          "subtitle": "Unique Designs",
+          "displayOrder": 2,
+          "status": "ACTIVE",
+          "content": null,
+          "imageUrl": null,
+          "imageAlt": "25,000+",
+          "href": null
+        },
+        {
+          "id": "clients",
+          "label": "Stat",
+          "title": "5,000+",
+          "subtitle": "Happy Clients",
+          "displayOrder": 3,
+          "status": "ACTIVE",
+          "content": null,
+          "imageUrl": null,
+          "imageAlt": "5,000+",
+          "href": null
+        }
+      ]
+    },
+    {
+      "id": "team",
+      "sectionKey": "team",
+      "sectionType": "team",
+      "label": "Our Team",
+      "eyebrow": "Our Team",
+      "title": "Artists behind every celebration",
+      "subtitle": "",
+      "content": "Our team brings together cake artists, designers, support specialists, and delivery coordinators who work with care, discipline, and a shared love for beautiful celebrations.",
+      "imageUrl": null,
+      "imageAlt": null,
+      "ctaLabel": null,
+      "ctaHref": null,
+      "secondaryCtaLabel": null,
+      "secondaryCtaHref": null,
+      "displayOrder": 3,
+      "status": "ACTIVE",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "items": [
+        {
+          "id": "aarohi-sharma",
+          "label": "Team Member",
+          "title": "Aarohi Sharma",
+          "subtitle": "Cake Artist",
+          "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=700&q=85",
+          "imageAlt": "Aarohi Sharma",
+          "displayOrder": 1,
+          "status": "ACTIVE",
+          "content": null,
+          "href": null
+        },
+        {
+          "id": "riya-kapoor",
+          "label": "Team Member",
+          "title": "Riya Kapoor",
+          "subtitle": "Theme Designer",
+          "imageUrl": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=700&q=85",
+          "imageAlt": "Riya Kapoor",
+          "displayOrder": 2,
+          "status": "ACTIVE",
+          "content": null,
+          "href": null
+        },
+        {
+          "id": "kunal-mehra",
+          "label": "Team Member",
+          "title": "Kunal Mehra",
+          "subtitle": "Customer Support",
+          "imageUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=700&q=85",
+          "imageAlt": "Kunal Mehra",
+          "displayOrder": 3,
+          "status": "ACTIVE",
+          "content": null,
+          "href": null
+        },
+        {
+          "id": "nisha-verma",
+          "label": "Team Member",
+          "title": "Nisha Verma",
+          "subtitle": "Delivery Coordinator",
+          "imageUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=700&q=85",
+          "imageAlt": "Nisha Verma",
+          "displayOrder": 4,
+          "status": "ACTIVE",
+          "content": null,
+          "href": null
+        }
+      ]
+    },
+    {
+      "id": "features",
+      "sectionKey": "features",
+      "sectionType": "features",
+      "label": "Why Choose Us",
+      "eyebrow": "Why Choose Us",
+      "title": "Premium cakes, polished experience",
+      "subtitle": "",
+      "content": "",
+      "imageUrl": null,
+      "imageAlt": null,
+      "ctaLabel": null,
+      "ctaHref": null,
+      "secondaryCtaLabel": null,
+      "secondaryCtaHref": null,
+      "displayOrder": 4,
+      "status": "ACTIVE",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "items": [
+        {
+          "id": "custom-designs",
+          "label": "Feature",
+          "title": "Custom Designs",
+          "displayOrder": 1,
+          "status": "ACTIVE",
+          "subtitle": null,
+          "content": null,
+          "imageUrl": null,
+          "imageAlt": "Custom Designs",
+          "href": null
+        },
+        {
+          "id": "premium-ingredients",
+          "label": "Feature",
+          "title": "Premium Ingredients",
+          "displayOrder": 2,
+          "status": "ACTIVE",
+          "subtitle": null,
+          "content": null,
+          "imageUrl": null,
+          "imageAlt": "Premium Ingredients",
+          "href": null
+        },
+        {
+          "id": "timely-delivery",
+          "label": "Feature",
+          "title": "Timely Delivery",
+          "displayOrder": 3,
+          "status": "ACTIVE",
+          "subtitle": null,
+          "content": null,
+          "imageUrl": null,
+          "imageAlt": "Timely Delivery",
+          "href": null
+        },
+        {
+          "id": "customer-satisfaction",
+          "label": "Feature",
+          "title": "Customer Satisfaction",
+          "displayOrder": 4,
+          "status": "ACTIVE",
+          "subtitle": null,
+          "content": null,
+          "imageUrl": null,
+          "imageAlt": "Customer Satisfaction",
+          "href": null
+        },
+        {
+          "id": "creative-concepts",
+          "label": "Feature",
+          "title": "Creative Concepts",
+          "displayOrder": 5,
+          "status": "ACTIVE",
+          "subtitle": null,
+          "content": null,
+          "imageUrl": null,
+          "imageAlt": "Creative Concepts",
+          "href": null
+        },
+        {
+          "id": "hygiene-quality",
+          "label": "Feature",
+          "title": "Hygiene & Quality",
+          "displayOrder": 6,
+          "status": "ACTIVE",
+          "subtitle": null,
+          "content": null,
+          "imageUrl": null,
+          "imageAlt": "Hygiene & Quality",
+          "href": null
+        }
+      ]
+    },
+    {
+      "id": "cta",
+      "sectionKey": "cta",
+      "sectionType": "cta",
+      "label": "Final CTA",
+      "eyebrow": "",
+      "title": "Let's Create Something Sweet Together",
+      "subtitle": "",
+      "content": "Tell us your theme, flavor, date, and celebration mood. We will help shape it into a cake worth remembering.",
+      "imageUrl": null,
+      "imageAlt": null,
+      "ctaLabel": "Order Your Cake Now",
+      "ctaHref": "/contact",
+      "secondaryCtaLabel": "WhatsApp Us",
+      "secondaryCtaHref": "https://wa.me/",
+      "displayOrder": 5,
+      "status": "ACTIVE",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "items": []
+    }
+  ],
+  "contactPageSections": [
+    {
+      "id": "hero",
+      "sectionKey": "hero",
+      "sectionType": "hero",
+      "label": "Hero",
+      "eyebrow": "Contact Chocobee",
+      "title": "Get in Touch",
+      "subtitle": "",
+      "content": "Planning a birthday, wedding, shower, or custom dessert table? Share your celebration details and our studio will help shape the perfect cake experience.",
+      "imageUrl": null,
+      "imageAlt": null,
+      "mapEmbedUrl": null,
+      "ctaLabel": null,
+      "ctaHref": null,
+      "displayOrder": 1,
+      "status": "ACTIVE",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "items": []
+    },
+    {
+      "id": "details",
+      "sectionKey": "details",
+      "sectionType": "details",
+      "label": "Contact Details",
+      "eyebrow": "",
+      "title": "Contact Details",
+      "subtitle": "",
+      "content": "",
+      "imageUrl": null,
+      "imageAlt": null,
+      "mapEmbedUrl": null,
+      "ctaLabel": "Chat on WhatsApp",
+      "ctaHref": "https://wa.me/",
+      "displayOrder": 2,
+      "status": "ACTIVE",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "items": [
+        {
+          "id": "studio",
+          "label": "Studio",
+          "title": "Studio",
+          "subtitle": "Chocobee Cake Studio",
+          "icon": "studio",
+          "displayOrder": 1,
+          "status": "ACTIVE",
+          "content": null,
+          "href": null
+        },
+        {
+          "id": "address",
+          "label": "Address",
+          "title": "Address",
+          "subtitle": "Crossing Republik, Ghaziabad",
+          "icon": "address",
+          "displayOrder": 2,
+          "status": "ACTIVE",
+          "content": null,
+          "href": null
+        },
+        {
+          "id": "phone",
+          "label": "Phone",
+          "title": "Phone",
+          "subtitle": "+91 00000 00000",
+          "href": "tel:+910000000000",
+          "icon": "phone",
+          "displayOrder": 3,
+          "status": "ACTIVE",
+          "content": null
+        },
+        {
+          "id": "email",
+          "label": "Email",
+          "title": "Email",
+          "subtitle": "hello@chocobeecake.studio",
+          "href": "mailto:hello@chocobeecake.studio",
+          "icon": "email",
+          "displayOrder": 4,
+          "status": "ACTIVE",
+          "content": null
+        },
+        {
+          "id": "hours",
+          "label": "Working Hours",
+          "title": "Working Hours",
+          "subtitle": "10 AM - 10 PM",
+          "icon": "hours",
+          "displayOrder": 5,
+          "status": "ACTIVE",
+          "content": null,
+          "href": null
+        }
+      ]
+    },
+    {
+      "id": "map",
+      "sectionKey": "map",
+      "sectionType": "map",
+      "label": "Map",
+      "eyebrow": "",
+      "title": "Studio Location",
+      "subtitle": "",
+      "content": "",
+      "imageUrl": null,
+      "imageAlt": null,
+      "mapEmbedUrl": "https://www.google.com/maps?q=Crossing%20Republik%2C%20Ghaziabad&output=embed",
+      "ctaLabel": null,
+      "ctaHref": null,
+      "displayOrder": 3,
+      "status": "ACTIVE",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "items": []
+    },
+    {
+      "id": "form",
+      "sectionKey": "form",
+      "sectionType": "form",
+      "label": "Contact Form",
+      "eyebrow": "",
+      "title": "Send a Message",
+      "subtitle": "",
+      "content": "Thank you. Our team will contact you shortly.",
+      "imageUrl": null,
+      "imageAlt": null,
+      "mapEmbedUrl": null,
+      "ctaLabel": "Submit Request",
+      "ctaHref": null,
+      "displayOrder": 4,
+      "status": "ACTIVE",
+      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "items": [
+        {
+          "id": "name",
+          "label": "Full Name",
+          "title": "Full Name",
+          "subtitle": "Your full name",
+          "icon": "text",
+          "displayOrder": 1,
+          "status": "ACTIVE",
+          "content": null,
+          "href": null
+        },
+        {
+          "id": "email",
+          "label": "Email Address",
+          "title": "Email Address",
+          "subtitle": "you@example.com",
+          "icon": "email",
+          "displayOrder": 2,
+          "status": "ACTIVE",
+          "content": null,
+          "href": null
+        },
+        {
+          "id": "phone",
+          "label": "Phone Number",
+          "title": "Phone Number",
+          "subtitle": "+91 00000 00000",
+          "icon": "phone",
+          "displayOrder": 3,
+          "status": "ACTIVE",
+          "content": null,
+          "href": null
+        },
+        {
+          "id": "message",
+          "label": "Message",
+          "title": "Message",
+          "subtitle": "Tell us about your cake theme, date, flavor, and size.",
+          "icon": "textarea",
+          "displayOrder": 4,
+          "status": "ACTIVE",
+          "content": null,
+          "href": null
+        }
+      ]
     }
   ],
   "footerSettings": {
@@ -316,7 +837,7 @@
     "addressLines": [
       "Crossing Republik, Ghaziabad, Gaur City 1 & 2, Noida Extension"
     ],
-    "phoneLabel": "+91 9999757191",
+    "phoneLabel": "+91 00000 00000",
     "phoneHref": "tel:+910000000000",
     "emailLabel": "hello@chocobeecake.studio",
     "emailHref": "mailto:hello@chocobeecake.studio",
@@ -426,35 +947,35 @@
     "socialLinks": [
       {
         "id": "instagram",
+        "type": "instagram",
         "label": "Instagram",
         "href": "https://instagram.com",
         "displayOrder": 1,
-        "status": "ACTIVE",
-        "type": "instagram"
+        "status": "ACTIVE"
       },
       {
         "id": "facebook",
+        "type": "facebook",
         "label": "Facebook",
         "href": "https://facebook.com",
         "displayOrder": 2,
-        "status": "ACTIVE",
-        "type": "facebook"
+        "status": "ACTIVE"
       },
       {
         "id": "whatsapp",
+        "type": "whatsapp",
         "label": "WhatsApp",
         "href": "https://wa.me/",
         "displayOrder": 3,
-        "status": "ACTIVE",
-        "type": "whatsapp"
+        "status": "ACTIVE"
       },
       {
         "id": "google",
+        "type": "google",
         "label": "Google Reviews",
         "href": "/#reviews-heading",
         "displayOrder": 4,
-        "status": "ACTIVE",
-        "type": "google"
+        "status": "ACTIVE"
       }
     ],
     "formTitle": "Reach Us",
@@ -466,6 +987,265 @@
     "formErrorMessage": "Please fill all required details correctly.",
     "copyrightText": "© 2026 Chocobee Cake Studio. All Rights Reserved.",
     "creditText": "Designed with love by Chocobee",
-    "updatedAt": "2026-06-23T02:40:58.316Z"
+    "updatedAt": "2026-06-23T10:26:05.388Z"
+  },
+  "customOrderSettings": {
+    "id": "custom-order",
+    "status": "ACTIVE",
+    "iconLabel": "Cake",
+    "title": "Custom Cake Order",
+    "subtitle": "Fill details & we'll confirm via your preferred channel",
+    "userSectionTitle": "User Details",
+    "userName": "Guest Customer",
+    "userPhone": "+91 00000 00000",
+    "userEmail": "hello@chocobeecake.studio",
+    "switchAccountLabel": "Not you? Switch account",
+    "switchAccountHref": "/admin/login",
+    "cakeSectionTitle": "Cake Details",
+    "themePlaceholder": "e.g., Unicorn, Superhero, Floral, Minimalist",
+    "cakeTextMaxLength": 30,
+    "cakeTextPlaceholder": "Text on cake",
+    "agePlaceholder": "e.g., 25",
+    "addressPlaceholder": "Full address with landmark & pincode",
+    "notesPlaceholder": "Any special instructions, allergies, eggless requirement, etc.",
+    "referenceSectionTitle": "Reference Images",
+    "dropzoneTitle": "Drop cake photos here or click to browse",
+    "dropzoneSubtitle": "Max 5 images, 5MB each (JPG, PNG)",
+    "galleryToggleLabel": "Or select from our gallery",
+    "galleryLimit": 12,
+    "maxUploadImages": 5,
+    "maxUploadSizeMb": 5,
+    "submitLabel": "Submit",
+    "submittingLabel": "Submitting...",
+    "footerNote": "You'll receive confirmation within 30 minutes",
+    "successMessage": "Order submitted! We will confirm shortly.",
+    "autoCloseMs": 4000,
+    "businessWhatsappNumber": "910000000000",
+    "businessEmail": "hello@chocobeecake.studio",
+    "enableGalleryPicker": true,
+    "enableReferenceUpload": true,
+    "options": {
+      "occasion": [
+        {
+          "id": "birthday",
+          "label": "Birthday",
+          "value": "Birthday",
+          "displayOrder": 1,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "wedding",
+          "label": "Wedding",
+          "value": "Wedding",
+          "displayOrder": 2,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "anniversary",
+          "label": "Anniversary",
+          "value": "Anniversary",
+          "displayOrder": 3,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "baby-shower",
+          "label": "Baby Shower",
+          "value": "Baby Shower",
+          "displayOrder": 4,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "corporate",
+          "label": "Corporate",
+          "value": "Corporate",
+          "displayOrder": 5,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "other",
+          "label": "Other",
+          "value": "Other",
+          "displayOrder": 6,
+          "status": "ACTIVE"
+        }
+      ],
+      "size": [
+        {
+          "id": "0-5-kg",
+          "label": "0.5 kg",
+          "value": "0.5 kg",
+          "displayOrder": 1,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "1-kg",
+          "label": "1 kg",
+          "value": "1 kg",
+          "displayOrder": 2,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "1-5-kg",
+          "label": "1.5 kg",
+          "value": "1.5 kg",
+          "displayOrder": 3,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "2-kg",
+          "label": "2 kg",
+          "value": "2 kg",
+          "displayOrder": 4,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "3-kg",
+          "label": "3 kg",
+          "value": "3 kg",
+          "displayOrder": 5,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "4-kg",
+          "label": "4 kg",
+          "value": "4 kg",
+          "displayOrder": 6,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "5-kg",
+          "label": "5+ kg",
+          "value": "5+ kg",
+          "displayOrder": 7,
+          "status": "ACTIVE"
+        }
+      ],
+      "tier": [
+        {
+          "id": "single-tier",
+          "label": "Single Tier",
+          "value": "Single Tier",
+          "displayOrder": 1,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "2-tier",
+          "label": "2-Tier",
+          "value": "2-Tier",
+          "displayOrder": 2,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "3-tier",
+          "label": "3-Tier",
+          "value": "3-Tier",
+          "displayOrder": 3,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "multi-tier",
+          "label": "Multi-Tier",
+          "value": "Multi-Tier",
+          "displayOrder": 4,
+          "status": "ACTIVE"
+        }
+      ],
+      "flavour": [
+        {
+          "id": "chocolate",
+          "label": "Chocolate",
+          "value": "Chocolate",
+          "displayOrder": 1,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "vanilla",
+          "label": "Vanilla",
+          "value": "Vanilla",
+          "displayOrder": 2,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "strawberry",
+          "label": "Strawberry",
+          "value": "Strawberry",
+          "displayOrder": 3,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "red-velvet",
+          "label": "Red Velvet",
+          "value": "Red Velvet",
+          "displayOrder": 4,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "black-forest",
+          "label": "Black Forest",
+          "value": "Black Forest",
+          "displayOrder": 5,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "butterscotch",
+          "label": "Butterscotch",
+          "value": "Butterscotch",
+          "displayOrder": 6,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "pineapple",
+          "label": "Pineapple",
+          "value": "Pineapple",
+          "displayOrder": 7,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "custom",
+          "label": "Custom",
+          "value": "Custom",
+          "displayOrder": 8,
+          "status": "ACTIVE"
+        }
+      ],
+      "time": [
+        {
+          "id": "9-am-12-pm",
+          "label": "9 AM - 12 PM",
+          "value": "9 AM - 12 PM",
+          "displayOrder": 1,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "12-pm-3-pm",
+          "label": "12 PM - 3 PM",
+          "value": "12 PM - 3 PM",
+          "displayOrder": 2,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "3-pm-6-pm",
+          "label": "3 PM - 6 PM",
+          "value": "3 PM - 6 PM",
+          "displayOrder": 3,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "6-pm-9-pm",
+          "label": "6 PM - 9 PM",
+          "value": "6 PM - 9 PM",
+          "displayOrder": 4,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "specific-time",
+          "label": "Specific Time",
+          "value": "Specific Time",
+          "displayOrder": 5,
+          "status": "ACTIVE"
+        }
+      ]
+    },
+    "updatedAt": "2026-06-23T10:26:05.388Z"
   }
 }

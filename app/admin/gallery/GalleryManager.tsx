@@ -7,6 +7,15 @@ type Category = {
   id: string;
   name: string;
   slug: string;
+  subcategoryCtas?: SubcategoryCta[];
+};
+
+type SubcategoryCta = {
+  id: string;
+  label: string;
+  href: string;
+  displayOrder: number;
+  status: "ACTIVE" | "INACTIVE";
 };
 
 type GalleryImage = {
@@ -19,6 +28,7 @@ type GalleryImage = {
   categorySlug?: string | null;
   categoryIds?: string[];
   categorySlugs?: string[];
+  subcategoryCtaIds?: string[];
   homeGroups?: string[];
   tags?: string | null;
   seoTitle?: string | null;
@@ -78,6 +88,7 @@ export function GalleryManager({
   const [images, setImages] = useState(initialImages);
   const [editing, setEditing] = useState<GalleryImage | null>(null);
   const selectedEditingCategories = editing?.categoryIds ?? (editing?.categoryId ? [editing.categoryId] : []);
+  const selectedEditingSubcategories = editing?.subcategoryCtaIds ?? [];
   const selectedEditingHomeGroups = editing?.homeGroups ?? [];
   const [imageUrl, setImageUrl] = useState(editing?.imageUrl ?? "");
   const [preview, setPreview] = useState(editing?.imageUrl ?? "");
@@ -88,6 +99,17 @@ export function GalleryManager({
   const [uploadStatus, setUploadStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [formVersion, setFormVersion] = useState(0);
+  const categorySubcategoryGroups = initialCategories
+    .map((category) => ({
+      ...category,
+      subcategoryCtas: (category.subcategoryCtas ?? [])
+        .filter((cta) => cta.status === "ACTIVE")
+        .sort((a, b) => a.displayOrder - b.displayOrder || a.label.localeCompare(b.label)),
+    }))
+    .filter((category) => category.subcategoryCtas.length);
+  const subcategoryLabelById = new Map(
+    categorySubcategoryGroups.flatMap((category) => category.subcategoryCtas.map((subcategory) => [subcategory.id, subcategory.label] as const)),
+  );
 
   const filteredImages = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -170,6 +192,7 @@ export function GalleryManager({
     const title = String(form.get("title") ?? "");
     const slug = String(form.get("slug") || slugify(title));
     const categoryIds = form.getAll("categoryIds").map(String).filter(Boolean);
+    const subcategoryCtaIds = form.getAll("subcategoryCtaIds").map(String).filter(Boolean);
     const homeGroups = form.getAll("homeGroups").map(String).filter(Boolean);
     const payload = {
       title,
@@ -178,6 +201,7 @@ export function GalleryManager({
       imageUrl,
       categoryId: categoryIds[0] ?? "",
       categoryIds,
+      subcategoryCtaIds,
       homeGroups,
       tags: String(form.get("tags") ?? ""),
       seoTitle: String(form.get("seoTitle") || `${title} | Chocobee Cake Studio`),
@@ -245,7 +269,7 @@ export function GalleryManager({
     setUploadStatus(editing ? "Image cleared. Submit update to save this change." : "Image removed from the form.");
   }
 
-  async function updateImageQuick(id: string, payload: Partial<Pick<GalleryImage, "categoryId" | "categoryIds" | "featured" | "status">>) {
+  async function updateImageQuick(id: string, payload: Partial<Pick<GalleryImage, "categoryId" | "categoryIds" | "subcategoryCtaIds" | "featured" | "status">>) {
     const current = images.find((image) => image.id === id);
     if (!current) return;
 
@@ -257,6 +281,7 @@ export function GalleryManager({
         imageUrl: current.imageUrl,
         categoryId: current.categoryId ?? "",
         categoryIds: current.categoryIds ?? (current.categoryId ? [current.categoryId] : []),
+        subcategoryCtaIds: current.subcategoryCtaIds ?? [],
         homeGroups: current.homeGroups ?? [],
         tags: current.tags ?? "",
         seoTitle: current.seoTitle ?? "",
@@ -294,7 +319,6 @@ export function GalleryManager({
       <header className="admin-page-header">
         <div>
           <p>Gallery Images</p>
-          <h1>Cake Image Gallery Control System</h1>
         </div>
         <div className="admin-header-actions">
           <button type="button" className="admin-publish-button" onClick={() => void publishGallery()}>
@@ -344,71 +368,90 @@ export function GalleryManager({
                     <Image src={image.imageUrl} alt={image.altText} fill sizes="88px" className="object-cover" />
                   </div>
 
-                  <div className="admin-gallery-row-title">
-                    <h2>{image.title}</h2>
-                    <p>/cakes/{image.slug}</p>
-                    <small>{image.description}</small>
-                  </div>
+                  <div className="admin-gallery-row-main">
+                    <div className="admin-gallery-row-title">
+                      <h2>{image.title}</h2>
+                      <p>/cakes/{image.slug}</p>
+                      <small>{image.description}</small>
+                    </div>
 
-                  <div className="admin-gallery-home-groups" aria-label={`Home page gallery groups for ${image.title}`}>
-                    <span>Home Page</span>
-                    <div>
-                      {image.homeGroups?.length ? (
-                        image.homeGroups.map((group) => <strong key={group}>{group}</strong>)
-                      ) : (
-                        <em>Not on homepage</em>
-                      )}
+                    <div className="admin-gallery-row-badges">
+                      <div className="admin-gallery-home-groups" aria-label={`Home page gallery groups for ${image.title}`}>
+                        <span>Home Page</span>
+                        <div>
+                          {image.homeGroups?.length ? (
+                            image.homeGroups.map((group) => <strong key={group}>{group}</strong>)
+                          ) : (
+                            <em>Not on homepage</em>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="admin-gallery-home-groups" aria-label={`Selected subcategories for ${image.title}`}>
+                        <span>Subcategories</span>
+                        <div>
+                          {image.subcategoryCtaIds?.length ? (
+                            image.subcategoryCtaIds.map((subcategoryId) => <strong key={subcategoryId}>{subcategoryLabelById.get(subcategoryId) ?? subcategoryId}</strong>)
+                          ) : (
+                            <em>None selected</em>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  <label>
-                    Category
-                    <select
-                      value={image.categoryId ?? ""}
-                      onChange={(event) =>
-                        updateImageQuick(image.id, {
-                          categoryId: event.currentTarget.value,
-                          categoryIds: event.currentTarget.value ? [event.currentTarget.value] : [],
-                        })
-                      }
-                    >
-                      <option value="">No category</option>
-                      {initialCategories.map((category) => (
-                        <option value={category.id} key={category.id}>
-                          {category.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <div className="admin-gallery-row-stacked-controls">
+                  <div className="admin-gallery-row-controls">
                     <label>
-                      Featured
-                      <select value={image.featured ? "yes" : "no"} onChange={(event) => updateImageQuick(image.id, { featured: event.currentTarget.value === "yes" })}>
-                        <option value="yes">Yes</option>
-                        <option value="no">No</option>
+                      Category
+                      <select
+                        value={image.categoryId ?? ""}
+                        onChange={(event) =>
+                          updateImageQuick(image.id, {
+                            categoryId: event.currentTarget.value,
+                            categoryIds: event.currentTarget.value ? [event.currentTarget.value] : [],
+                          })
+                        }
+                      >
+                        <option value="">No category</option>
+                        {initialCategories.map((category) => (
+                          <option value={category.id} key={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
                       </select>
                     </label>
 
-                    <label>
-                      Visibility
-                      <select value={image.status} onChange={(event) => updateImageQuick(image.id, { status: event.currentTarget.value as GalleryImage["status"] })}>
-                        <option value="ACTIVE">Show</option>
-                        <option value="INACTIVE">Hide</option>
-                      </select>
-                    </label>
-                  </div>
+                    <div className="admin-gallery-status-column">
+                      <div className="admin-gallery-row-actions">
+                        <a href={`/cakes/${image.slug}`} target="_blank" rel="noreferrer" aria-label={`View ${image.title}`} title="View">
+                          <EyeIcon />
+                        </a>
+                        <button type="button" onClick={() => startEditing(image)} aria-label={`Edit ${image.title}`} title="Edit">
+                          <EditIcon />
+                        </button>
+                        <button type="button" onClick={() => deleteImage(image.id)} aria-label={`Remove ${image.title}`} title="Remove">
+                          <TrashIcon />
+                        </button>
+                      </div>
 
-                  <div className="admin-gallery-row-actions">
-                    <a href={`/cakes/${image.slug}`} target="_blank" rel="noreferrer" aria-label={`View ${image.title}`} title="View">
-                      <EyeIcon />
-                    </a>
-                    <button type="button" onClick={() => startEditing(image)} aria-label={`Edit ${image.title}`} title="Edit">
-                      <EditIcon />
-                    </button>
-                    <button type="button" onClick={() => deleteImage(image.id)} aria-label={`Remove ${image.title}`} title="Remove">
-                      <TrashIcon />
-                    </button>
+                      <div className="admin-gallery-row-stacked-controls">
+                        <label>
+                          Featured
+                          <select value={image.featured ? "yes" : "no"} onChange={(event) => updateImageQuick(image.id, { featured: event.currentTarget.value === "yes" })}>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                          </select>
+                        </label>
+
+                        <label>
+                          Visibility
+                          <select value={image.status} onChange={(event) => updateImageQuick(image.id, { status: event.currentTarget.value as GalleryImage["status"] })}>
+                            <option value="ACTIVE">Show</option>
+                            <option value="INACTIVE">Hide</option>
+                          </select>
+                        </label>
+                      </div>
+                    </div>
                   </div>
                 </article>
               ))}
@@ -506,6 +549,29 @@ export function GalleryManager({
                 </label>
               ))}
             </div>
+          </div>
+          <div className="admin-category-field">
+            <button type="button" className="admin-category-toggle" aria-expanded="true" aria-controls="admin-image-subcategory-list">
+              <span>Sub Categories</span>
+              <span>{selectedEditingSubcategories.length || "No"} selected</span>
+            </button>
+            {categorySubcategoryGroups.length ? (
+              <div className="admin-category-checklist admin-subcategory-checklist" id="admin-image-subcategory-list" role="group" aria-label="Select cake subcategories">
+                {categorySubcategoryGroups.map((category) => (
+                  <div className="admin-subcategory-group" key={category.id}>
+                    <strong>{category.name}</strong>
+                    {category.subcategoryCtas.map((subcategory) => (
+                      <label className="admin-category-check-option" key={subcategory.id}>
+                        <input name="subcategoryCtaIds" type="checkbox" value={subcategory.id} defaultChecked={selectedEditingSubcategories.includes(subcategory.id)} />
+                        <span>{subcategory.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="admin-upload-status">Add subcategory CTAs from Categories first.</p>
+            )}
           </div>
           <label>
             Short Description

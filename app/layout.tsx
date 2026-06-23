@@ -15,9 +15,39 @@ const pacifico = Pacifico({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://chocobeecake.vercel.app"),
   title: "Chocobee Cake Studio",
   description:
     "Chocobee Cake Studio bakes pastel custom cakes, cupcakes, and dessert tables for joyful celebrations.",
+  applicationName: "Chocobee Cake Studio",
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    siteName: "Chocobee Cake Studio",
+    title: "Chocobee Cake Studio",
+    description: "Custom cakes, cupcakes, and dessert tables for joyful celebrations.",
+    url: "/",
+    images: [
+      {
+        url: "/Images/CB_logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Chocobee Cake Studio",
+      },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Chocobee Cake Studio",
+    description: "Custom cakes, cupcakes, and dessert tables for joyful celebrations.",
+    images: ["/Images/CB_logo.png"],
+  },
 };
 
 export default function RootLayout({

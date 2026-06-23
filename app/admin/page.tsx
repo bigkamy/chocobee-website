@@ -23,7 +23,6 @@ export default function AdminDashboardPage() {
       <header className="admin-page-header">
         <div>
           <p>Admin Dashboard</p>
-          <h1>Simple content control for Chocobee Cake Studio</h1>
         </div>
         <Link href="/api/admin/dashboard" className="admin-outline-button">
           Dashboard API

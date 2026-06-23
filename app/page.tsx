@@ -2,10 +2,11 @@ import Image from "next/image";
 import { CategoriesSection } from "./CategoriesSection";
 import { Footer } from "./Footer";
 import { GallerySection } from "./GallerySection";
+import { HeroOrderActions } from "./HeroOrderActions";
 import { NavBar } from "./NavBar";
 import { ReviewsSection } from "./ReviewsSection";
 import { getPublicImageDimensions } from "@/lib/image-dimensions";
-import { listLocalGalleryImages, listLocalHomePageSections, type CmsHomePageSection } from "@/lib/local-cms";
+import { getLocalCustomOrderSettings, listLocalGalleryImages, listLocalHomePageSections, type CmsHomePageSection } from "@/lib/local-cms";
 
 export const dynamic = "force-dynamic";
 
@@ -94,6 +95,7 @@ function renderHeroTitle(title: string) {
 
 export default async function Home() {
   const homeSections = await listLocalHomePageSections({ activeOnly: true });
+  const customOrderSettings = await getLocalCustomOrderSettings();
   const homeGalleryImages = await Promise.all(
     (await listLocalGalleryImages())
       .filter((image) => image.homeGroups?.length)
@@ -122,7 +124,7 @@ export default async function Home() {
     <main className="site-shell min-h-screen overflow-hidden text-[#5D4037]">
       <DecorativeSprinkles />
 
-      <NavBar />
+      <NavBar customOrderSettings={customOrderSettings} />
 
       {heroSection ? (
       <section id="home" className="relative pt-28 sm:pt-32">
@@ -136,20 +138,14 @@ export default async function Home() {
                 "Serving since 2013, Chef Neha Panwar has created 25,000+ unique cake designs, delighting 5,000+ happy clients with exceptional creativity, premium quality, and a passion for crafting memorable celebrations truly unforgettable."}
             </p>
 
-            <div className="mt-8 flex flex-col items-center gap-5 sm:flex-row sm:gap-7 md:items-start">
-              <a
-                href={heroSection.ctaHref ?? "/about"}
-                className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#be1919] px-8 text-sm font-bold text-white shadow-[0_18px_30px_rgba(190,25,25,0.28)] transition hover:-translate-y-1 hover:bg-[#a91515]"
-              >
-                {heroSection.ctaLabel ?? "Know More"}
-              </a>
-              <a
-                href={heroSection.secondaryCtaHref ?? "/gallery"}
-                className="inline-flex min-h-12 items-center justify-center rounded-full border-2 border-[#be1919] bg-white/55 px-8 text-sm font-bold text-[#be1919] transition hover:-translate-y-1 hover:bg-[#fff2ba]"
-              >
-                {heroSection.secondaryCtaLabel ?? "Explore our Treat"}
-              </a>
-            </div>
+            <HeroOrderActions
+              primaryLabel={heroSection.ctaLabel ?? "Know More"}
+              primaryHref={heroSection.ctaHref ?? "/about"}
+              secondaryLabel={heroSection.secondaryCtaLabel ?? "Explore our Treat"}
+              secondaryHref={heroSection.secondaryCtaHref ?? "/gallery"}
+              galleryImages={homeGalleryImages}
+              customOrderSettings={customOrderSettings}
+            />
 
           </div>
 

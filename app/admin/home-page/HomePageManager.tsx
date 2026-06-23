@@ -307,7 +307,6 @@ export function HomePageManager({ initialSections }: { initialSections: HomePage
       <header className="admin-page-header">
         <div>
           <p>Home Page</p>
-          <h1>Control home page content section by section</h1>
         </div>
         <div className="admin-header-actions">
           <button type="button" className="admin-publish-button" onClick={() => void loadSections()}>

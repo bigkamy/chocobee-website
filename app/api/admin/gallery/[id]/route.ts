@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
+import { readJsonBody } from "@/lib/api-json";
 import { gallerySchema } from "@/lib/admin/validators";
 import { deleteLocalGalleryImage, updateLocalGalleryImage } from "@/lib/local-cms";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const parsed = gallerySchema.partial().safeParse(await request.json());
+  const body = await readJsonBody(request);
+  if (body.response) return body.response;
+
+  const parsed = gallerySchema.partial().safeParse(body.data);
 
   if (!parsed.success) {
     return NextResponse.json({ error: "Validation failed.", issues: parsed.error.flatten() }, { status: 422 });

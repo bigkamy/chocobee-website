@@ -7,6 +7,18 @@ export const categorySchema = z.object({
   name: z.string().min(2),
   slug: z.string().min(2),
   description: z.string().optional().nullable(),
+  subcategoryCtas: z
+    .array(
+      z.object({
+        id: z.string().min(1),
+        label: z.string().min(1),
+        href: z.string().min(1),
+        displayOrder: z.coerce.number().int().default(0),
+        status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
+      }),
+    )
+    .optional()
+    .default([]),
   displayOrder: z.coerce.number().int().default(0),
   status,
 });
@@ -19,6 +31,7 @@ export const gallerySchema = z.object({
   publicId: z.string().optional().nullable(),
   categoryId: z.string().optional().nullable(),
   categoryIds: z.array(z.string()).optional().default([]),
+  subcategoryCtaIds: z.array(z.string()).optional().default([]),
   homeGroups: z.array(z.enum(["Recent Designs", "Most Viewed", "Top on Demand"])).optional().default([]),
   tags: z.string().optional().nullable(),
   seoTitle: z.string().optional().nullable(),
@@ -105,6 +118,68 @@ export const homePageSectionSchema = z.object({
   status,
 });
 
+const aboutSectionItemSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  title: z.string().min(1),
+  subtitle: z.string().optional().nullable(),
+  content: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  imageAlt: z.string().optional().nullable(),
+  href: z.string().optional().nullable(),
+  displayOrder: z.coerce.number().int().default(0),
+  status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
+});
+
+export const aboutPageSectionSchema = z.object({
+  sectionKey: z.string().min(2),
+  sectionType: z.enum(["story", "chef", "team", "features", "cta", "content"]).default("content"),
+  label: z.string().min(2),
+  eyebrow: z.string().optional().nullable(),
+  title: z.string().min(1),
+  subtitle: z.string().optional().nullable(),
+  content: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  imageAlt: z.string().optional().nullable(),
+  ctaLabel: z.string().optional().nullable(),
+  ctaHref: z.string().optional().nullable(),
+  secondaryCtaLabel: z.string().optional().nullable(),
+  secondaryCtaHref: z.string().optional().nullable(),
+  displayOrder: z.coerce.number().int().default(0),
+  status,
+  items: z.array(aboutSectionItemSchema).default([]),
+});
+
+const contactSectionItemSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  title: z.string().min(1),
+  subtitle: z.string().optional().nullable(),
+  content: z.string().optional().nullable(),
+  href: z.string().optional().nullable(),
+  icon: z.string().optional().nullable(),
+  displayOrder: z.coerce.number().int().default(0),
+  status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
+});
+
+export const contactPageSectionSchema = z.object({
+  sectionKey: z.string().min(2),
+  sectionType: z.enum(["hero", "details", "map", "form", "content"]).default("content"),
+  label: z.string().min(2),
+  eyebrow: z.string().optional().nullable(),
+  title: z.string().min(1),
+  subtitle: z.string().optional().nullable(),
+  content: z.string().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
+  imageAlt: z.string().optional().nullable(),
+  mapEmbedUrl: z.string().optional().nullable(),
+  ctaLabel: z.string().optional().nullable(),
+  ctaHref: z.string().optional().nullable(),
+  displayOrder: z.coerce.number().int().default(0),
+  status,
+  items: z.array(contactSectionItemSchema).default([]),
+});
+
 const footerLinkSchema = z.object({
   id: z.string().min(1),
   label: z.string().min(1),
@@ -140,6 +215,57 @@ export const footerSettingsSchema = z.object({
   formErrorMessage: z.string().min(1),
   copyrightText: z.string().min(1),
   creditText: z.string().min(1),
+});
+
+const customOrderOptionSchema = z.object({
+  id: z.string().min(1),
+  label: z.string().min(1),
+  value: z.string().min(1),
+  displayOrder: z.coerce.number().int().default(0),
+  status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
+});
+
+export const customOrderSettingsSchema = z.object({
+  status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
+  iconLabel: z.string().min(1),
+  title: z.string().min(1),
+  subtitle: z.string().min(1),
+  userSectionTitle: z.string().min(1),
+  userName: z.string().min(1),
+  userPhone: z.string().min(1),
+  userEmail: z.string().email(),
+  switchAccountLabel: z.string().min(1),
+  switchAccountHref: z.string().min(1),
+  cakeSectionTitle: z.string().min(1),
+  themePlaceholder: z.string().min(1),
+  cakeTextMaxLength: z.coerce.number().int().min(1).max(120),
+  cakeTextPlaceholder: z.string().min(1),
+  agePlaceholder: z.string().min(1),
+  addressPlaceholder: z.string().min(1),
+  notesPlaceholder: z.string().min(1),
+  referenceSectionTitle: z.string().min(1),
+  dropzoneTitle: z.string().min(1),
+  dropzoneSubtitle: z.string().min(1),
+  galleryToggleLabel: z.string().min(1),
+  galleryLimit: z.coerce.number().int().min(1).max(48),
+  maxUploadImages: z.coerce.number().int().min(1).max(12),
+  maxUploadSizeMb: z.coerce.number().int().min(1).max(25),
+  submitLabel: z.string().min(1),
+  submittingLabel: z.string().min(1),
+  footerNote: z.string().min(1),
+  successMessage: z.string().min(1),
+  autoCloseMs: z.coerce.number().int().min(1000).max(15000),
+  businessWhatsappNumber: z.string().min(8),
+  businessEmail: z.string().email(),
+  enableGalleryPicker: z.coerce.boolean().default(true),
+  enableReferenceUpload: z.coerce.boolean().default(true),
+  options: z.object({
+    occasion: z.array(customOrderOptionSchema).default([]),
+    size: z.array(customOrderOptionSchema).default([]),
+    tier: z.array(customOrderOptionSchema).default([]),
+    flavour: z.array(customOrderOptionSchema).default([]),
+    time: z.array(customOrderOptionSchema).default([]),
+  }),
 });
 
 export const resourceSchemas = {

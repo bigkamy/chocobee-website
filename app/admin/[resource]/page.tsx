@@ -29,7 +29,6 @@ export default async function AdminResourcePage({ params }: { params: Promise<{ 
       <header className="admin-page-header">
         <div>
           <p>{resource.label}</p>
-          <h1>{resource.description}</h1>
         </div>
         <a href={`/api/admin/${resource.key}`} className="admin-outline-button">
           REST API

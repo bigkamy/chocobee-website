@@ -3,6 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { CakeOrderTrigger } from "./CakeOrderTrigger";
+import type { CmsCustomOrderSettings } from "@/lib/local-cms";
 
 const navItems = [
   {
@@ -46,7 +48,7 @@ const navItems = [
   },
 ];
 
-export function NavBar() {
+export function NavBar({ customOrderSettings }: { customOrderSettings?: CmsCustomOrderSettings }) {
   const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
@@ -105,8 +107,8 @@ export function NavBar() {
           ))}
         </div>
 
-        <Link
-          href="/contact"
+        <CakeOrderTrigger
+          settings={customOrderSettings}
           className={`site-navbar-cta rounded-full bg-[#be1919] text-sm font-bold text-white shadow-[0_12px_22px_rgba(190,25,25,0.28)] transition hover:-translate-y-0.5 hover:bg-[#a91515] ${
             hasScrolled ? "px-3 py-2 sm:px-4" : "px-4 py-2.5 sm:px-5"
           }`}
@@ -119,7 +121,7 @@ export function NavBar() {
             </svg>
           </span>
           Custom Orders
-        </Link>
+        </CakeOrderTrigger>
       </nav>
     </header>
   );

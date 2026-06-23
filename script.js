@@ -11,6 +11,8 @@ let autoSlideInterval;
 let spacing = 140;
 let sliderWidth = 80;
 
+carousel?.setAttribute('data-ready', 'true');
+
 // Keep the slider width responsive and smooth.
 function updateSlideWidth() {
   slides.forEach((slide) => {

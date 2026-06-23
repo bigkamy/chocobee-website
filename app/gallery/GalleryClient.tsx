@@ -4,7 +4,19 @@ import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { NavBar } from "../NavBar";
 
-type Category = string;
+type SubcategoryCta = {
+  id: string;
+  label: string;
+  href: string;
+  displayOrder: number;
+  status: "ACTIVE" | "INACTIVE";
+};
+
+type Category = {
+  name: string;
+  slug: string;
+  subcategoryCtas?: SubcategoryCta[];
+};
 
 type GalleryItem = {
   id: string;
@@ -25,12 +37,12 @@ type GalleryApiItem = Omit<GalleryItem, "category"> & {
 };
 
 const fallbackCategories: Category[] = [
-  "All",
-  "Birthday Cakes",
-  "Wedding Cakes",
-  "Designer Cakes",
-  "Kids Cakes",
-  "Cookies"
+  { name: "All", slug: "all", subcategoryCtas: [] },
+  { name: "Birthday Cakes", slug: "birthday-cakes", subcategoryCtas: [] },
+  { name: "Wedding Cakes", slug: "wedding-cakes", subcategoryCtas: [] },
+  { name: "Designer Cakes", slug: "designer-cakes", subcategoryCtas: [] },
+  { name: "Kids Cakes", slug: "kids-cakes", subcategoryCtas: [] },
+  { name: "Cookies", slug: "cookies", subcategoryCtas: [] },
 ];
 
 const galleryItems: GalleryItem[] = [
@@ -132,7 +144,7 @@ function WhatsAppIcon() {
 }
 
 export function GalleryClient() {
-  const [activeCategory, setActiveCategory] = useState<Category>("All");
+  const [activeCategory, setActiveCategory] = useState("All");
   const [categories, setCategories] = useState<Category[]>(fallbackCategories);
   const [items, setItems] = useState<GalleryItem[]>(galleryItems);
   const [visibleCount, setVisibleCount] = useState(initialVisible);
@@ -144,11 +156,15 @@ export function GalleryClient() {
       try {
         const response = await fetch("/api/categories", { cache: "no-store" });
         if (!response.ok) return;
-        const data = (await response.json()) as { categories?: Array<{ name: string }> };
-        const names = data.categories?.map((category) => category.name).filter(Boolean) ?? [];
+        const data = (await response.json()) as { categories?: Category[] };
+        const nextCategories = data.categories?.filter((category) => category.name).map((category) => ({
+          ...category,
+          slug: category.slug || toSlug(category.name),
+          subcategoryCtas: category.subcategoryCtas ?? [],
+        })) ?? [];
 
-        if (isMounted && names.length) {
-          setCategories(["All", ...names]);
+        if (isMounted && nextCategories.length) {
+          setCategories([{ name: "All", slug: "all", subcategoryCtas: [] }, ...nextCategories]);
         }
       } catch {
         setCategories(fallbackCategories);
@@ -167,8 +183,8 @@ export function GalleryClient() {
 
     async function loadImages() {
       try {
-        const selectedCategory = categories.find((category) => category === activeCategory);
-        const categoryParam = activeCategory === "All" ? "" : `?category=${encodeURIComponent(toSlug(selectedCategory ?? ""))}`;
+        const selectedCategory = categories.find((category) => category.name === activeCategory);
+        const categoryParam = activeCategory === "All" ? "" : `?category=${encodeURIComponent(selectedCategory?.slug ?? toSlug(activeCategory))}`;
         const response = await fetch(`/api/gallery${categoryParam}`, { cache: "no-store" });
         if (!response.ok) return;
         const data = (await response.json()) as { images?: GalleryApiItem[] };
@@ -177,10 +193,10 @@ export function GalleryClient() {
             const categoryObject = typeof image.category === "object" ? image.category : null;
             const categoryLabel = typeof image.category === "string" ? image.category : null;
             const primarySlug = categoryObject?.slug ?? image.categorySlug ?? image.categorySlugs?.[0] ?? "";
-            const matchedCategory = categories.find((category) => toSlug(category) === primarySlug);
+            const matchedCategory = categories.find((category) => category.slug === primarySlug);
             return {
               ...image,
-              category: categoryObject?.name ?? matchedCategory ?? categoryLabel ?? primarySlug ?? "Gallery",
+              category: categoryObject?.name ?? matchedCategory?.name ?? categoryLabel ?? primarySlug ?? "Gallery",
               categorySlug: primarySlug,
             };
           }) ?? [];
@@ -209,7 +225,7 @@ export function GalleryClient() {
   const visibleItems = filteredItems.slice(0, visibleCount);
 
   const handleCategoryChange = (category: Category) => {
-    setActiveCategory(category);
+    setActiveCategory(category.name);
     setVisibleCount(initialVisible);
   };
 
@@ -239,21 +255,34 @@ export function GalleryClient() {
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
                   {categories.map((category) => {
-                    const isActive = activeCategory === category;
+                    const isActive = activeCategory === category.name;
+                    const subcategoryCtas = category.subcategoryCtas
+                      ?.filter((cta) => cta.status === "ACTIVE")
+                      .sort((a, b) => a.displayOrder - b.displayOrder || a.label.localeCompare(b.label)) ?? [];
                     return (
-                      <button
-                        key={category}
-                        type="button"
-                        onClick={() => handleCategoryChange(category)}
-                        className={`rounded-2xl px-4 py-3 text-left text-sm font-bold transition ${
-                          isActive
-                            ? "bg-[#be1919] text-white shadow-[0_12px_26px_rgba(190,25,25,0.24)]"
-                            : "bg-[#fff5f0] text-[#6f4b40] hover:-translate-y-0.5 hover:bg-[#ffedf1] hover:text-[#be1919]"
-                        }`}
-                        aria-pressed={isActive}
-                      >
-                        {category}
-                      </button>
+                      <div className="gallery-category-group" key={category.slug}>
+                        <button
+                          type="button"
+                          onClick={() => handleCategoryChange(category)}
+                          className={`rounded-2xl px-4 py-3 text-left text-sm font-bold transition ${
+                            isActive
+                              ? "bg-[#be1919] text-white shadow-[0_12px_26px_rgba(190,25,25,0.24)]"
+                              : "bg-[#fff5f0] text-[#6f4b40] hover:-translate-y-0.5 hover:bg-[#ffedf1] hover:text-[#be1919]"
+                          }`}
+                          aria-pressed={isActive}
+                        >
+                          {category.name}
+                        </button>
+                        {subcategoryCtas.length ? (
+                          <div className="gallery-subcategory-ctas" aria-label={`${category.name} subcategories`}>
+                            {subcategoryCtas.map((cta) => (
+                              <a href={cta.href} key={cta.id}>
+                                {cta.label}
+                              </a>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
                     );
                   })}
                 </div>

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { readJsonBody } from "@/lib/api-json";
 import { categorySchema } from "@/lib/admin/validators";
 import { createLocalCategory, listLocalCategories } from "@/lib/local-cms";
 
@@ -8,7 +9,10 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const parsed = categorySchema.safeParse(await request.json());
+  const body = await readJsonBody(request);
+  if (body.response) return body.response;
+
+  const parsed = categorySchema.safeParse(body.data);
 
   if (!parsed.success) {
     return NextResponse.json({ error: "Validation failed.", issues: parsed.error.flatten() }, { status: 422 });
@@ -18,6 +22,7 @@ export async function POST(request: Request) {
     name: parsed.data.name,
     slug: parsed.data.slug,
     description: parsed.data.description,
+    subcategoryCtas: parsed.data.subcategoryCtas,
     displayOrder: parsed.data.displayOrder,
     status: parsed.data.status ?? "ACTIVE",
   });

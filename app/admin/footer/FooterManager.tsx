@@ -154,7 +154,6 @@ export function FooterManager({ initialSettings }: { initialSettings: CmsFooterS
       <header className="admin-footer-page-header">
         <div>
           <p>Footer Settings</p>
-          <h1>Website footer control</h1>
           <span>Last updated {new Date(settings.updatedAt).toLocaleDateString()}</span>
         </div>
         <div className="admin-header-actions">

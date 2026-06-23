@@ -7,6 +7,15 @@ type Category = {
   name: string;
   slug: string;
   description?: string | null;
+  subcategoryCtas?: SubcategoryCta[];
+  displayOrder: number;
+  status: "ACTIVE" | "INACTIVE";
+};
+
+type SubcategoryCta = {
+  id: string;
+  label: string;
+  href: string;
   displayOrder: number;
   status: "ACTIVE" | "INACTIVE";
 };
@@ -22,6 +31,7 @@ function slugify(value: string) {
 export function CategoriesManager({ initialCategories }: { initialCategories: Category[] }) {
   const [categories, setCategories] = useState<Category[]>(initialCategories);
   const [editing, setEditing] = useState<Category | null>(null);
+  const [subcategoryCtas, setSubcategoryCtas] = useState<SubcategoryCta[]>([]);
   const [message, setMessage] = useState("");
 
   async function loadCategories() {
@@ -39,6 +49,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
       name,
       slug,
       description: String(form.get("description") ?? ""),
+      subcategoryCtas,
       displayOrder: Number(form.get("displayOrder") ?? 0),
       status: String(form.get("status") ?? "ACTIVE") as Category["status"],
     };
@@ -56,8 +67,53 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
 
     event.currentTarget.reset();
     setEditing(null);
+    setSubcategoryCtas([]);
     setMessage(editing ? "Category updated." : "Category added.");
     await loadCategories();
+  }
+
+  function startEditing(category: Category) {
+    setEditing(category);
+    setSubcategoryCtas(category.subcategoryCtas ?? []);
+  }
+
+  function cancelEditing() {
+    setEditing(null);
+    setSubcategoryCtas([]);
+  }
+
+  function addSubcategoryCta() {
+    setSubcategoryCtas((current) => {
+      const nextIndex = current.length + 1;
+      return [
+        ...current,
+        {
+          id: `subcategory-cta-${nextIndex}`,
+          label: "New Subcategory",
+          href: "/gallery",
+          displayOrder: nextIndex,
+          status: "ACTIVE",
+        },
+      ];
+    });
+  }
+
+  function updateSubcategoryCta(index: number, patch: Partial<SubcategoryCta>) {
+    setSubcategoryCtas((current) =>
+      current.map((cta, ctaIndex) => {
+        if (ctaIndex !== index) return cta;
+        const label = patch.label ?? cta.label;
+        return {
+          ...cta,
+          ...patch,
+          id: patch.id ?? cta.id ?? slugify(label),
+        };
+      }),
+    );
+  }
+
+  function deleteSubcategoryCta(index: number) {
+    setSubcategoryCtas((current) => current.filter((_, ctaIndex) => ctaIndex !== index));
   }
 
   async function deleteCategory(id: string) {
@@ -82,7 +138,6 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
       <header className="admin-page-header">
         <div>
           <p>Categories</p>
-          <h1>Control the category list shown on the Gallery page</h1>
         </div>
         <div className="admin-header-actions">
           <button type="button" className="admin-publish-button" onClick={() => void publishCategories()}>
@@ -95,7 +150,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
       </header>
 
       <section className="admin-resource-grid">
-        <form onSubmit={handleSubmit} className="admin-resource-card admin-category-form">
+        <form onSubmit={handleSubmit} className="admin-resource-card admin-category-form" key={editing?.id ?? "new-category"}>
           <h2>{editing ? "Edit Category" : "Add Category"}</h2>
           <label>
             Category Name
@@ -120,9 +175,49 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
               <option value="INACTIVE">Inactive</option>
             </select>
           </label>
+          <div className="admin-category-subcategory-panel">
+            <div>
+              <h3>Subcategory CTA</h3>
+              <button type="button" className="admin-secondary-button" onClick={addSubcategoryCta}>
+                Add CTA
+              </button>
+            </div>
+            {subcategoryCtas.length ? (
+              <div className="admin-category-subcategory-list">
+                {subcategoryCtas.map((cta, index) => (
+                  <article key={`${cta.id}-${index}`}>
+                    <label>
+                      Label
+                      <input value={cta.label} onChange={(event) => updateSubcategoryCta(index, { label: event.currentTarget.value })} />
+                    </label>
+                    <label>
+                      Link
+                      <input value={cta.href} onChange={(event) => updateSubcategoryCta(index, { href: event.currentTarget.value })} />
+                    </label>
+                    <label>
+                      Order
+                      <input type="number" value={cta.displayOrder} onChange={(event) => updateSubcategoryCta(index, { displayOrder: Number(event.currentTarget.value) })} />
+                    </label>
+                    <label>
+                      Status
+                      <select value={cta.status} onChange={(event) => updateSubcategoryCta(index, { status: event.currentTarget.value as SubcategoryCta["status"] })}>
+                        <option value="ACTIVE">Active</option>
+                        <option value="INACTIVE">Inactive</option>
+                      </select>
+                    </label>
+                    <button type="button" className="admin-secondary-button admin-category-danger-button" onClick={() => deleteSubcategoryCta(index)}>
+                      Delete
+                    </button>
+                  </article>
+                ))}
+              </div>
+            ) : (
+              <p className="admin-muted">Add buttons for subcategories like Kids Theme, Eggless, Premium, or Photo Cake.</p>
+            )}
+          </div>
           <button type="submit">{editing ? "Update Category" : "Add Category"}</button>
           {editing ? (
-            <button type="button" className="admin-secondary-button" onClick={() => setEditing(null)}>
+            <button type="button" className="admin-secondary-button" onClick={cancelEditing}>
               Cancel Edit
             </button>
           ) : null}
@@ -138,7 +233,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
             {categories
               .filter((category) => category.status === "ACTIVE")
               .map((category) => (
-                <span key={category.id}>{category.name}</span>
+                <span key={category.id}>{category.name} {category.subcategoryCtas?.filter((cta) => cta.status === "ACTIVE").length ? `(${category.subcategoryCtas.filter((cta) => cta.status === "ACTIVE").length} CTAs)` : ""}</span>
               ))}
           </div>
         </article>
@@ -154,6 +249,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
               <th>Name</th>
               <th>Slug</th>
               <th>Description</th>
+              <th>Sub CTAs</th>
               <th>Order</th>
               <th>Status</th>
               <th>Actions</th>
@@ -165,12 +261,13 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
                 <td>{category.name}</td>
                 <td>{category.slug}</td>
                 <td>{category.description}</td>
+                <td>{category.subcategoryCtas?.filter((cta) => cta.status === "ACTIVE").length ?? 0}</td>
                 <td>{category.displayOrder}</td>
                 <td>
                   <span>{category.status === "ACTIVE" ? "Active" : "Inactive"}</span>
                 </td>
                 <td>
-                  <button type="button" onClick={() => setEditing(category)}>
+                  <button type="button" onClick={() => startEditing(category)}>
                     Edit
                   </button>
                   <button type="button" onClick={() => deleteCategory(category.id)}>
