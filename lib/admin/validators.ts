@@ -23,6 +23,15 @@ export const categorySchema = z.object({
   status,
 });
 
+export const reviewSchema = z.object({
+  name: z.string().min(2),
+  text: z.string().min(2),
+  rating: z.coerce.number().int().min(1).max(5).default(5),
+  date: z.string().min(1),
+  displayOrder: z.coerce.number().int().default(0),
+  status,
+});
+
 export const gallerySchema = z.object({
   title: z.string().min(2),
   slug: z.string().min(2),

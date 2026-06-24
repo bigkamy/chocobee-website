@@ -42,7 +42,8 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const name = String(form.get("name") ?? "");
     const slug = String(form.get("slug") || slugify(name));
     const payload = {
@@ -65,7 +66,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
       return;
     }
 
-    event.currentTarget.reset();
+    formElement.reset();
     setEditing(null);
     setSubcategoryCtas([]);
     setMessage(editing ? "Category updated." : "Category added.");
@@ -149,8 +150,8 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
         </div>
       </header>
 
-      <section className="admin-resource-grid">
-        <form onSubmit={handleSubmit} className="admin-resource-card admin-category-form" key={editing?.id ?? "new-category"}>
+      <section className="admin-categories-layout">
+        <form onSubmit={handleSubmit} className="admin-resource-card admin-category-form admin-categories-form" key={editing?.id ?? "new-category"}>
           <h2>{editing ? "Edit Category" : "Add Category"}</h2>
           <label>
             Category Name
@@ -224,25 +225,10 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
           {message ? <p role="status">{message}</p> : null}
         </form>
 
-        <article className="admin-resource-card">
-          <h2>Live Gallery Categories</h2>
-          <p className="admin-muted">
-            Active categories from this list appear automatically in the sidebar on <strong>/gallery</strong>.
-          </p>
-          <div className="admin-field-list">
-            {categories
-              .filter((category) => category.status === "ACTIVE")
-              .map((category) => (
-                <span key={category.id}>{category.name} {category.subcategoryCtas?.filter((cta) => cta.status === "ACTIVE").length ? `(${category.subcategoryCtas.filter((cta) => cta.status === "ACTIVE").length} CTAs)` : ""}</span>
-              ))}
+        <section className="admin-table-card admin-categories-table">
+          <div>
+            <h2>All Categories</h2>
           </div>
-        </article>
-      </section>
-
-      <section className="admin-table-card">
-        <div>
-          <h2>All Categories</h2>
-        </div>
         <table>
           <thead>
             <tr>
@@ -278,6 +264,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
             ))}
           </tbody>
         </table>
+        </section>
       </section>
     </main>
   );

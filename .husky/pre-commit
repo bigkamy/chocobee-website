@@ -1,0 +1,5 @@
+echo "› Type-checking (tsc --noEmit)..."
+npx tsc --noEmit || exit 1
+
+echo "› Linting (eslint)..."
+npx eslint . || exit 1

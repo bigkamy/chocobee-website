@@ -78,6 +78,17 @@ function TrashIcon() {
   );
 }
 
+function GalleryStackIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="3" y="3" width="18" height="18" rx="3" />
+      <path d="m3 16 4.5-4.5a2 2 0 0 1 2.8 0L15 16" />
+      <path d="m13 14 2-2a2 2 0 0 1 2.8 0L21 15" />
+      <circle cx="9" cy="9" r="1.6" />
+    </svg>
+  );
+}
+
 export function GalleryManager({
   initialCategories,
   initialImages,
@@ -355,14 +366,31 @@ export function GalleryManager({
 
           <section className="admin-gallery-table-card">
             <div className="admin-gallery-table-heading">
-              <div>
-                <h2>Uploaded Cake Images</h2>
-                <p>{filteredImages.length} images found</p>
+              <div className="admin-gallery-table-heading-label">
+                <span className="admin-gallery-table-heading-icon" aria-hidden="true">
+                  <GalleryStackIcon />
+                </span>
+                <div>
+                  <h2>Uploaded Cake Images</h2>
+                  <p>Manage every cake photo shown across your website</p>
+                </div>
               </div>
+              <span className="admin-gallery-count-badge">
+                {filteredImages.length} {filteredImages.length === 1 ? "image" : "images"}
+              </span>
             </div>
 
             <div className="admin-gallery-rows">
-              {filteredImages.map((image) => (
+              {filteredImages.length === 0 ? (
+                <div className="admin-gallery-empty">
+                  <span className="admin-gallery-empty-icon" aria-hidden="true">
+                    <GalleryStackIcon />
+                  </span>
+                  <h3>No cake images to show</h3>
+                  <p>Upload your first cake photo, or adjust your search and category filters to see results.</p>
+                </div>
+              ) : (
+                filteredImages.map((image) => (
                 <article className="admin-gallery-row" key={image.id}>
                   <div className="admin-gallery-thumb">
                     <Image src={image.imageUrl} alt={image.altText} fill sizes="88px" className="object-cover" />
@@ -454,7 +482,8 @@ export function GalleryManager({
                     </div>
                   </div>
                 </article>
-              ))}
+                ))
+              )}
             </div>
           </section>
         </div>

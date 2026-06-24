@@ -1,7 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { Breadcrumb } from "../Breadcrumb";
 import { NavBar } from "../NavBar";
 
 type SubcategoryCta = {
@@ -28,6 +30,7 @@ type GalleryItem = {
   categorySlug?: string | null;
   categoryIds?: string[];
   categorySlugs?: string[];
+  subcategoryCtaIds?: string[];
   featured?: boolean;
   altText: string;
 };
@@ -117,10 +120,10 @@ function EyeIcon() {
   );
 }
 
-function HeartIcon() {
+function HeartIcon({ filled = false }: { filled?: boolean }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5">
-      <path d="M12 20s-7.3-4.4-9.2-9.1C1.4 7.4 3.6 4.5 6.7 4.5c1.8 0 3.3 1 4.1 2.2.8-1.2 2.3-2.2 4.1-2.2 3.1 0 5.3 2.9 3.9 6.4C17.3 15.6 12 20 12 20Z" fill="none" stroke="currentColor" strokeLinejoin="round" strokeWidth="1.9" />
+      <path d="M12 20s-7.3-4.4-9.2-9.1C1.4 7.4 3.6 4.5 6.7 4.5c1.8 0 3.3 1 4.1 2.2.8-1.2 2.3-2.2 4.1-2.2 3.1 0 5.3 2.9 3.9 6.4C17.3 15.6 12 20 12 20Z" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeLinejoin="round" strokeWidth="1.9" />
     </svg>
   );
 }
@@ -145,9 +148,12 @@ function WhatsAppIcon() {
 
 export function GalleryClient() {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [activeSubcategoryId, setActiveSubcategoryId] = useState("");
   const [categories, setCategories] = useState<Category[]>(fallbackCategories);
   const [items, setItems] = useState<GalleryItem[]>(galleryItems);
   const [visibleCount, setVisibleCount] = useState(initialVisible);
+  const [likedIds, setLikedIds] = useState<string[]>([]);
+  const router = useRouter();
 
   useEffect(() => {
     let isMounted = true;
@@ -217,25 +223,81 @@ export function GalleryClient() {
   }, [activeCategory, categories]);
 
   const filteredItems = useMemo(() => {
-    return activeCategory === "All"
-      ? items
-      : items.filter((item) => item.category === activeCategory || item.categorySlugs?.includes(toSlug(activeCategory)));
-  }, [activeCategory, items]);
+    const categoryFilteredItems =
+      activeCategory === "All"
+        ? items
+        : items.filter((item) => item.category === activeCategory || item.categorySlugs?.includes(toSlug(activeCategory)));
+
+    return activeSubcategoryId
+      ? categoryFilteredItems.filter((item) => item.subcategoryCtaIds?.includes(activeSubcategoryId))
+      : categoryFilteredItems;
+  }, [activeCategory, activeSubcategoryId, items]);
 
   const visibleItems = filteredItems.slice(0, visibleCount);
 
   const handleCategoryChange = (category: Category) => {
     setActiveCategory(category.name);
+    setActiveSubcategoryId("");
     setVisibleCount(initialVisible);
+  };
+
+  const handleSubcategoryChange = (category: Category, subcategoryId: string) => {
+    setActiveCategory(category.name);
+    setActiveSubcategoryId((current) => (current === subcategoryId ? "" : subcategoryId));
+    setVisibleCount(initialVisible);
+  };
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem("chocobee-liked-cakes") ?? "[]");
+      if (Array.isArray(stored)) {
+        // Hydrate likes from storage after mount to avoid an SSR/client mismatch.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setLikedIds(stored.filter((id): id is string => typeof id === "string"));
+      }
+    } catch {
+      // ignore unreadable storage
+    }
+  }, []);
+
+  const handleView = (slug: string) => {
+    router.push(`/cakes/${slug}`);
+  };
+
+  const toggleLike = (id: string) => {
+    setLikedIds((current) => {
+      const next = current.includes(id) ? current.filter((value) => value !== id) : [...current, id];
+      try {
+        localStorage.setItem("chocobee-liked-cakes", JSON.stringify(next));
+      } catch {
+        // ignore unwritable storage
+      }
+      return next;
+    });
+  };
+
+  const handleShare = async (item: GalleryItem) => {
+    const url = `${window.location.origin}/cakes/${item.slug}`;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: item.title, text: `Check out ${item.title} by Chocobee Cake Studio`, url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      window.alert("Link copied to clipboard!");
+    } catch {
+      // user dismissed the share sheet or sharing failed — no action needed
+    }
   };
 
   return (
     <>
       <NavBar />
       <main className="min-h-screen bg-[#fff5f0] text-[#5d4037]">
-      <section className="relative overflow-hidden px-4 pb-16 pt-48 sm:px-6 lg:px-8 lg:pb-20 lg:pt-56">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_8%,rgba(255,183,197,0.5),transparent_20rem),radial-gradient(circle_at_92%_15%,rgba(255,215,0,0.22),transparent_18rem),linear-gradient(120deg,rgba(255,255,255,0.58),transparent)]" />
-        <div className="relative mx-auto max-w-7xl">
+        <section className="relative overflow-hidden px-4 pb-16 pt-48 sm:px-6 lg:px-8 lg:pb-20 lg:pt-56">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_8%,rgba(255,183,197,0.5),transparent_20rem),radial-gradient(circle_at_92%_15%,rgba(255,215,0,0.22),transparent_18rem),linear-gradient(120deg,rgba(255,255,255,0.58),transparent)]" />
+          <div className="relative mx-auto max-w-7xl">
+            <Breadcrumb items={[{ label: "Gallery" }]} />
           <div className="mb-8 text-center">
             <p className="text-xs font-extrabold uppercase tracking-[0.3em] text-[#be1919]">Cakes & Cookies Gallery</p>
             <h1 className="mt-3 font-heading text-4xl leading-tight text-[#5d4037] sm:text-5xl lg:text-6xl">
@@ -266,19 +328,25 @@ export function GalleryClient() {
                           onClick={() => handleCategoryChange(category)}
                           className={`rounded-2xl px-4 py-3 text-left text-sm font-bold transition ${
                             isActive
-                              ? "bg-[#be1919] text-white shadow-[0_12px_26px_rgba(190,25,25,0.24)]"
+                              ? "bg-[#be1919] text-white"
                               : "bg-[#fff5f0] text-[#6f4b40] hover:-translate-y-0.5 hover:bg-[#ffedf1] hover:text-[#be1919]"
                           }`}
                           aria-pressed={isActive}
                         >
                           {category.name}
                         </button>
-                        {subcategoryCtas.length ? (
+                        {isActive && subcategoryCtas.length ? (
                           <div className="gallery-subcategory-ctas" aria-label={`${category.name} subcategories`}>
                             {subcategoryCtas.map((cta) => (
-                              <a href={cta.href} key={cta.id}>
+                              <button
+                                type="button"
+                                className={activeSubcategoryId === cta.id ? "gallery-subcategory-active" : ""}
+                                onClick={() => handleSubcategoryChange(category, cta.id)}
+                                aria-pressed={activeSubcategoryId === cta.id}
+                                key={cta.id}
+                              >
                                 {cta.label}
-                              </a>
+                              </button>
                             ))}
                           </div>
                         ) : null}
@@ -315,21 +383,29 @@ export function GalleryClient() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#2d1611]/70 via-[#2d1611]/10 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
                       <div className="absolute inset-x-4 bottom-4 flex translate-y-4 items-center justify-center gap-3 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                        <button type="button" className="rounded-full bg-white/92 p-3 text-[#be1919] shadow-lg transition hover:scale-110" aria-label={`View ${item.title}`}>
+                        <button type="button" onClick={() => handleView(item.slug)} className="rounded-full bg-white/92 p-3 text-[#be1919] shadow-lg transition hover:scale-110" aria-label={`View ${item.title}`}>
                           <EyeIcon />
                         </button>
-                        <button type="button" className="rounded-full bg-white/92 p-3 text-[#be1919] shadow-lg transition hover:scale-110" aria-label={`Like ${item.title}`}>
-                          <HeartIcon />
+                        <button
+                          type="button"
+                          onClick={() => toggleLike(item.id)}
+                          aria-pressed={likedIds.includes(item.id)}
+                          className={`rounded-full p-3 shadow-lg transition hover:scale-110 ${
+                            likedIds.includes(item.id) ? "bg-[#be1919] text-white" : "bg-white/92 text-[#be1919]"
+                          }`}
+                          aria-label={`Like ${item.title}`}
+                        >
+                          <HeartIcon filled={likedIds.includes(item.id)} />
                         </button>
-                        <button type="button" className="rounded-full bg-white/92 p-3 text-[#be1919] shadow-lg transition hover:scale-110" aria-label={`Share ${item.title}`}>
+                        <button type="button" onClick={() => void handleShare(item)} className="rounded-full bg-white/92 p-3 text-[#be1919] shadow-lg transition hover:scale-110" aria-label={`Share ${item.title}`}>
                           <ShareIcon />
                         </button>
                       </div>
                     </div>
-                    <div className="p-4">
-                      <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-[#be1919]">{item.category}</p>
-                      <h3 className="mt-2 text-lg font-extrabold text-[#5d4037]">{item.title}</h3>
-                      <a href={`/cakes/${item.slug}`} className="mt-3 inline-flex text-sm font-extrabold text-[#be1919]">
+                    <div className="p-3">
+                      <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-[#be1919]">{item.category}</p>
+                      <h3 className="mt-1 text-sm font-extrabold text-[#5d4037]">{item.title}</h3>
+                      <a href={`/cakes/${item.slug}`} className="mt-1.5 inline-flex text-xs font-extrabold text-[#be1919]">
                         View Details
                       </a>
                     </div>

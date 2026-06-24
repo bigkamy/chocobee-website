@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Breadcrumb } from "../Breadcrumb";
 import { Footer } from "../Footer";
 import { NavBar } from "../NavBar";
 import { listLocalAboutPageSections } from "@/lib/local-cms";
@@ -196,6 +197,9 @@ export default async function AboutPage() {
     <>
       <NavBar />
       <main className="about-page-shell min-h-screen bg-[#fff5f0] pt-32 text-[#5d4037]">
+        <div className="mx-auto max-w-7xl px-5 pt-8 sm:px-8 lg:px-10">
+          <Breadcrumb items={[{ label: "About" }]} />
+        </div>
         {sections.map((section) => (
           <AboutSection section={section} key={section.id} />
         ))}

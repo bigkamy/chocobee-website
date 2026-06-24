@@ -1,8 +1,7 @@
 import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { compare } from "bcryptjs";
-import { prisma } from "./prisma";
 import type { AdminRole } from "./permissions";
+import { getAdminEmail, verifyAdminLogin } from "./admin-credentials";
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -21,24 +20,17 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) return null;
 
-        const user = await prisma.adminUser.findUnique({
-          where: { email: credentials.email.toLowerCase() },
-        });
-
-        const isValid = user ? await compare(credentials.password, user.passwordHash) : false;
-
-        if (!user || !user.isActive || !isValid) return null;
-
-        await prisma.adminUser.update({
-          where: { id: user.id },
-          data: { lastLoginAt: new Date() },
-        });
+        // This site stores its content in data/cms.json (no database). The single
+        // admin account is configured via ADMIN_EMAIL/ADMIN_PASSWORD and can be
+        // changed through the password-reset flow (stored in data/admin-auth.json).
+        const isValid = await verifyAdminLogin(credentials.email, credentials.password);
+        if (!isValid) return null;
 
         return {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role as AdminRole,
+          id: "admin",
+          name: "Chocobee Admin",
+          email: getAdminEmail(),
+          role: "ADMIN" as AdminRole,
         };
       },
     }),

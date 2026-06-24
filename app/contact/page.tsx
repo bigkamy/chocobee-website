@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Breadcrumb } from "../Breadcrumb";
 import { Footer } from "../Footer";
 import { NavBar } from "../NavBar";
 import { ContactForm } from "./ContactForm";
@@ -145,6 +146,7 @@ export default async function ContactPage() {
         <section className="relative overflow-hidden px-5 pb-16 pt-48 sm:px-8 lg:px-10 lg:pb-20 lg:pt-56">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_12%_12%,rgba(255,183,197,0.38),transparent_18rem),radial-gradient(circle_at_88%_10%,rgba(255,215,0,0.2),transparent_20rem)]" />
           <div className="relative mx-auto max-w-7xl">
+            <Breadcrumb items={[{ label: "Contact" }]} />
             <HeroIntro section={hero} />
             <div className="mt-10 grid gap-6 lg:grid-cols-2">
               <div className="space-y-6">

@@ -6,7 +6,7 @@ import { HeroOrderActions } from "./HeroOrderActions";
 import { NavBar } from "./NavBar";
 import { ReviewsSection } from "./ReviewsSection";
 import { getPublicImageDimensions } from "@/lib/image-dimensions";
-import { getLocalCustomOrderSettings, listLocalGalleryImages, listLocalHomePageSections, type CmsHomePageSection } from "@/lib/local-cms";
+import { getLocalCustomOrderSettings, listLocalGalleryImages, listLocalHomePageSections, listLocalReviews, type CmsHomePageSection } from "@/lib/local-cms";
 
 export const dynamic = "force-dynamic";
 
@@ -84,11 +84,16 @@ function renderHeroTitle(title: string) {
 
   if (nameStart < 0) return title;
 
+  const before = title.slice(0, nameStart).trim();
+  const after = title.slice(nameStart + highlightedName.length).trim();
+
   return (
     <>
-      {title.slice(0, nameStart)}
-      <span className="text-[#be1919]">{highlightedName}</span>
-      {title.slice(nameStart + highlightedName.length)}
+      <span className="block whitespace-nowrap">{before}</span>
+      <span className="block whitespace-nowrap text-[#be1919]">
+        {highlightedName}
+        {after ? ` ${after}` : ""}
+      </span>
     </>
   );
 }
@@ -96,6 +101,7 @@ function renderHeroTitle(title: string) {
 export default async function Home() {
   const homeSections = await listLocalHomePageSections({ activeOnly: true });
   const customOrderSettings = await getLocalCustomOrderSettings();
+  const reviews = await listLocalReviews({ activeOnly: true });
   const homeGalleryImages = await Promise.all(
     (await listLocalGalleryImages())
       .filter((image) => image.homeGroups?.length)
@@ -117,7 +123,6 @@ export default async function Home() {
   const whyUsSection = findSection(homeSections, "why-us");
   const categoriesSection = findSection(homeSections, "categories");
   const gallerySection = findSection(homeSections, "gallery");
-  const reviewsSection = findSection(homeSections, "reviews");
   const whyUsCards = getWhyUsCards(whyUsSection);
 
   return (
@@ -149,13 +154,13 @@ export default async function Home() {
 
           </div>
 
-          <div className="hero-image-static relative mx-auto flex w-full max-w-[640px] justify-center">
+          <div className="hero-image-static relative mx-auto flex w-full max-w-[760px] justify-center self-end md:-translate-x-6">
             <div className="hero-glow" aria-hidden="true" />
             <div className="floating-cupcake">
               <Image
-                src={heroSection.imageUrl || "/Images/neha.png?v=2"}
+                src={heroSection.imageUrl || "/Images/neha.png"}
                 alt={heroSection.imageAlt || "Chocobee Cake Studio feature"}
-                width={712}
+                width={1467}
                 height={1058}
                 priority
                 sizes="(max-width: 768px) 88vw, 512px"
@@ -171,7 +176,7 @@ export default async function Home() {
       ) : null}
 
       {whyUsSection ? (
-      <section id="why-us" className="relative z-[80] mx-auto -mt-10 -mb-14 max-w-7xl px-5 pb-0 sm:-mt-14 sm:-mb-16 sm:px-8 lg:-mt-16 lg:-mb-20 lg:px-10">
+      <section id="why-us" className="relative z-[80] mx-auto -mt-24 -mb-14 max-w-7xl px-5 pb-0 sm:-mt-28 sm:-mb-16 sm:px-8 lg:-mt-32 lg:-mb-20 lg:px-10">
         <div className="reveal grid gap-4 rounded-[28px] border border-white/80 bg-white/62 p-4 shadow-[0_20px_55px_rgba(93,64,55,0.1)] backdrop-blur md:grid-cols-3">
           {whyUsCards.map((item, index) => (
             <article key={item.title} className={`why-card why-card-${index + 1}`}>
@@ -207,7 +212,7 @@ export default async function Home() {
         />
       ) : null}
 
-      {reviewsSection ? <ReviewsSection /> : null}
+      {reviews.length ? <ReviewsSection reviews={reviews} /> : null}
 
       <Footer />
     </main>

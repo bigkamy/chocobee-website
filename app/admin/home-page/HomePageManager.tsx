@@ -321,6 +321,14 @@ export function HomePageManager({ initialSections }: { initialSections: HomePage
       <section className="admin-table-card admin-home-sections-card">
         <div>
           <h2>All Home Page Sections</h2>
+          <div className="admin-home-sections-links">
+            <Link href="/admin/custom-order" className="admin-outline-button">
+              Custom Order Popup
+            </Link>
+            <Link href="/admin/reviews" className="admin-outline-button">
+              Reviews
+            </Link>
+          </div>
         </div>
         {message ? <p className="admin-muted" role="status">{message}</p> : null}
         <table>
@@ -336,7 +344,7 @@ export function HomePageManager({ initialSections }: { initialSections: HomePage
           </thead>
           <tbody>
             {sections.map((section) => (
-              <tr key={section.id}>
+              <tr key={section.id} className={editing?.id === section.id ? "admin-home-section-active" : undefined}>
                 <td>{section.label}</td>
                 <td>{section.sectionKey}</td>
                 <td>{section.title}</td>

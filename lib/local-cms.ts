@@ -21,6 +21,16 @@ export type CmsCategory = {
   status: CmsStatus;
 };
 
+export type CmsReview = {
+  id: string;
+  name: string;
+  text: string;
+  rating: number;
+  date: string;
+  displayOrder: number;
+  status: CmsStatus;
+};
+
 export type CmsGalleryImage = {
   id: string;
   title: string;
@@ -242,6 +252,7 @@ export type CmsCustomOrderSettings = {
 
 type CmsData = {
   categories: CmsCategory[];
+  reviews: CmsReview[];
   galleryImages: CmsGalleryImage[];
   homePageSections: CmsHomePageSection[];
   aboutPageSections: CmsAboutPageSection[];
@@ -468,7 +479,7 @@ export const defaultHomePageSections: CmsHomePageSection[] = [
     subtitle: "Serving since 2013",
     content:
       "Control the first home page section, including headline, supporting text, image, and primary action.",
-    imageUrl: "/Images/neha.png?v=2",
+    imageUrl: "/Images/neha.png",
     imageAlt: "Chef Neha Panwar",
     ctaLabel: "Know More",
     ctaHref: "/about",
@@ -528,23 +539,6 @@ export const defaultHomePageSections: CmsHomePageSection[] = [
     secondaryCtaLabel: null,
     secondaryCtaHref: null,
     displayOrder: 4,
-    status: "ACTIVE",
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: "reviews",
-    sectionKey: "reviews",
-    label: "Reviews",
-    title: "Customer Reviews",
-    subtitle: "Sweet words",
-    content: "Control visibility for the home page reviews section.",
-    imageUrl: null,
-    imageAlt: null,
-    ctaLabel: null,
-    ctaHref: null,
-    secondaryCtaLabel: null,
-    secondaryCtaHref: null,
-    displayOrder: 5,
     status: "ACTIVE",
     updatedAt: new Date().toISOString(),
   },
@@ -1162,6 +1156,34 @@ function normalizeContactSections(sections?: CmsContactPageSection[]) {
     .sort((a, b) => a.displayOrder - b.displayOrder || a.label.localeCompare(b.label));
 }
 
+export const defaultReviews: CmsReview[] = [
+  { id: "review-1", name: "Priya Sharma", text: "Amazing quality, beautiful design and delicious taste. Everyone loved the cake.", rating: 5, date: "2 weeks ago", displayOrder: 1, status: "ACTIVE" },
+  { id: "review-2", name: "Ritika Jain", text: "The customized cake exceeded our expectations. Highly recommended.", rating: 5, date: "3 weeks ago", displayOrder: 2, status: "ACTIVE" },
+  { id: "review-3", name: "Aman Gupta", text: "Perfect theme cake with timely delivery and outstanding presentation.", rating: 5, date: "1 month ago", displayOrder: 3, status: "ACTIVE" },
+  { id: "review-4", name: "Neha Bansal", text: "Best designer cakes in Crossing Republik. Taste and design both excellent.", rating: 5, date: "1 month ago", displayOrder: 4, status: "ACTIVE" },
+  { id: "review-5", name: "Sonal Verma", text: "Neha ji understands every detail and delivers exactly what is promised.", rating: 5, date: "2 months ago", displayOrder: 5, status: "ACTIVE" },
+  { id: "review-6", name: "Karan Malhotra", text: "Beautiful wedding cake and professional service.", rating: 5, date: "2 months ago", displayOrder: 6, status: "ACTIVE" },
+  { id: "review-7", name: "Ankita Rao", text: "The cake became the highlight of our celebration.", rating: 5, date: "3 months ago", displayOrder: 7, status: "ACTIVE" },
+  { id: "review-8", name: "Megha Singh", text: "Fresh ingredients, stunning decoration and wonderful flavor.", rating: 5, date: "3 months ago", displayOrder: 8, status: "ACTIVE" },
+  { id: "review-9", name: "Rahul Mehta", text: "Ordered multiple times and every experience has been exceptional.", rating: 5, date: "4 months ago", displayOrder: 9, status: "ACTIVE" },
+  { id: "review-10", name: "Divya Kapoor", text: "Creative designs, premium quality and excellent customer support.", rating: 5, date: "4 months ago", displayOrder: 10, status: "ACTIVE" },
+];
+
+function normalizeReviews(reviews: CmsReview[] | undefined) {
+  return (reviews ?? defaultReviews)
+    .map((review, index) => ({
+      ...review,
+      id: review.id || `review-${index + 1}`,
+      name: review.name || `Customer ${index + 1}`,
+      text: review.text || "",
+      rating: Math.min(5, Math.max(1, Math.round(review.rating ?? 5))),
+      date: review.date || "Recently",
+      displayOrder: review.displayOrder ?? index + 1,
+      status: review.status ?? "ACTIVE",
+    }))
+    .sort((a, b) => a.displayOrder - b.displayOrder || a.name.localeCompare(b.name));
+}
+
 async function ensureCmsFile() {
   await mkdir(path.dirname(cmsPath), { recursive: true });
 
@@ -1224,6 +1246,7 @@ async function ensureCmsFile() {
       contactPageSections: normalizeContactSections(parsed.contactPageSections),
       footerSettings: normalizeFooterSettings(parsed.footerSettings),
       customOrderSettings: normalizeCustomOrderSettings(parsed.customOrderSettings),
+      reviews: normalizeReviews(parsed.reviews),
     };
     await writeCmsData(data);
     return data;
@@ -1236,6 +1259,7 @@ async function ensureCmsFile() {
       contactPageSections: defaultContactPageSections,
       footerSettings: defaultFooterSettings,
       customOrderSettings: defaultCustomOrderSettings,
+      reviews: defaultReviews,
     };
     await writeCmsData(initialData);
     return initialData;
@@ -1299,6 +1323,40 @@ export async function deleteLocalCategory(id: string) {
       categorySlugs,
     };
   });
+  await writeCmsData(data);
+}
+
+export async function listLocalReviews({ activeOnly = false } = {}) {
+  const data = await ensureCmsFile();
+  return data.reviews
+    .filter((review) => (activeOnly ? review.status === "ACTIVE" : true))
+    .sort((a, b) => a.displayOrder - b.displayOrder || a.name.localeCompare(b.name));
+}
+
+export async function createLocalReview(input: Omit<CmsReview, "id">) {
+  const data = await ensureCmsFile();
+  const id = `review-${Date.now()}`;
+  const review: CmsReview = { ...input, id };
+  data.reviews = [...data.reviews, review];
+  await writeCmsData(data);
+  return review;
+}
+
+export async function updateLocalReview(id: string, input: Partial<Omit<CmsReview, "id">>) {
+  const data = await ensureCmsFile();
+  let updated: CmsReview | undefined;
+  data.reviews = data.reviews.map((review) => {
+    if (review.id !== id) return review;
+    updated = { ...review, ...input };
+    return updated;
+  });
+  await writeCmsData(data);
+  return updated;
+}
+
+export async function deleteLocalReview(id: string) {
+  const data = await ensureCmsFile();
+  data.reviews = data.reviews.filter((review) => review.id !== id);
   await writeCmsData(data);
 }
 

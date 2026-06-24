@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     localPatterns: [
       {
         pathname: "/Images/neha.png",
-        search: "?v=2",
+        search: "?v=4",
       },
       {
         pathname: "/Images/**",

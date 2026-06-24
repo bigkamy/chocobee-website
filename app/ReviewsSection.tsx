@@ -2,68 +2,22 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const reviews = [
-  {
-    name: "Priya Sharma",
-    text: "Amazing quality, beautiful design and delicious taste. Everyone loved the cake.",
-    date: "2 weeks ago",
-    avatar: "PS",
-  },
-  {
-    name: "Ritika Jain",
-    text: "The customized cake exceeded our expectations. Highly recommended.",
-    date: "3 weeks ago",
-    avatar: "RJ",
-  },
-  {
-    name: "Aman Gupta",
-    text: "Perfect theme cake with timely delivery and outstanding presentation.",
-    date: "1 month ago",
-    avatar: "AG",
-  },
-  {
-    name: "Neha Bansal",
-    text: "Best designer cakes in Crossing Republik. Taste and design both excellent.",
-    date: "1 month ago",
-    avatar: "NB",
-  },
-  {
-    name: "Sonal Verma",
-    text: "Neha ji understands every detail and delivers exactly what is promised.",
-    date: "2 months ago",
-    avatar: "SV",
-  },
-  {
-    name: "Karan Malhotra",
-    text: "Beautiful wedding cake and professional service.",
-    date: "2 months ago",
-    avatar: "KM",
-  },
-  {
-    name: "Ankita Rao",
-    text: "The cake became the highlight of our celebration.",
-    date: "3 months ago",
-    avatar: "AR",
-  },
-  {
-    name: "Megha Singh",
-    text: "Fresh ingredients, stunning decoration and wonderful flavor.",
-    date: "3 months ago",
-    avatar: "MS",
-  },
-  {
-    name: "Rahul Mehta",
-    text: "Ordered multiple times and every experience has been exceptional.",
-    date: "4 months ago",
-    avatar: "RM",
-  },
-  {
-    name: "Divya Kapoor",
-    text: "Creative designs, premium quality and excellent customer support.",
-    date: "4 months ago",
-    avatar: "DK",
-  },
-];
+type Review = {
+  id?: string;
+  name: string;
+  text: string;
+  rating?: number;
+  date: string;
+};
+
+function initials(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("");
+}
 
 const stats = [
   { label: "Rating", value: 4.8, suffix: "+", icon: "star", decimals: 1 },
@@ -104,11 +58,11 @@ function StatIcon({ type }: { type: string }) {
   );
 }
 
-function Stars() {
+function Stars({ rating = 5 }: { rating?: number }) {
   return (
-    <span className="review-stars" aria-label="5 out of 5 stars">
+    <span className="review-stars" aria-label={`${rating} out of 5 stars`}>
       {Array.from({ length: 5 }).map((_, index) => (
-        <svg key={index} viewBox="0 0 24 24" aria-hidden="true">
+        <svg key={index} viewBox="0 0 24 24" aria-hidden="true" className={index < rating ? undefined : "is-empty"}>
           <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z" />
         </svg>
       ))}
@@ -124,16 +78,16 @@ function GoogleMark() {
   );
 }
 
-function ReviewCard({ review, index }: { review: (typeof reviews)[number]; index: number }) {
+function ReviewCard({ review, index }: { review: Review; index: number }) {
   return (
     <article className="review-card reveal" style={{ "--review-delay": `${index * 0.04}s` } as React.CSSProperties}>
       <div className="review-card-top">
         <span className="review-avatar" aria-hidden="true">
-          {review.avatar}
+          {initials(review.name)}
         </span>
         <div>
           <h3>{review.name}</h3>
-          <Stars />
+          <Stars rating={review.rating ?? 5} />
         </div>
         <GoogleMark />
       </div>
@@ -206,7 +160,7 @@ function Counter({ value, suffix, decimals }: { value: number; suffix: string; d
   );
 }
 
-export function ReviewsSection() {
+export function ReviewsSection({ reviews }: { reviews: Review[] }) {
   const carouselRef = useRef<HTMLDivElement>(null);
   const schema = useMemo(
     () => ({
@@ -226,13 +180,13 @@ export function ReviewsSection() {
         },
         reviewRating: {
           "@type": "Rating",
-          ratingValue: "5",
+          ratingValue: String(review.rating ?? 5),
           bestRating: "5",
         },
         reviewBody: review.text,
       })),
     }),
-    [],
+    [reviews],
   );
 
   useEffect(() => {
@@ -296,7 +250,7 @@ export function ReviewsSection() {
 
         <div className="reviews-grid" ref={carouselRef}>
           {reviews.map((review, index) => (
-            <ReviewCard review={review} index={index} key={review.name} />
+            <ReviewCard review={review} index={index} key={review.id ?? review.name} />
           ))}
         </div>
 

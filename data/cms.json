@@ -72,7 +72,7 @@
       "keywords": "chocolate cake, truffle cake, birthday cake",
       "featured": true,
       "status": "ACTIVE",
-      "createdAt": "2026-06-23T10:26:05.388Z",
+      "createdAt": "2026-06-24T14:48:30.740Z",
       "subcategoryCtaIds": []
     },
     {
@@ -100,7 +100,7 @@
       "keywords": "wedding cake, lace cake, designer wedding cake",
       "featured": true,
       "status": "ACTIVE",
-      "createdAt": "2026-06-23T10:26:05.388Z",
+      "createdAt": "2026-06-24T14:48:30.740Z",
       "subcategoryCtaIds": []
     },
     {
@@ -127,7 +127,7 @@
       "keywords": "kids cake, theme cake, candy cake",
       "featured": false,
       "status": "ACTIVE",
-      "createdAt": "2026-06-23T10:26:05.388Z",
+      "createdAt": "2026-06-24T14:48:30.740Z",
       "subcategoryCtaIds": []
     }
   ],
@@ -139,7 +139,7 @@
       "title": "Meet the Chef Neha Panwar",
       "subtitle": "Serving since 2013",
       "content": "Control the first home page section, including headline, supporting text, image, and primary action.",
-      "imageUrl": "/Images/neha.png?v=2",
+      "imageUrl": "/Images/neha.png",
       "imageAlt": "Chef Neha Panwar",
       "ctaLabel": "Know More",
       "ctaHref": "/about",
@@ -147,7 +147,7 @@
       "secondaryCtaHref": "/gallery",
       "displayOrder": 1,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "updatedAt": "2026-06-24T14:48:30.740Z",
       "categoryCards": [],
       "whyCards": []
     },
@@ -166,7 +166,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 2,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "updatedAt": "2026-06-24T14:48:30.740Z",
       "whyCards": [
         {
           "id": "baked-fresh",
@@ -275,7 +275,7 @@
       ],
       "displayOrder": 3,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "updatedAt": "2026-06-24T14:48:30.740Z",
       "whyCards": []
     },
     {
@@ -293,26 +293,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 4,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
-      "categoryCards": [],
-      "whyCards": []
-    },
-    {
-      "id": "reviews",
-      "sectionKey": "reviews",
-      "label": "Reviews",
-      "title": "Customer Reviews",
-      "subtitle": "Sweet words",
-      "content": "Control visibility for the home page reviews section.",
-      "imageUrl": null,
-      "imageAlt": null,
-      "ctaLabel": null,
-      "ctaHref": null,
-      "secondaryCtaLabel": null,
-      "secondaryCtaHref": null,
-      "displayOrder": 5,
-      "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "updatedAt": "2026-06-24T14:48:30.740Z",
       "categoryCards": [],
       "whyCards": []
     }
@@ -335,7 +316,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 1,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "updatedAt": "2026-06-24T14:48:30.740Z",
       "items": [
         {
           "id": "designer-celebration-cakes",
@@ -428,7 +409,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 2,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "updatedAt": "2026-06-24T14:48:30.740Z",
       "items": [
         {
           "id": "years",
@@ -485,7 +466,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 3,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "updatedAt": "2026-06-24T14:48:30.740Z",
       "items": [
         {
           "id": "aarohi-sharma",
@@ -554,7 +535,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 4,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "updatedAt": "2026-06-24T14:48:30.740Z",
       "items": [
         {
           "id": "custom-designs",
@@ -647,7 +628,7 @@
       "secondaryCtaHref": "https://wa.me/",
       "displayOrder": 5,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "updatedAt": "2026-06-24T14:48:30.740Z",
       "items": []
     }
   ],
@@ -668,7 +649,7 @@
       "ctaHref": null,
       "displayOrder": 1,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "updatedAt": "2026-06-24T14:48:30.740Z",
       "items": []
     },
     {
@@ -687,7 +668,7 @@
       "ctaHref": "https://wa.me/",
       "displayOrder": 2,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "updatedAt": "2026-06-24T14:48:30.740Z",
       "items": [
         {
           "id": "studio",
@@ -762,7 +743,7 @@
       "ctaHref": null,
       "displayOrder": 3,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "updatedAt": "2026-06-24T14:48:30.740Z",
       "items": []
     },
     {
@@ -781,7 +762,7 @@
       "ctaHref": null,
       "displayOrder": 4,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-23T10:26:05.388Z",
+      "updatedAt": "2026-06-24T14:48:30.740Z",
       "items": [
         {
           "id": "name",
@@ -987,7 +968,7 @@
     "formErrorMessage": "Please fill all required details correctly.",
     "copyrightText": "© 2026 Chocobee Cake Studio. All Rights Reserved.",
     "creditText": "Designed with love by Chocobee",
-    "updatedAt": "2026-06-23T10:26:05.388Z"
+    "updatedAt": "2026-06-24T14:48:30.740Z"
   },
   "customOrderSettings": {
     "id": "custom-order",
@@ -1246,6 +1227,98 @@
         }
       ]
     },
-    "updatedAt": "2026-06-23T10:26:05.388Z"
-  }
+    "updatedAt": "2026-06-24T14:48:30.741Z"
+  },
+  "reviews": [
+    {
+      "id": "review-1",
+      "name": "Priya Sharma",
+      "text": "Amazing quality, beautiful design and delicious taste. Everyone loved the cake.",
+      "rating": 5,
+      "date": "2 weeks ago",
+      "displayOrder": 1,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "review-2",
+      "name": "Ritika Jain",
+      "text": "The customized cake exceeded our expectations. Highly recommended.",
+      "rating": 5,
+      "date": "3 weeks ago",
+      "displayOrder": 2,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "review-3",
+      "name": "Aman Gupta",
+      "text": "Perfect theme cake with timely delivery and outstanding presentation.",
+      "rating": 5,
+      "date": "1 month ago",
+      "displayOrder": 3,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "review-4",
+      "name": "Neha Bansal",
+      "text": "Best designer cakes in Crossing Republik. Taste and design both excellent.",
+      "rating": 5,
+      "date": "1 month ago",
+      "displayOrder": 4,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "review-5",
+      "name": "Sonal Verma",
+      "text": "Neha ji understands every detail and delivers exactly what is promised.",
+      "rating": 5,
+      "date": "2 months ago",
+      "displayOrder": 5,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "review-6",
+      "name": "Karan Malhotra",
+      "text": "Beautiful wedding cake and professional service.",
+      "rating": 5,
+      "date": "2 months ago",
+      "displayOrder": 6,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "review-7",
+      "name": "Ankita Rao",
+      "text": "The cake became the highlight of our celebration.",
+      "rating": 5,
+      "date": "3 months ago",
+      "displayOrder": 7,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "review-8",
+      "name": "Megha Singh",
+      "text": "Fresh ingredients, stunning decoration and wonderful flavor.",
+      "rating": 5,
+      "date": "3 months ago",
+      "displayOrder": 8,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "review-9",
+      "name": "Rahul Mehta",
+      "text": "Ordered multiple times and every experience has been exceptional.",
+      "rating": 5,
+      "date": "4 months ago",
+      "displayOrder": 9,
+      "status": "ACTIVE"
+    },
+    {
+      "id": "review-10",
+      "name": "Divya Kapoor",
+      "text": "Creative designs, premium quality and excellent customer support.",
+      "rating": 5,
+      "date": "4 months ago",
+      "displayOrder": 10,
+      "status": "ACTIVE"
+    }
+  ]
 }
