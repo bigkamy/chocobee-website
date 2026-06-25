@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { EditIcon, TrashIcon } from "../ActionIcons";
 
 type Category = {
   id: string;
@@ -206,8 +207,8 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
                         <option value="INACTIVE">Inactive</option>
                       </select>
                     </label>
-                    <button type="button" className="admin-secondary-button admin-category-danger-button" onClick={() => deleteSubcategoryCta(index)}>
-                      Delete
+                    <button type="button" className="admin-action-icon" onClick={() => deleteSubcategoryCta(index)} aria-label="Delete subcategory CTA" title="Delete">
+                      <TrashIcon />
                     </button>
                   </article>
                 ))}
@@ -253,11 +254,11 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
                   <span>{category.status === "ACTIVE" ? "Active" : "Inactive"}</span>
                 </td>
                 <td>
-                  <button type="button" onClick={() => startEditing(category)}>
-                    Edit
+                  <button type="button" className="admin-action-icon" onClick={() => startEditing(category)} aria-label={`Edit ${category.name}`} title="Edit">
+                    <EditIcon />
                   </button>
-                  <button type="button" onClick={() => deleteCategory(category.id)}>
-                    Delete
+                  <button type="button" className="admin-action-icon" onClick={() => deleteCategory(category.id)} aria-label={`Delete ${category.name}`} title="Delete">
+                    <TrashIcon />
                   </button>
                 </td>
               </tr>

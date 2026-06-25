@@ -3,6 +3,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import type { CmsCustomOrderSettings, CmsReview } from "@/lib/local-cms";
+import { CloseIcon, EditIcon, ManageIcon, TrashIcon } from "../ActionIcons";
+import { CustomOrderManager } from "../custom-order/CustomOrderManager";
+import { ReviewsManager } from "../reviews/ReviewsManager";
+
+type ManagePanel = "custom-order" | "reviews" | null;
 
 type HomePageSection = {
   id: string;
@@ -52,9 +58,18 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-export function HomePageManager({ initialSections }: { initialSections: HomePageSection[] }) {
+export function HomePageManager({
+  initialSections,
+  customOrderSettings,
+  reviews,
+}: {
+  initialSections: HomePageSection[];
+  customOrderSettings: CmsCustomOrderSettings;
+  reviews: CmsReview[];
+}) {
   const [sections, setSections] = useState<HomePageSection[]>(initialSections);
   const [editing, setEditing] = useState<HomePageSection | null>(null);
+  const [activePanel, setActivePanel] = useState<ManagePanel>(null);
   const [imageUrl, setImageUrl] = useState("");
   const [preview, setPreview] = useState("");
   const [isUploading, setIsUploading] = useState(false);
@@ -70,6 +85,7 @@ export function HomePageManager({ initialSections }: { initialSections: HomePage
   }
 
   function startEditing(section: HomePageSection) {
+    setActivePanel(null);
     setEditing(section);
     setImageUrl(section.imageUrl ?? "");
     setPreview(section.imageUrl ?? "");
@@ -77,6 +93,11 @@ export function HomePageManager({ initialSections }: { initialSections: HomePage
     setWhyCards(section.whyCards ?? []);
     setUploadStatus("");
     setMessage("");
+  }
+
+  function togglePanel(panel: Exclude<ManagePanel, null>) {
+    setEditing(null);
+    setActivePanel((current) => (current === panel ? null : panel));
   }
 
   function cancelEditing() {
@@ -321,14 +342,6 @@ export function HomePageManager({ initialSections }: { initialSections: HomePage
       <section className="admin-table-card admin-home-sections-card">
         <div>
           <h2>All Home Page Sections</h2>
-          <div className="admin-home-sections-links">
-            <Link href="/admin/custom-order" className="admin-outline-button">
-              Custom Order Popup
-            </Link>
-            <Link href="/admin/reviews" className="admin-outline-button">
-              Reviews
-            </Link>
-          </div>
         </div>
         {message ? <p className="admin-muted" role="status">{message}</p> : null}
         <table>
@@ -353,18 +366,73 @@ export function HomePageManager({ initialSections }: { initialSections: HomePage
                   <span>{section.status === "ACTIVE" ? "Active" : "Inactive"}</span>
                 </td>
                 <td>
-                  <button type="button" onClick={() => startEditing(section)}>
-                    Edit
+                  <button type="button" className="admin-action-icon" onClick={() => startEditing(section)} aria-label={`Edit ${section.label}`} title="Edit">
+                    <EditIcon />
                   </button>
-                  <button type="button" onClick={() => void deleteSection(section)}>
-                    Delete
+                  <button type="button" className="admin-action-icon" onClick={() => void deleteSection(section)} aria-label={`Delete ${section.label}`} title="Delete">
+                    <TrashIcon />
                   </button>
                 </td>
               </tr>
             ))}
+
+            <tr className="admin-home-section-linkrow">
+              <td>Custom Order Popup</td>
+              <td>custom-order</td>
+              <td>Custom order popup content &amp; options</td>
+              <td>—</td>
+              <td>
+                <span>Managed</span>
+              </td>
+              <td>
+                <button
+                  type="button"
+                  className={`admin-action-icon is-manage${activePanel === "custom-order" ? " is-open" : ""}`}
+                  onClick={() => togglePanel("custom-order")}
+                  aria-expanded={activePanel === "custom-order"}
+                  aria-label={activePanel === "custom-order" ? "Close Custom Order Popup" : "Manage Custom Order Popup"}
+                  title={activePanel === "custom-order" ? "Close" : "Manage"}
+                >
+                  {activePanel === "custom-order" ? <CloseIcon /> : <ManageIcon />}
+                </button>
+              </td>
+            </tr>
+            <tr className="admin-home-section-linkrow">
+              <td>Reviews</td>
+              <td>reviews</td>
+              <td>Customer reviews shown on the home page</td>
+              <td>—</td>
+              <td>
+                <span>Managed</span>
+              </td>
+              <td>
+                <button
+                  type="button"
+                  className={`admin-action-icon is-manage${activePanel === "reviews" ? " is-open" : ""}`}
+                  onClick={() => togglePanel("reviews")}
+                  aria-expanded={activePanel === "reviews"}
+                  aria-label={activePanel === "reviews" ? "Close Reviews" : "Manage Reviews"}
+                  title={activePanel === "reviews" ? "Close" : "Manage"}
+                >
+                  {activePanel === "reviews" ? <CloseIcon /> : <ManageIcon />}
+                </button>
+              </td>
+            </tr>
           </tbody>
         </table>
       </section>
+
+      {activePanel === "custom-order" ? (
+        <section className="admin-home-section-editor-card">
+          <CustomOrderManager initialSettings={customOrderSettings} embedded />
+        </section>
+      ) : null}
+
+      {activePanel === "reviews" ? (
+        <section className="admin-home-section-editor-card">
+          <ReviewsManager initialReviews={reviews} embedded />
+        </section>
+      ) : null}
 
       {editing ? (
         <section className="admin-resource-card admin-home-section-editor-card">

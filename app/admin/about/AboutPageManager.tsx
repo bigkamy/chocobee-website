@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import type { CmsAboutPageSection, CmsAboutSectionItem, CmsAboutSectionType } from "@/lib/local-cms";
+import { EditIcon, TrashIcon } from "../ActionIcons";
 
 type SectionStatus = "ACTIVE" | "INACTIVE";
 
@@ -273,11 +274,11 @@ export function AboutPageManager({ initialSections }: { initialSections: CmsAbou
                   <span>{section.status === "ACTIVE" ? "Active" : "Inactive"}</span>
                 </td>
                 <td>
-                  <button type="button" onClick={() => startEditing(section)}>
-                    Edit
+                  <button type="button" className="admin-action-icon" onClick={() => startEditing(section)} aria-label={`Edit ${section.label}`} title="Edit">
+                    <EditIcon />
                   </button>
-                  <button type="button" onClick={() => void deleteSection(section)}>
-                    Delete
+                  <button type="button" className="admin-action-icon" onClick={() => void deleteSection(section)} aria-label={`Delete ${section.label}`} title="Delete">
+                    <TrashIcon />
                   </button>
                 </td>
               </tr>
@@ -414,8 +415,8 @@ export function AboutPageManager({ initialSections }: { initialSections: CmsAbou
                   <article className="admin-about-item-card" key={`${item.id}-${index}`}>
                     <div className="admin-about-item-card-header">
                       <strong>{item.label}</strong>
-                      <button type="button" onClick={() => deleteItem(index)}>
-                        Delete
+                      <button type="button" className="admin-action-icon" onClick={() => deleteItem(index)} aria-label={`Delete ${item.label}`} title="Delete">
+                        <TrashIcon />
                       </button>
                     </div>
                     <div className="admin-about-item-preview-row">

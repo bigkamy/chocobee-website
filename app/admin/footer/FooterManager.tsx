@@ -205,13 +205,11 @@ export function FooterManager({ initialSettings }: { initialSettings: CmsFooterS
             <div className="admin-footer-panel-actions">
               <p>Control the logo, studio address, call links, email, and working hours shown in the footer.</p>
               <div>
-                <button type="button" className="admin-outline-button admin-footer-compact-button" onClick={() => setIsEditing(true)}>
+                <button type="button" className="admin-action-icon" onClick={() => setIsEditing(true)} aria-label="Edit footer identity" title="Edit">
                   <EditIcon />
-                  Edit
                 </button>
-                <button type="button" className="admin-outline-button admin-footer-compact-button admin-footer-danger-button" onClick={clearIdentityInfo}>
+                <button type="button" className="admin-action-icon" onClick={clearIdentityInfo} aria-label="Clear footer identity" title="Delete">
                   <TrashIcon />
-                  Delete
                 </button>
               </div>
             </div>

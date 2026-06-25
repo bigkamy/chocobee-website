@@ -32,7 +32,7 @@ function nextOption(group: CmsCustomOrderOption[], groupKey: CmsCustomOrderOptio
   };
 }
 
-export function CustomOrderManager({ initialSettings }: { initialSettings: CmsCustomOrderSettings }) {
+export function CustomOrderManager({ initialSettings, embedded = false }: { initialSettings: CmsCustomOrderSettings; embedded?: boolean }) {
   const [settings, setSettings] = useState(initialSettings);
   const [savedSettings, setSavedSettings] = useState(initialSettings);
   const [isEditing, setIsEditing] = useState(false);
@@ -134,8 +134,9 @@ export function CustomOrderManager({ initialSettings }: { initialSettings: CmsCu
 
   const activeOptions = optionGroups.reduce((total, group) => total + settings.options[group.key].filter((option) => option.status === "ACTIVE").length, 0);
 
+  const Root = embedded ? "div" : "main";
   return (
-    <main className="admin-page admin-footer-page admin-custom-order-page">
+    <Root className={`${embedded ? "admin-embedded-panel" : "admin-page"} admin-footer-page admin-custom-order-page`}>
       <header className="admin-footer-page-header">
         <div>
           <p>Custom Cake Order Popup</p>
@@ -426,7 +427,7 @@ export function CustomOrderManager({ initialSettings }: { initialSettings: CmsCu
           </button>
         </div>
       </form>
-    </main>
+    </Root>
   );
 }
 

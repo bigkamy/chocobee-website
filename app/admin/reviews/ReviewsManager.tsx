@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { FormEvent, useState } from "react";
+import { EditIcon, TrashIcon } from "../ActionIcons";
 
 type Review = {
   id: string;
@@ -13,7 +14,7 @@ type Review = {
   status: "ACTIVE" | "INACTIVE";
 };
 
-export function ReviewsManager({ initialReviews }: { initialReviews: Review[] }) {
+export function ReviewsManager({ initialReviews, embedded = false }: { initialReviews: Review[]; embedded?: boolean }) {
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
   const [editing, setEditing] = useState<Review | null>(null);
   const [message, setMessage] = useState("");
@@ -73,8 +74,9 @@ export function ReviewsManager({ initialReviews }: { initialReviews: Review[] })
     await loadReviews();
   }
 
+  const Root = embedded ? "div" : "main";
   return (
-    <main className="admin-page">
+    <Root className={embedded ? "admin-embedded-panel" : "admin-page"}>
       <header className="admin-page-header">
         <div>
           <p>Reviews</p>
@@ -159,11 +161,11 @@ export function ReviewsManager({ initialReviews }: { initialReviews: Review[] })
                     <span>{review.status === "ACTIVE" ? "Visible" : "Hidden"}</span>
                   </td>
                   <td>
-                    <button type="button" onClick={() => startEditing(review)}>
-                      Edit
+                    <button type="button" className="admin-action-icon" onClick={() => startEditing(review)} aria-label={`Edit review by ${review.name}`} title="Edit">
+                      <EditIcon />
                     </button>
-                    <button type="button" onClick={() => void deleteReview(review)}>
-                      Delete
+                    <button type="button" className="admin-action-icon" onClick={() => void deleteReview(review)} aria-label={`Delete review by ${review.name}`} title="Delete">
+                      <TrashIcon />
                     </button>
                   </td>
                 </tr>
@@ -172,6 +174,6 @@ export function ReviewsManager({ initialReviews }: { initialReviews: Review[] })
           </table>
         </section>
       </section>
-    </main>
+    </Root>
   );
 }

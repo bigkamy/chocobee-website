@@ -815,7 +815,6 @@ img {
 .admin-category-subcategory-list article > button {
   grid-column: 1 / -1;
   justify-self: start;
-  padding: 0 1.1rem;
 }
 
 .admin-category-danger-button {
@@ -3129,10 +3128,58 @@ img {
   box-shadow: 0 1.25rem 3rem rgba(37, 99, 235, 0.09);
 }
 
-.admin-home-sections-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+.admin-home-section-linkrow td {
+  background: rgba(37, 99, 235, 0.05);
+}
+
+.admin-embedded-panel {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+button.admin-action-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  min-height: 2.4rem;
+  padding: 0;
+  border: 1px solid rgba(190, 25, 25, 0.2);
+  border-radius: 0.7rem;
+  background: #fff;
+  color: #be1919;
+  cursor: pointer;
+  box-shadow: none;
+  transition: background 0.18s ease, color 0.18s ease, border-color 0.18s ease;
+}
+
+button.admin-action-icon svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.9;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+button.admin-action-icon:hover {
+  background: #be1919;
+  color: #fff;
+  border-color: #be1919;
+}
+
+button.admin-action-icon.is-manage {
+  color: #1d4ed8;
+  border-color: rgba(37, 99, 235, 0.3);
+}
+
+button.admin-action-icon.is-manage:hover,
+button.admin-action-icon.is-manage.is-open {
+  background: #1d4ed8;
+  color: #fff;
+  border-color: #1d4ed8;
 }
 
 .admin-home-sections-card tbody tr {
