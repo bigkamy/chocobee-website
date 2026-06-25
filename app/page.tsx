@@ -6,7 +6,7 @@ import { HeroOrderActions } from "./HeroOrderActions";
 import { NavBar } from "./NavBar";
 import { ReviewsSection } from "./ReviewsSection";
 import { getPublicImageDimensions } from "@/lib/image-dimensions";
-import { getLocalCustomOrderSettings, listLocalGalleryImages, listLocalHomePageSections, listLocalReviews, type CmsHomePageSection } from "@/lib/local-cms";
+import { getLocalCustomOrderSettings, listLocalCategories, listLocalGalleryImages, listLocalHomePageSections, listLocalReviews, type CmsHomePageSection } from "@/lib/local-cms";
 
 export const dynamic = "force-dynamic";
 
@@ -102,11 +102,22 @@ export default async function Home() {
   const homeSections = await listLocalHomePageSections({ activeOnly: true });
   const customOrderSettings = await getLocalCustomOrderSettings();
   const reviews = await listLocalReviews({ activeOnly: true });
+  const categories = await listLocalCategories({ activeOnly: true });
+  const categoryNameBySlug = new Map(categories.map((category) => [category.slug, category.name]));
+  const subcategoryLabelById = new Map(
+    categories.flatMap((category) => (category.subcategoryCtas ?? []).map((cta) => [cta.id, cta.label] as const)),
+  );
   const homeGalleryImages = await Promise.all(
     (await listLocalGalleryImages())
       .filter((image) => image.homeGroups?.length)
       .map(async (image) => {
         const dimensions = await getPublicImageDimensions(image.imageUrl);
+        const primarySlug = image.categorySlug ?? image.categorySlugs?.[0] ?? null;
+        const subCategory =
+          (image.subcategoryCtaIds ?? [])
+            .map((ctaId) => subcategoryLabelById.get(ctaId))
+            .filter(Boolean)
+            .join(", ") || null;
 
         return {
           src: image.imageUrl,
@@ -116,6 +127,9 @@ export default async function Home() {
           width: dimensions?.width ?? null,
           height: dimensions?.height ?? null,
           groups: image.homeGroups ?? [],
+          category: (primarySlug ? categoryNameBySlug.get(primarySlug) : null) ?? primarySlug ?? null,
+          subCategory,
+          description: image.description ?? null,
         };
       }),
   );
@@ -132,7 +146,7 @@ export default async function Home() {
       <NavBar customOrderSettings={customOrderSettings} />
 
       {heroSection ? (
-      <section id="home" className="relative pt-28 sm:pt-32">
+      <section id="hero" className="relative pt-20 sm:pt-24">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-0 sm:px-8 md:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:pb-0">
           <div className="reveal relative z-10 mx-auto max-w-2xl text-center md:mx-0 md:text-left">
             <h1 className="font-heading text-[2.35rem] leading-[0.95] text-[#5D4037] sm:text-[3.35rem] lg:text-[4.1rem]">

@@ -46,7 +46,7 @@ function StorySection({ section }: { section: CmsAboutPageSection }) {
   const slides = orderedActiveItems(section.items);
 
   return (
-    <section className="px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
+    <section id={section.sectionKey} className="px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-center">
           <SectionIntro section={section} />
@@ -73,7 +73,7 @@ function ChefSection({ section }: { section: CmsAboutPageSection }) {
   const stats = orderedActiveItems(section.items);
 
   return (
-    <section className="bg-white/45 px-5 py-20 backdrop-blur-[1px] sm:px-8 lg:px-10 lg:py-24">
+    <section id={section.sectionKey} className="bg-white/45 px-5 py-20 backdrop-blur-[1px] sm:px-8 lg:px-10 lg:py-24">
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         {section.imageUrl ? (
           <div className="relative mx-auto w-full max-w-md overflow-hidden rounded-[2rem] bg-[#ffe8ee]">
@@ -102,7 +102,7 @@ function TeamSection({ section }: { section: CmsAboutPageSection }) {
   const members = orderedActiveItems(section.items);
 
   return (
-    <section className="px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
+    <section id={section.sectionKey} className="px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
       <div className="mx-auto max-w-7xl">
         <SectionIntro section={section} centered />
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -125,7 +125,7 @@ function FeaturesSection({ section }: { section: CmsAboutPageSection }) {
   const features = orderedActiveItems(section.items);
 
   return (
-    <section className="bg-white/45 px-5 py-20 backdrop-blur-[1px] sm:px-8 lg:px-10 lg:py-24">
+    <section id={section.sectionKey} className="bg-white/45 px-5 py-20 backdrop-blur-[1px] sm:px-8 lg:px-10 lg:py-24">
       <div className="mx-auto max-w-7xl">
         <SectionIntro section={section} centered />
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -145,7 +145,7 @@ function FeaturesSection({ section }: { section: CmsAboutPageSection }) {
 
 function CtaSection({ section }: { section: CmsAboutPageSection }) {
   return (
-    <section className="px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
+    <section id={section.sectionKey} className="px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
       <div className="mx-auto max-w-5xl rounded-[2rem] bg-[linear-gradient(135deg,#be1919,#7f1512)] px-6 py-12 text-center text-white shadow-[0_24px_70px_rgba(190,25,25,0.24)] sm:px-10">
         <h2 className="font-heading text-4xl leading-tight sm:text-5xl">{section.title}</h2>
         {section.content ? <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-white/86">{section.content}</p> : null}
@@ -168,7 +168,7 @@ function CtaSection({ section }: { section: CmsAboutPageSection }) {
 
 function ContentSection({ section }: { section: CmsAboutPageSection }) {
   return (
-    <section className="px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
+    <section id={section.sectionKey} className="px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
       <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
         {section.imageUrl ? (
           <div className="relative overflow-hidden rounded-[2rem] bg-white shadow-[0_18px_45px_rgba(93,64,55,0.1)]">

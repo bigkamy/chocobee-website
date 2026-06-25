@@ -3,9 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/app/Breadcrumb";
+import { CakeShareActions } from "@/app/CakeShareActions";
 import { Footer } from "@/app/Footer";
 import { NavBar } from "@/app/NavBar";
-import { getLocalGalleryImageBySlug } from "@/lib/local-cms";
+import { WhatsAppEnquiryButton } from "@/app/WhatsAppEnquiryButton";
+import { getLocalGalleryImageBySlug, listLocalCategories } from "@/lib/local-cms";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -39,6 +41,21 @@ export default async function CakeDetailPage({ params }: PageProps) {
 
   if (!cake) notFound();
 
+  const categories = await listLocalCategories({ activeOnly: true });
+  const primarySlug = cake.categorySlug ?? cake.categorySlugs?.[0] ?? null;
+  const categoryName = categories.find((category) => category.slug === primarySlug)?.name ?? primarySlug ?? null;
+  const subCategory =
+    (cake.subcategoryCtaIds ?? [])
+      .map((ctaId) => {
+        for (const category of categories) {
+          const match = category.subcategoryCtas?.find((cta) => cta.id === ctaId);
+          if (match) return match.label;
+        }
+        return null;
+      })
+      .filter(Boolean)
+      .join(", ") || null;
+
   return (
     <>
       <NavBar />
@@ -70,13 +87,19 @@ export default async function CakeDetailPage({ params }: PageProps) {
             ) : null}
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/contact" className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#be1919] px-7 text-sm font-extrabold text-white">
-                Enquire About This Cake
-              </Link>
-              <a href="https://wa.me/910000000000" className="inline-flex min-h-12 items-center justify-center rounded-full bg-[#25d366] px-7 text-sm font-extrabold text-white">
-                WhatsApp Us
-              </a>
+              <WhatsAppEnquiryButton
+                cakeTitle={cake.title}
+                cakeSlug={cake.slug}
+                category={categoryName}
+                subCategory={subCategory}
+                imageUrl={cake.imageUrl}
+                description={cake.description}
+                block
+                className="wa-enquiry-cta"
+              />
             </div>
+
+            <CakeShareActions cakeTitle={cake.title} cakeSlug={cake.slug} />
           </div>
         </section>
       </main>

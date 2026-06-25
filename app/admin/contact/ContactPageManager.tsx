@@ -193,6 +193,7 @@ export function ContactPageManager({ initialSections }: { initialSections: CmsCo
           <thead>
             <tr>
               <th>Section</th>
+              <th>Section ID</th>
               <th>Type</th>
               <th>Title</th>
               <th>Items</th>
@@ -205,6 +206,7 @@ export function ContactPageManager({ initialSections }: { initialSections: CmsCo
             {sections.map((section) => (
               <tr className={editing?.id === section.id ? "admin-contact-selected-row" : undefined} key={section.id}>
                 <td>{section.label}</td>
+                <td><code className="admin-section-id">#{section.sectionKey}</code></td>
                 <td>{section.sectionType}</td>
                 <td>{section.title}</td>
                 <td>{section.items.length}</td>
@@ -226,7 +228,7 @@ export function ContactPageManager({ initialSections }: { initialSections: CmsCo
             <div className="admin-contact-editor-heading">
               <div>
                 <span>{isNew ? "New Section" : "Editing Section"}</span>
-                <h2>{editing.label}</h2>
+                <h2>{editing.label} <code className="admin-section-id">#{editing.sectionKey}</code></h2>
               </div>
               <button type="button" className="admin-secondary-button" onClick={() => setEditing(null)}>Cancel</button>
             </div>

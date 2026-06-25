@@ -11,6 +11,8 @@ function inputType(icon?: string | null) {
 
 export function ContactForm({ section }: { section?: CmsContactPageSection }) {
   const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const configuredFields = section?.items
     .filter((item) => item.status === "ACTIVE")
     .sort((a, b) => a.displayOrder - b.displayOrder || a.title.localeCompare(b.title));
@@ -23,7 +25,7 @@ export function ContactForm({ section }: { section?: CmsContactPageSection }) {
         { id: "message", title: "Message", subtitle: "Tell us about your cake theme, date, flavor, and size.", icon: "textarea" },
       ];
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
 
@@ -32,12 +34,40 @@ export function ContactForm({ section }: { section?: CmsContactPageSection }) {
       return;
     }
 
-    setSuccessMessage(section?.content || "Thank you. Our team will contact you shortly.");
-    form.reset();
+    const formData = new FormData(form);
+    const entries = (fields ?? []).map((field) => ({
+      label: field.title,
+      value: String(formData.get(field.id) ?? ""),
+    }));
+    const emailField = (fields ?? []).find((field) => field.icon === "email");
+    const replyTo = emailField ? String(formData.get(emailField.id) ?? "") : "";
+
+    setErrorMessage("");
+    setSubmitting(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ entries, replyTo }),
+      });
+      const data = (await response.json()) as { ok?: boolean; error?: string };
+
+      if (!response.ok || !data.ok) {
+        throw new Error(data.error || "Unable to send your message. Please try again.");
+      }
+
+      setSuccessMessage(section?.content || "Thank you. Our team will contact you shortly.");
+      form.reset();
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Unable to send your message. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="self-start rounded-[1.5rem] border border-white/75 bg-white/75 p-5 shadow-[0_24px_60px_rgba(93,64,55,0.12)] backdrop-blur md:p-6">
+    <form id={section?.sectionKey} onSubmit={handleSubmit} className="self-start rounded-[1.5rem] border border-white/75 bg-white/75 p-5 shadow-[0_24px_60px_rgba(93,64,55,0.12)] backdrop-blur md:p-6">
       <div className="mb-4">
         <h2 className="font-heading text-3xl leading-tight text-[#5d4037] sm:text-4xl">{section?.title || "Send a Message"}</h2>
       </div>
@@ -72,14 +102,21 @@ export function ContactForm({ section }: { section?: CmsContactPageSection }) {
 
       <button
         type="submit"
-        className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#be1919] px-6 text-sm font-extrabold text-white shadow-[0_18px_34px_rgba(190,25,25,0.24)] transition hover:-translate-y-1 hover:bg-[#a91515]"
+        disabled={submitting}
+        className="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-full bg-[#be1919] px-6 text-sm font-extrabold text-white shadow-[0_18px_34px_rgba(190,25,25,0.24)] transition hover:-translate-y-1 hover:bg-[#a91515] disabled:cursor-wait disabled:opacity-70"
       >
-        {section?.ctaLabel || "Submit Request"}
+        {submitting ? "Sending..." : section?.ctaLabel || "Submit Request"}
       </button>
 
       {successMessage ? (
         <p role="status" className="mt-4 rounded-2xl bg-[#25d366]/12 px-4 py-3 text-sm font-bold text-[#197a3b]">
           {successMessage}
+        </p>
+      ) : null}
+
+      {errorMessage ? (
+        <p role="alert" className="mt-4 rounded-2xl bg-[#be1919]/10 px-4 py-3 text-sm font-bold text-[#be1919]">
+          {errorMessage}
         </p>
       ) : null}
     </form>

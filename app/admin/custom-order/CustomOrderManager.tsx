@@ -20,6 +20,15 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+// Locale-independent date format (dd/mm/yyyy) so SSR and client output match and avoid hydration mismatches.
+function formatDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  return `${day}/${month}/${date.getUTCFullYear()}`;
+}
+
 function nextOption(group: CmsCustomOrderOption[], groupKey: CmsCustomOrderOptionGroup): CmsCustomOrderOption {
   const nextIndex = group.length + 1;
   const label = `New ${groupKey} option`;
@@ -140,7 +149,7 @@ export function CustomOrderManager({ initialSettings, embedded = false }: { init
       <header className="admin-footer-page-header">
         <div>
           <p>Custom Cake Order Popup</p>
-          <span>Last updated {new Date(settings.updatedAt).toLocaleDateString()}</span>
+          <span>Last updated {formatDate(settings.updatedAt)}</span>
         </div>
         <div className="admin-header-actions">
           <Link href="/" className="admin-outline-button">

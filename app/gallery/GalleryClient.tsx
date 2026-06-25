@@ -1,10 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Breadcrumb } from "../Breadcrumb";
 import { NavBar } from "../NavBar";
+import { WhatsAppEnquiryButton } from "../WhatsAppEnquiryButton";
 
 type SubcategoryCta = {
   id: string;
@@ -111,31 +111,6 @@ function CakeIcon() {
   );
 }
 
-function EyeIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5">
-      <path d="M2.8 12s3.3-6 9.2-6 9.2 6 9.2 6-3.3 6-9.2 6-9.2-6-9.2-6Z" fill="none" stroke="currentColor" strokeWidth="1.9" />
-      <path d="M12 14.8a2.8 2.8 0 1 0 0-5.6 2.8 2.8 0 0 0 0 5.6Z" fill="none" stroke="currentColor" strokeWidth="1.9" />
-    </svg>
-  );
-}
-
-function HeartIcon({ filled = false }: { filled?: boolean }) {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5">
-      <path d="M12 20s-7.3-4.4-9.2-9.1C1.4 7.4 3.6 4.5 6.7 4.5c1.8 0 3.3 1 4.1 2.2.8-1.2 2.3-2.2 4.1-2.2 3.1 0 5.3 2.9 3.9 6.4C17.3 15.6 12 20 12 20Z" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeLinejoin="round" strokeWidth="1.9" />
-    </svg>
-  );
-}
-
-function ShareIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5">
-      <path d="M18 8a3 3 0 1 0-2.8-4M6 14a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm12-1a3 3 0 1 0 0 6 3 3 0 0 0 0-6ZM8.7 15.4l6.6-3.8M8.8 18.6l6.4 3.7" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.9" />
-    </svg>
-  );
-}
-
 function WhatsAppIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6">
@@ -152,8 +127,6 @@ export function GalleryClient() {
   const [categories, setCategories] = useState<Category[]>(fallbackCategories);
   const [items, setItems] = useState<GalleryItem[]>(galleryItems);
   const [visibleCount, setVisibleCount] = useState(initialVisible);
-  const [likedIds, setLikedIds] = useState<string[]>([]);
-  const router = useRouter();
 
   useEffect(() => {
     let isMounted = true;
@@ -247,48 +220,17 @@ export function GalleryClient() {
     setVisibleCount(initialVisible);
   };
 
-  useEffect(() => {
-    try {
-      const stored = JSON.parse(localStorage.getItem("chocobee-liked-cakes") ?? "[]");
-      if (Array.isArray(stored)) {
-        // Hydrate likes from storage after mount to avoid an SSR/client mismatch.
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setLikedIds(stored.filter((id): id is string => typeof id === "string"));
-      }
-    } catch {
-      // ignore unreadable storage
-    }
-  }, []);
+  const subcategoryLabelById = useMemo(() => {
+    const map = new Map<string, string>();
+    categories.forEach((category) => category.subcategoryCtas?.forEach((cta) => map.set(cta.id, cta.label)));
+    return map;
+  }, [categories]);
 
-  const handleView = (slug: string) => {
-    router.push(`/cakes/${slug}`);
-  };
-
-  const toggleLike = (id: string) => {
-    setLikedIds((current) => {
-      const next = current.includes(id) ? current.filter((value) => value !== id) : [...current, id];
-      try {
-        localStorage.setItem("chocobee-liked-cakes", JSON.stringify(next));
-      } catch {
-        // ignore unwritable storage
-      }
-      return next;
-    });
-  };
-
-  const handleShare = async (item: GalleryItem) => {
-    const url = `${window.location.origin}/cakes/${item.slug}`;
-    try {
-      if (navigator.share) {
-        await navigator.share({ title: item.title, text: `Check out ${item.title} by Chocobee Cake Studio`, url });
-        return;
-      }
-      await navigator.clipboard.writeText(url);
-      window.alert("Link copied to clipboard!");
-    } catch {
-      // user dismissed the share sheet or sharing failed — no action needed
-    }
-  };
+  const subCategoryLabel = (item: GalleryItem) =>
+    item.subcategoryCtaIds
+      ?.map((ctaId) => subcategoryLabelById.get(ctaId))
+      .filter(Boolean)
+      .join(", ") || null;
 
   return (
     <>
@@ -383,23 +325,16 @@ export function GalleryClient() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#2d1611]/70 via-[#2d1611]/10 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
                       <div className="absolute inset-x-4 bottom-4 flex translate-y-4 items-center justify-center gap-3 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                        <button type="button" onClick={() => handleView(item.slug)} className="rounded-full bg-white/92 p-3 text-[#be1919] shadow-lg transition hover:scale-110" aria-label={`View ${item.title}`}>
-                          <EyeIcon />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => toggleLike(item.id)}
-                          aria-pressed={likedIds.includes(item.id)}
-                          className={`rounded-full p-3 shadow-lg transition hover:scale-110 ${
-                            likedIds.includes(item.id) ? "bg-[#be1919] text-white" : "bg-white/92 text-[#be1919]"
-                          }`}
-                          aria-label={`Like ${item.title}`}
-                        >
-                          <HeartIcon filled={likedIds.includes(item.id)} />
-                        </button>
-                        <button type="button" onClick={() => void handleShare(item)} className="rounded-full bg-white/92 p-3 text-[#be1919] shadow-lg transition hover:scale-110" aria-label={`Share ${item.title}`}>
-                          <ShareIcon />
-                        </button>
+                        <WhatsAppEnquiryButton
+                          variant="icon"
+                          cakeTitle={item.title}
+                          cakeSlug={item.slug}
+                          category={item.category}
+                          subCategory={subCategoryLabel(item)}
+                          imageUrl={item.imageUrl}
+                          description={item.description}
+                          className="gallery-overlay-wa"
+                        />
                       </div>
                     </div>
                     <div className="p-3">

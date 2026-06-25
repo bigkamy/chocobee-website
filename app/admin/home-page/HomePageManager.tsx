@@ -348,7 +348,7 @@ export function HomePageManager({
           <thead>
             <tr>
               <th>Section</th>
-              <th>Key</th>
+              <th>Section ID</th>
               <th>Title</th>
               <th>Order</th>
               <th>Status</th>
@@ -359,7 +359,7 @@ export function HomePageManager({
             {sections.map((section) => (
               <tr key={section.id} className={editing?.id === section.id ? "admin-home-section-active" : undefined}>
                 <td>{section.label}</td>
-                <td>{section.sectionKey}</td>
+                <td><code className="admin-section-id">#{section.sectionKey}</code></td>
                 <td>{section.title}</td>
                 <td>{section.displayOrder}</td>
                 <td>
@@ -399,7 +399,7 @@ export function HomePageManager({
             </tr>
             <tr className="admin-home-section-linkrow">
               <td>Reviews</td>
-              <td>reviews</td>
+              <td><code className="admin-section-id">#reviews</code></td>
               <td>Customer reviews shown on the home page</td>
               <td>—</td>
               <td>
@@ -438,7 +438,7 @@ export function HomePageManager({
         <section className="admin-resource-card admin-home-section-editor-card">
           <form onSubmit={handleSubmit} className="admin-category-form admin-home-section-editor" key={editing.id}>
             <div className="admin-home-section-editor-heading">
-              <h3>Edit {editing.label}</h3>
+              <h3>Edit {editing.label} <code className="admin-section-id">#{editing.sectionKey}</code></h3>
               <button type="button" className="admin-secondary-button" onClick={cancelEditing}>
                 Cancel
               </button>

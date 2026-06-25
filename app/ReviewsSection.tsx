@@ -216,7 +216,7 @@ export function ReviewsSection({ reviews }: { reviews: Review[] }) {
   }, []);
 
   return (
-    <section className="reviews-section" aria-labelledby="reviews-heading">
+    <section id="reviews" className="reviews-section" aria-labelledby="reviews-heading">
       <span className="review-particle review-particle-one" aria-hidden="true" />
       <span className="review-particle review-particle-two" aria-hidden="true" />
       <span className="review-particle review-particle-three" aria-hidden="true" />

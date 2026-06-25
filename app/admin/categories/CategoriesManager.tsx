@@ -84,6 +84,12 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
     setSubcategoryCtas([]);
   }
 
+  function startAdding() {
+    setEditing(null);
+    setSubcategoryCtas([]);
+    setMessage("");
+  }
+
   function addSubcategoryCta() {
     setSubcategoryCtas((current) => {
       const nextIndex = current.length + 1;
@@ -229,6 +235,9 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
         <section className="admin-table-card admin-categories-table">
           <div>
             <h2>All Categories</h2>
+            <button type="button" onClick={startAdding}>
+              Add New
+            </button>
           </div>
         <table>
           <thead>
@@ -244,7 +253,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
           </thead>
           <tbody>
             {categories.map((category) => (
-              <tr key={category.id}>
+              <tr key={category.id} className={editing?.id === category.id ? "admin-category-selected-row" : undefined}>
                 <td>{category.name}</td>
                 <td>{category.slug}</td>
                 <td>{category.description}</td>

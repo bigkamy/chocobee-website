@@ -15,6 +15,15 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+// Locale-independent date format (dd/mm/yyyy) so SSR and client output match and avoid hydration mismatches.
+function formatDate(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const day = String(date.getUTCDate()).padStart(2, "0");
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  return `${day}/${month}/${date.getUTCFullYear()}`;
+}
+
 function nextLink(group: CmsFooterLink[], label: string): CmsFooterLink {
   const nextIndex = group.length + 1;
   return {
@@ -150,13 +159,16 @@ export function FooterManager({ initialSettings }: { initialSettings: CmsFooterS
   }
 
   return (
-    <main className="admin-page admin-footer-page">
+    <main className="admin-page admin-footer-page admin-footer-pro">
       <header className="admin-footer-page-header">
         <div>
           <p>Footer Settings</p>
-          <span>Last updated {new Date(settings.updatedAt).toLocaleDateString()}</span>
+          <span>Last updated {formatDate(settings.updatedAt)}</span>
         </div>
         <div className="admin-header-actions">
+          <span className="admin-footer-mode-pill" data-editing={isEditing}>
+            {isEditing ? "Editing mode" : "View only"}
+          </span>
           <Link href="/" className="admin-outline-button">
             View Website
           </Link>
@@ -189,7 +201,7 @@ export function FooterManager({ initialSettings }: { initialSettings: CmsFooterS
         </article>
         <article>
           <span>Last Updated</span>
-          <strong>{new Date(settings.updatedAt).toLocaleDateString()}</strong>
+          <strong>{formatDate(settings.updatedAt)}</strong>
         </article>
       </section>
 
@@ -214,19 +226,11 @@ export function FooterManager({ initialSettings }: { initialSettings: CmsFooterS
               </div>
             </div>
           </div>
-          <div className="admin-footer-brand-grid">
-            <div className="admin-gallery-preview admin-footer-logo-preview">
-              {settings.logoUrl ? <Image src={settings.logoUrl} alt={settings.logoAlt} fill sizes="220px" className="object-contain" /> : null}
-            </div>
-            <div className="admin-footer-field-grid">
-              <label>
-                Logo URL
-                <input value={settings.logoUrl} disabled={!isEditing} onChange={(event) => updateField("logoUrl", event.currentTarget.value)} />
-              </label>
-              <label>
-                Logo Alt Text
-                <input value={settings.logoAlt} disabled={!isEditing} onChange={(event) => updateField("logoAlt", event.currentTarget.value)} />
-              </label>
+          <div className="admin-footer-identity-body">
+            <div className="admin-footer-identity-logo">
+              <div className="admin-gallery-preview admin-footer-logo-preview">
+                {settings.logoUrl ? <Image src={settings.logoUrl} alt={settings.logoAlt} fill sizes="220px" className="object-contain" /> : null}
+              </div>
               <div className="admin-upload-control">
                 <label>
                   Upload Logo
@@ -235,36 +239,47 @@ export function FooterManager({ initialSettings }: { initialSettings: CmsFooterS
               </div>
               {uploadStatus ? <p className="admin-upload-status">{uploadStatus}</p> : null}
             </div>
-          </div>
-          <label>
-            Address Lines
-            <textarea
-              value={settings.addressLines.join("\n")}
-              disabled={!isEditing}
-              onChange={(event) => updateField("addressLines", event.currentTarget.value.split("\n").map((line) => line.trim()).filter(Boolean))}
-            />
-          </label>
-          <div className="admin-footer-field-grid">
-            <label>
-              Phone Label
-              <input value={settings.phoneLabel} disabled={!isEditing} onChange={(event) => updateField("phoneLabel", event.currentTarget.value)} />
-            </label>
-            <label>
-              Phone Link
-              <input value={settings.phoneHref} disabled={!isEditing} onChange={(event) => updateField("phoneHref", event.currentTarget.value)} />
-            </label>
-            <label>
-              Email Label
-              <input value={settings.emailLabel} disabled={!isEditing} onChange={(event) => updateField("emailLabel", event.currentTarget.value)} />
-            </label>
-            <label>
-              Email Link
-              <input value={settings.emailHref} disabled={!isEditing} onChange={(event) => updateField("emailHref", event.currentTarget.value)} />
-            </label>
-            <label>
-              Hours
-              <input value={settings.hoursLabel} disabled={!isEditing} onChange={(event) => updateField("hoursLabel", event.currentTarget.value)} />
-            </label>
+
+            <div className="admin-footer-identity-fields">
+              <label>
+                Logo URL
+                <input value={settings.logoUrl} disabled={!isEditing} onChange={(event) => updateField("logoUrl", event.currentTarget.value)} />
+              </label>
+              <label>
+                Logo Alt Text
+                <input value={settings.logoAlt} disabled={!isEditing} onChange={(event) => updateField("logoAlt", event.currentTarget.value)} />
+              </label>
+              <label className="admin-footer-identity-address">
+                Address Lines
+                <textarea
+                  value={settings.addressLines.join("\n")}
+                  disabled={!isEditing}
+                  onChange={(event) => updateField("addressLines", event.currentTarget.value.split("\n").map((line) => line.trim()).filter(Boolean))}
+                />
+              </label>
+              <div className="admin-footer-identity-contact">
+                <label>
+                  Phone Label
+                  <input value={settings.phoneLabel} disabled={!isEditing} onChange={(event) => updateField("phoneLabel", event.currentTarget.value)} />
+                </label>
+                <label>
+                  Phone Link
+                  <input value={settings.phoneHref} disabled={!isEditing} onChange={(event) => updateField("phoneHref", event.currentTarget.value)} />
+                </label>
+                <label>
+                  Email Label
+                  <input value={settings.emailLabel} disabled={!isEditing} onChange={(event) => updateField("emailLabel", event.currentTarget.value)} />
+                </label>
+                <label>
+                  Email Link
+                  <input value={settings.emailHref} disabled={!isEditing} onChange={(event) => updateField("emailHref", event.currentTarget.value)} />
+                </label>
+                <label className="admin-footer-identity-hours">
+                  Hours
+                  <input value={settings.hoursLabel} disabled={!isEditing} onChange={(event) => updateField("hoursLabel", event.currentTarget.value)} />
+                </label>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -409,7 +424,6 @@ function FooterLinkEditor({
       <div className="admin-footer-link-head" aria-hidden="true">
         <span>Name</span>
         <span>URL</span>
-        <span>Order</span>
         <span>Status</span>
         <span>Actions</span>
       </div>
@@ -423,15 +437,6 @@ function FooterLinkEditor({
           <label>
             Link
             <input value={link.href} disabled={!isEditing} onChange={(event) => onUpdate(index, { href: event.currentTarget.value })} />
-          </label>
-          <label>
-            Order
-            <input
-              type="number"
-              value={link.displayOrder}
-              disabled={!isEditing}
-              onChange={(event) => onUpdate(index, { displayOrder: Number(event.currentTarget.value) })}
-            />
           </label>
           <label>
             Status
@@ -473,7 +478,6 @@ function FooterSocialEditor({
         <span>Type</span>
         <span>Name</span>
         <span>URL</span>
-        <span>Order</span>
         <span>Status</span>
         <span>Actions</span>
       </div>
@@ -496,15 +500,6 @@ function FooterSocialEditor({
           <label>
             Link
             <input value={link.href} disabled={!isEditing} onChange={(event) => onUpdate(index, { href: event.currentTarget.value })} />
-          </label>
-          <label>
-            Order
-            <input
-              type="number"
-              value={link.displayOrder}
-              disabled={!isEditing}
-              onChange={(event) => onUpdate(index, { displayOrder: Number(event.currentTarget.value) })}
-            />
           </label>
           <label>
             Status

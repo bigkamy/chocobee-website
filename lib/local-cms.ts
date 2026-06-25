@@ -478,11 +478,11 @@ export const defaultHomePageSections: CmsHomePageSection[] = [
     title: "Meet the Chef Neha Panwar",
     subtitle: "Serving since 2013",
     content:
-      "Control the first home page section, including headline, supporting text, image, and primary action.",
+      "From a humble home kitchen to a name everyone celebrates—turning cakes into unforgettable experiences. ",
     imageUrl: "/Images/neha.png",
     imageAlt: "Chef Neha Panwar",
     ctaLabel: "Know More",
-    ctaHref: "/about",
+    ctaHref: "/about#chef",
     secondaryCtaLabel: "Explore our Treat",
     secondaryCtaHref: "/gallery",
     displayOrder: 1,

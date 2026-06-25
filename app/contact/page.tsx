@@ -62,7 +62,7 @@ function ContactIcon({ icon }: { icon?: string | null }) {
 
 function HeroIntro({ section }: { section?: CmsContactPageSection }) {
   return (
-    <div className="mx-auto max-w-3xl text-center">
+    <div id={section?.sectionKey} className="mx-auto max-w-3xl text-center">
       {section?.eyebrow ? <p className="text-sm font-extrabold uppercase tracking-[0.28em] text-[#be1919]">{section.eyebrow}</p> : null}
       <h1 className="mt-3 font-heading text-5xl leading-tight text-[#5d4037] sm:text-6xl">{section?.title || "Get in Touch"}</h1>
       {section?.content ? <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-[#765447]">{section.content}</p> : null}
@@ -74,7 +74,7 @@ function DetailCard({ section }: { section?: CmsContactPageSection }) {
   const items = orderedItems(section?.items ?? []);
 
   return (
-    <section className="rounded-[1.5rem] border border-white/75 bg-white/70 p-5 shadow-[0_24px_60px_rgba(93,64,55,0.1)] backdrop-blur md:p-7">
+    <section id={section?.sectionKey} className="rounded-[1.5rem] border border-white/75 bg-white/70 p-5 shadow-[0_24px_60px_rgba(93,64,55,0.1)] backdrop-blur md:p-7">
       <h2 className="font-heading text-3xl text-[#5d4037]">{section?.title || "Contact Details"}</h2>
       <div className="mt-5 grid gap-3">
         {items.map((detail, index) => {
@@ -120,7 +120,7 @@ function MapSection({ section }: { section?: CmsContactPageSection }) {
   if (!section?.mapEmbedUrl) return null;
 
   return (
-    <section className="overflow-hidden rounded-[1.5rem] border border-white/75 bg-white/70 p-3 shadow-[0_24px_60px_rgba(93,64,55,0.1)] backdrop-blur">
+    <section id={section?.sectionKey} className="overflow-hidden rounded-[1.5rem] border border-white/75 bg-white/70 p-3 shadow-[0_24px_60px_rgba(93,64,55,0.1)] backdrop-blur">
       <iframe
         title={section.title || "Chocobee Cake Studio location map"}
         src={section.mapEmbedUrl}

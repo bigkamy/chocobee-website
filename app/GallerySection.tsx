@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useMemo, useState } from "react";
+import { WhatsAppEnquiryButton } from "./WhatsAppEnquiryButton";
 
 const filters = ["All", "Recent Designs", "Most Viewed", "Top on Demand"] as const;
 
@@ -13,6 +14,9 @@ type HomeGalleryImage = {
   width?: number | null;
   height?: number | null;
   groups: string[];
+  category?: string | null;
+  subCategory?: string | null;
+  description?: string | null;
 };
 
 const defaultGalleryImages: HomeGalleryImage[] = [
@@ -156,7 +160,6 @@ type GallerySectionProps = {
 
 export function GallerySection({ eyebrow, title, ctaLabel, ctaHref, images }: GallerySectionProps) {
   const [activeFilter, setActiveFilter] = useState<Filter>("All");
-  const [wishlistCounts, setWishlistCounts] = useState<Record<string, number>>({});
   const galleryImages = useMemo(() => (images?.length ? images : defaultGalleryImages), [images]);
   const visibleImages = useMemo(
     () =>
@@ -165,29 +168,6 @@ export function GallerySection({ eyebrow, title, ctaLabel, ctaHref, images }: Ga
         : galleryImages.filter((image) => image.groups.includes(activeFilter)),
     [activeFilter, galleryImages],
   );
-
-  function handleWishlist(label: string) {
-    setWishlistCounts((counts) => ({ ...counts, [label]: (counts[label] ?? 0) + 1 }));
-  }
-
-  async function handleShare(image: HomeGalleryImage) {
-    const shareData = {
-      title: `${image.label} by Chocobee Cake Studio`,
-      text: `Take a look at this ${image.label.toLowerCase()} design from Chocobee Cake Studio.`,
-      url: window.location.href,
-    };
-
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-        return;
-      } catch {
-        return;
-      }
-    }
-
-    window.alert(`${shareData.title}\n${shareData.url}`);
-  }
 
   return (
     <section id="gallery" className="gallery-section" aria-labelledby="gallery-heading">
@@ -224,25 +204,17 @@ export function GallerySection({ eyebrow, title, ctaLabel, ctaHref, images }: Ga
                 sizes="(max-width: 640px) 92vw, (max-width: 1024px) 23vw, 18vw"
                 className="gallery-image"
               />
-              <div className="gallery-card-actions" aria-label={`${image.label} engagement actions`}>
-                <button type="button" onClick={() => handleWishlist(image.label)} aria-label={`Add ${image.label} to wishlist`}>
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M12 20s-7.5-4.4-9.2-9.4C1.6 7.2 3.8 4 7.3 4c2 0 3.5 1 4.7 2.6C13.2 5 14.8 4 16.8 4c3.5 0 5.7 3.2 4.5 6.6C19.5 15.6 12 20 12 20Z" />
-                  </svg>
-                  <span>{(wishlistCounts[image.label] ?? 84 + index * 7).toLocaleString()}</span>
-                </button>
-                <button type="button" onClick={() => void handleShare(image)} aria-label={`Share ${image.label}`}>
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M18 8a3 3 0 1 0-2.8-4M6 14a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm12 4a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM8.7 9.7l6.6-3.4M8.7 16.3l6.6-3.4" />
-                  </svg>
-                </button>
-                <span className="gallery-views" aria-label={`${(1200 + index * 137).toLocaleString()} views`}>
-                  <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M2.5 12s3.4-6 9.5-6 9.5 6 9.5 6-3.4 6-9.5 6-9.5-6-9.5-6Z" />
-                    <path d="M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4Z" />
-                  </svg>
-                  <span>{(1200 + index * 137).toLocaleString()}</span>
-                </span>
+              <div className="gallery-card-actions" aria-label={`${image.label} actions`}>
+                <WhatsAppEnquiryButton
+                  variant="icon"
+                  cakeTitle={image.label}
+                  cakeSlug={image.slug}
+                  category={image.category}
+                  subCategory={image.subCategory}
+                  imageUrl={image.src}
+                  description={image.description}
+                  className="gallery-card-wa"
+                />
               </div>
               <figcaption>{image.label}</figcaption>
             </figure>

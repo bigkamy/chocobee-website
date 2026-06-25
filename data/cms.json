@@ -72,7 +72,7 @@
       "keywords": "chocolate cake, truffle cake, birthday cake",
       "featured": true,
       "status": "ACTIVE",
-      "createdAt": "2026-06-24T15:27:45.483Z",
+      "createdAt": "2026-06-25T05:46:51.245Z",
       "subcategoryCtaIds": []
     },
     {
@@ -100,7 +100,7 @@
       "keywords": "wedding cake, lace cake, designer wedding cake",
       "featured": true,
       "status": "ACTIVE",
-      "createdAt": "2026-06-24T15:27:45.483Z",
+      "createdAt": "2026-06-25T05:46:51.245Z",
       "subcategoryCtaIds": []
     },
     {
@@ -127,7 +127,7 @@
       "keywords": "kids cake, theme cake, candy cake",
       "featured": false,
       "status": "ACTIVE",
-      "createdAt": "2026-06-24T15:27:45.483Z",
+      "createdAt": "2026-06-25T05:46:51.245Z",
       "subcategoryCtaIds": []
     }
   ],
@@ -138,16 +138,16 @@
       "label": "Hero",
       "title": "Meet the Chef Neha Panwar",
       "subtitle": "Serving since 2013",
-      "content": "Control the first home page section, including headline, supporting text, image, and primary action.",
+      "content": "From a humble home kitchen to a name everyone celebrates—turning cakes into unforgettable experiences. ",
       "imageUrl": "/Images/neha.png",
       "imageAlt": "Chef Neha Panwar",
       "ctaLabel": "Know More",
-      "ctaHref": "/about",
+      "ctaHref": "/about#chef",
       "secondaryCtaLabel": "Explore our Treat",
       "secondaryCtaHref": "/gallery",
       "displayOrder": 1,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-24T15:27:45.483Z",
+      "updatedAt": "2026-06-25T05:46:51.245Z",
       "categoryCards": [],
       "whyCards": []
     },
@@ -166,7 +166,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 2,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-24T15:27:45.483Z",
+      "updatedAt": "2026-06-25T05:46:51.245Z",
       "whyCards": [
         {
           "id": "baked-fresh",
@@ -275,7 +275,7 @@
       ],
       "displayOrder": 3,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-24T15:27:45.483Z",
+      "updatedAt": "2026-06-25T05:46:51.245Z",
       "whyCards": []
     },
     {
@@ -293,7 +293,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 4,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-24T15:27:45.483Z",
+      "updatedAt": "2026-06-25T05:46:51.245Z",
       "categoryCards": [],
       "whyCards": []
     }
@@ -316,7 +316,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 1,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-24T15:27:45.483Z",
+      "updatedAt": "2026-06-25T05:46:51.245Z",
       "items": [
         {
           "id": "designer-celebration-cakes",
@@ -409,7 +409,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 2,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-24T15:27:45.483Z",
+      "updatedAt": "2026-06-25T05:46:51.245Z",
       "items": [
         {
           "id": "years",
@@ -466,7 +466,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 3,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-24T15:27:45.483Z",
+      "updatedAt": "2026-06-25T05:46:51.245Z",
       "items": [
         {
           "id": "aarohi-sharma",
@@ -535,7 +535,7 @@
       "secondaryCtaHref": null,
       "displayOrder": 4,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-24T15:27:45.483Z",
+      "updatedAt": "2026-06-25T05:46:51.245Z",
       "items": [
         {
           "id": "custom-designs",
@@ -628,7 +628,7 @@
       "secondaryCtaHref": "https://wa.me/",
       "displayOrder": 5,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-24T15:27:45.483Z",
+      "updatedAt": "2026-06-25T05:46:51.245Z",
       "items": []
     }
   ],
@@ -649,7 +649,7 @@
       "ctaHref": null,
       "displayOrder": 1,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-24T15:27:45.483Z",
+      "updatedAt": "2026-06-25T05:46:51.245Z",
       "items": []
     },
     {
@@ -668,7 +668,7 @@
       "ctaHref": "https://wa.me/",
       "displayOrder": 2,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-24T15:27:45.483Z",
+      "updatedAt": "2026-06-25T05:46:51.245Z",
       "items": [
         {
           "id": "studio",
@@ -743,7 +743,7 @@
       "ctaHref": null,
       "displayOrder": 3,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-24T15:27:45.483Z",
+      "updatedAt": "2026-06-25T05:46:51.245Z",
       "items": []
     },
     {
@@ -762,7 +762,7 @@
       "ctaHref": null,
       "displayOrder": 4,
       "status": "ACTIVE",
-      "updatedAt": "2026-06-24T15:27:45.483Z",
+      "updatedAt": "2026-06-25T05:46:51.245Z",
       "items": [
         {
           "id": "name",
@@ -968,7 +968,7 @@
     "formErrorMessage": "Please fill all required details correctly.",
     "copyrightText": "© 2026 Chocobee Cake Studio. All Rights Reserved.",
     "creditText": "Designed with love by Chocobee",
-    "updatedAt": "2026-06-24T15:27:45.483Z"
+    "updatedAt": "2026-06-25T05:46:51.245Z"
   },
   "customOrderSettings": {
     "id": "custom-order",
@@ -1227,7 +1227,7 @@
         }
       ]
     },
-    "updatedAt": "2026-06-24T15:27:45.483Z"
+    "updatedAt": "2026-06-25T05:46:51.245Z"
   },
   "reviews": [
     {

@@ -1,10 +1,17 @@
 import nodemailer from "nodemailer";
 
+/**
+ * Inbox that should receive customer-facing form submissions (contact form,
+ * custom cake orders). Override with the CONTACT_EMAIL env var if needed.
+ */
+export const BUSINESS_EMAIL = process.env.CONTACT_EMAIL || "chocobeecakes@gmail.com";
+
 type SendArgs = {
   to: string;
   subject: string;
   text: string;
   html: string;
+  replyTo?: string;
 };
 
 function getTransport() {
@@ -27,7 +34,7 @@ function getTransport() {
  * configured, the message is logged to the server console instead so the flow
  * stays testable in development. Returns whether it was actually delivered.
  */
-export async function sendAdminEmail({ to, subject, text, html }: SendArgs) {
+export async function sendAdminEmail({ to, subject, text, html, replyTo }: SendArgs) {
   const transport = getTransport();
   const from = process.env.SMTP_FROM || process.env.SMTP_USER || "no-reply@chocobee.local";
 
@@ -36,6 +43,6 @@ export async function sendAdminEmail({ to, subject, text, html }: SendArgs) {
     return { delivered: false };
   }
 
-  await transport.sendMail({ from, to, subject, text, html });
+  await transport.sendMail({ from, to, subject, text, html, replyTo });
   return { delivered: true };
 }

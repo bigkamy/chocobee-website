@@ -5,6 +5,9 @@ import Link from "next/link";
 import { ChangeEvent, DragEvent, FormEvent, ReactNode, useEffect, useMemo, useReducer, useState } from "react";
 import { createPortal } from "react-dom";
 import type { CmsCustomOrderOptionGroup, CmsCustomOrderSettings } from "@/lib/local-cms";
+import { STUDIO_WHATSAPP_NUMBER } from "@/lib/whatsapp";
+
+const MAX_REFERENCE_IMAGES = 5;
 
 export type CakeOrderGalleryImage = {
   src: string;
@@ -192,6 +195,8 @@ export function CakeOrderModal({
   const [successText, setSuccessText] = useState("Your order has been sent successfully!");
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [imageWarning, setImageWarning] = useState("");
+  const maxImages = Math.min(popupSettings.maxUploadImages || MAX_REFERENCE_IMAGES, MAX_REFERENCE_IMAGES);
   const filePreviews = useMemo(() => files.map((file) => ({ file, src: URL.createObjectURL(file) })), [files]);
 
   const errors = useMemo(() => {
@@ -245,10 +250,14 @@ export function CakeOrderModal({
   }
 
   function addFiles(nextFiles: FileList | File[]) {
-    const accepted = Array.from(nextFiles)
-      .filter((file) => ["image/jpeg", "image/png"].includes(file.type) && file.size <= popupSettings.maxUploadSizeMb * 1024 * 1024)
-      .slice(0, Math.max(0, popupSettings.maxUploadImages - files.length));
-    setFiles((current) => [...current, ...accepted].slice(0, popupSettings.maxUploadImages));
+    const incoming = Array.from(nextFiles).filter(
+      (file) => ["image/jpeg", "image/png"].includes(file.type) && file.size <= popupSettings.maxUploadSizeMb * 1024 * 1024,
+    );
+    const remaining = Math.max(0, maxImages - files.length);
+    const accepted = incoming.slice(0, remaining);
+
+    setImageWarning(incoming.length > remaining ? `You can attach a maximum of ${maxImages} images.` : "");
+    setFiles((current) => [...current, ...accepted].slice(0, maxImages));
   }
 
   function handleDrop(event: DragEvent<HTMLLabelElement>) {
@@ -261,11 +270,17 @@ export function CakeOrderModal({
   }
 
   function toggleGalleryImage(image: CakeOrderGalleryImage) {
-    setSelectedGallery((current) =>
-      current.some((item) => item.src === image.src)
-        ? current.filter((item) => item.src !== image.src)
-        : [...current, image].slice(0, popupSettings.maxUploadImages),
-    );
+    setSelectedGallery((current) => {
+      if (current.some((item) => item.src === image.src)) {
+        setImageWarning("");
+        return current.filter((item) => item.src !== image.src);
+      }
+      if (current.length >= maxImages) {
+        setImageWarning(`You can attach a maximum of ${maxImages} images.`);
+        return current;
+      }
+      return [...current, image];
+    });
   }
 
   async function uploadReferenceImages() {
@@ -292,10 +307,15 @@ export function CakeOrderModal({
 
     if (Object.keys(errors).length) return;
 
+    // Reserve a tab during the user gesture so the WhatsApp redirect isn't popup-blocked after the awaits.
+    const whatsappWindow = window.open("", "_blank");
+
     try {
       setSubmitting(true);
       const uploadedImageUrls = await uploadReferenceImages();
       const message = buildMessage(state, selectedGallery, uploadedImageUrls, popupSettings);
+      const whatsappLink = `https://wa.me/${STUDIO_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
       const response = await fetch("/send-whatsapp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -312,10 +332,15 @@ export function CakeOrderModal({
         throw new Error(data.error || "Unable to send your order. Please try again.");
       }
 
+      // Open WhatsApp to the studio number with all order details + reference image links.
+      if (whatsappWindow) whatsappWindow.location.href = whatsappLink;
+      else window.open(whatsappLink, "_blank", "noopener,noreferrer");
+
       window.localStorage.setItem("latestCakeOrder", message);
       setSuccessText(data.message || "Your order has been sent successfully!");
       setSuccess(true);
     } catch (error) {
+      whatsappWindow?.close();
       setSubmitError(error instanceof Error ? error.message : "Unable to send your order. Please try again.");
     } finally {
       setSubmitting(false);
@@ -445,6 +470,7 @@ export function CakeOrderModal({
                   <small>{popupSettings.dropzoneSubtitle}</small>
                 </label>
               ) : null}
+              {imageWarning ? <p className="cake-order-image-warning" role="alert">{imageWarning}</p> : null}
               {filePreviews.length ? (
                 <div className="cake-order-preview-grid">
                   {filePreviews.map(({ file, src }, index) => (
