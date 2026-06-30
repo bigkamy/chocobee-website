@@ -1185,7 +1185,12 @@ function normalizeReviews(reviews: CmsReview[] | undefined) {
 }
 
 async function ensureCmsFile() {
-  await mkdir(path.dirname(cmsPath), { recursive: true });
+  try {
+    await mkdir(path.dirname(cmsPath), { recursive: true });
+  } catch {
+    // Read-only filesystem (e.g. a serverless host): the directory can't be
+    // created. Reads still work from the bundled data/cms.json, so ignore.
+  }
 
   try {
     const raw = await readFile(cmsPath, "utf8");
@@ -1248,7 +1253,9 @@ async function ensureCmsFile() {
       customOrderSettings: normalizeCustomOrderSettings(parsed.customOrderSettings),
       reviews: normalizeReviews(parsed.reviews),
     };
-    await writeCmsData(data);
+    // Persist the normalized shape back, but tolerate a read-only filesystem:
+    // a failed write here must NOT discard the data we just read successfully.
+    await persistCmsDataQuietly(data);
     return data;
   } catch {
     const initialData: CmsData = {
@@ -1261,7 +1268,7 @@ async function ensureCmsFile() {
       customOrderSettings: defaultCustomOrderSettings,
       reviews: defaultReviews,
     };
-    await writeCmsData(initialData);
+    await persistCmsDataQuietly(initialData);
     return initialData;
   }
 }
@@ -1269,6 +1276,17 @@ async function ensureCmsFile() {
 async function writeCmsData(data: CmsData) {
   await mkdir(path.dirname(cmsPath), { recursive: true });
   await writeFile(cmsPath, JSON.stringify(data, null, 2));
+}
+
+// Best-effort persistence used by read paths. On a writable filesystem this
+// keeps data/cms.json normalized; on a read-only serverless host the write
+// fails harmlessly and the in-memory data is still returned to the caller.
+async function persistCmsDataQuietly(data: CmsData) {
+  try {
+    await writeCmsData(data);
+  } catch {
+    // Read-only filesystem — admin edits are persisted elsewhere in production.
+  }
 }
 
 export async function listLocalCategories({ activeOnly = false } = {}) {
