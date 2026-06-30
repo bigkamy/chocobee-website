@@ -265,7 +265,8 @@ export function GalleryManager({
     const confirmed = window.confirm("Remove this selected image from the form? Unsaved uploaded files may be deleted.");
     if (!confirmed) return;
 
-    const isUnsavedUploadedImage = imageUrl.startsWith("/uploads/cakes/") && imageUrl !== editing?.imageUrl;
+    // Covers both legacy same-origin uploads and S3-hosted uploads (".../cakes/...").
+    const isUnsavedUploadedImage = imageUrl.includes("/cakes/") && imageUrl !== editing?.imageUrl;
 
     if (isUnsavedUploadedImage) {
       await fetch("/api/admin/upload", {
@@ -314,7 +315,7 @@ export function GalleryManager({
     if (!confirmed) return;
 
     await fetch(`/api/admin/gallery/${id}`, { method: "DELETE" });
-    if (current?.imageUrl.startsWith("/uploads/cakes/")) {
+    if (current?.imageUrl.includes("/cakes/")) {
       await fetch("/api/admin/upload", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },

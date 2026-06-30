@@ -293,7 +293,12 @@ export function CakeOrderModal({
       body.append("file", file);
       const response = await fetch("/api/admin/upload", { method: "POST", body });
       const data = (await response.json()) as { imageUrl?: string };
-      if (response.ok && data.imageUrl) uploadedUrls.push(`${window.location.origin}${data.imageUrl}`);
+      if (response.ok && data.imageUrl) {
+        // Uploads now return an absolute S3 URL; only prefix the origin for
+        // legacy same-origin paths.
+        const url = /^https?:\/\//.test(data.imageUrl) ? data.imageUrl : `${window.location.origin}${data.imageUrl}`;
+        uploadedUrls.push(url);
+      }
     }
 
     return uploadedUrls;
@@ -316,7 +321,7 @@ export function CakeOrderModal({
       const message = buildMessage(state, selectedGallery, uploadedImageUrls, popupSettings);
       const whatsappLink = `https://wa.me/${STUDIO_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
-      const response = await fetch("/send-whatsapp", {
+      const response = await fetch("/api/send-whatsapp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

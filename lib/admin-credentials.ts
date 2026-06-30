@@ -1,11 +1,16 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { createHash, randomBytes } from "node:crypto";
 import { compare, hash } from "bcryptjs";
+import type { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
-// This site has no database, so the single admin account's password override and
-// password-reset token live in a local JSON file alongside data/cms.json.
+// The single admin account's password override and password-reset token are
+// persisted in Postgres (CmsDocument row "admin-auth") so they survive on a
+// read-only serverless host. The legacy data/admin-auth.json is read only as a
+// fallback to seed local dev.
 const storePath = path.join(process.cwd(), "data", "admin-auth.json");
+const ADMIN_AUTH_DOC_KEY = "admin-auth";
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
 
 type ResetState = {
@@ -28,6 +33,13 @@ export function getAdminEmail() {
 
 async function readStore(): Promise<AdminAuthStore> {
   try {
+    const row = await prisma.cmsDocument.findUnique({ where: { key: ADMIN_AUTH_DOC_KEY } });
+    if (row?.data) return row.data as AdminAuthStore;
+  } catch {
+    // Database unreachable — fall back to the legacy file below.
+  }
+
+  try {
     const raw = await readFile(storePath, "utf8");
     return JSON.parse(raw) as AdminAuthStore;
   } catch {
@@ -36,8 +48,11 @@ async function readStore(): Promise<AdminAuthStore> {
 }
 
 async function writeStore(store: AdminAuthStore) {
-  await mkdir(path.dirname(storePath), { recursive: true });
-  await writeFile(storePath, JSON.stringify(store, null, 2));
+  await prisma.cmsDocument.upsert({
+    where: { key: ADMIN_AUTH_DOC_KEY },
+    create: { key: ADMIN_AUTH_DOC_KEY, data: store as unknown as Prisma.InputJsonValue },
+    update: { data: store as unknown as Prisma.InputJsonValue },
+  });
 }
 
 /** Validate a login attempt against the stored password (if set) or the env password. */

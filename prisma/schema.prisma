@@ -6,6 +6,16 @@ datasource db {
   provider = "postgresql"
 }
 
+// Stores CMS content and admin-auth state as JSON documents, one row per key
+// (e.g. "cms" for site content, "admin-auth" for the admin password/reset).
+// This replaces the read-only-filesystem data/*.json files so admin edits and
+// uploads persist on Amplify SSR.
+model CmsDocument {
+  key       String   @id
+  data      Json
+  updatedAt DateTime @updatedAt
+}
+
 enum AdminRole {
   ADMIN
 }

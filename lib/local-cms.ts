@@ -1,5 +1,7 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import path from "node:path";
+import type { Prisma } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 
 export type CmsStatus = "ACTIVE" | "INACTIVE";
 
@@ -261,7 +263,10 @@ type CmsData = {
   customOrderSettings: CmsCustomOrderSettings;
 };
 
+// Bundled defaults shipped with the build; only used to seed Postgres on first
+// boot. Live content is read from and written to the CmsDocument row below.
 const cmsPath = path.join(process.cwd(), "data", "cms.json");
+const CMS_DOC_KEY = "cms";
 
 export function slugify(value: string) {
   return value
@@ -479,7 +484,7 @@ export const defaultHomePageSections: CmsHomePageSection[] = [
     subtitle: "Serving since 2013",
     content:
       "From a humble home kitchen to a name everyone celebrates—turning cakes into unforgettable experiences. ",
-    imageUrl: "/Images/neha.png",
+    imageUrl: "https://chocobee-uploads-556311299862.s3.ap-south-1.amazonaws.com/content/neha.png",
     imageAlt: "Chef Neha Panwar",
     ctaLabel: "Know More",
     ctaHref: "/about#chef",
@@ -631,7 +636,7 @@ export const defaultAboutPageSections: CmsAboutPageSection[] = [
     subtitle: "",
     content:
       "Chef Neha Panwar leads Chocobee Cake Studio with a passion for creative storytelling through cake. Her journey is rooted in listening carefully to each client, translating ideas into elegant edible designs, and delivering cakes that taste as beautiful as they look. Her expertise in theme detailing, premium finishes, and customer-first service has helped make thousands of celebrations truly unforgettable.",
-    imageUrl: "/Images/neha.png",
+    imageUrl: "https://chocobee-uploads-556311299862.s3.ap-south-1.amazonaws.com/content/neha.png",
     imageAlt: "Chef Neha Panwar",
     ctaLabel: null,
     ctaHref: null,
@@ -849,7 +854,7 @@ export const defaultContactPageSections: CmsContactPageSection[] = [
 
 export const defaultFooterSettings: CmsFooterSettings = {
   id: "footer",
-  logoUrl: "/Images/CB_logo.png",
+  logoUrl: "https://chocobee-uploads-556311299862.s3.ap-south-1.amazonaws.com/content/CB_logo.png",
   logoAlt: "Chocobee Cake Studio",
   addressLines: ["Crossing Republik, Ghaziabad, Gaur City 1 & 2, Noida Extension"],
   phoneLabel: "+91 00000 00000",
@@ -1185,16 +1190,10 @@ function normalizeReviews(reviews: CmsReview[] | undefined) {
 }
 
 async function ensureCmsFile() {
-  try {
-    await mkdir(path.dirname(cmsPath), { recursive: true });
-  } catch {
-    // Read-only filesystem (e.g. a serverless host): the directory can't be
-    // created. Reads still work from the bundled data/cms.json, so ignore.
-  }
+  const source = await readRawCmsData();
 
-  try {
-    const raw = await readFile(cmsPath, "utf8");
-    const parsed = JSON.parse(raw) as Partial<CmsData>;
+  if (source) {
+    const parsed = source.parsed;
     const data: CmsData = {
       categories: (parsed.categories ?? defaultCategories).map((category) => ({
         ...category,
@@ -1253,39 +1252,60 @@ async function ensureCmsFile() {
       customOrderSettings: normalizeCustomOrderSettings(parsed.customOrderSettings),
       reviews: normalizeReviews(parsed.reviews),
     };
-    // Persist the normalized shape back, but tolerate a read-only filesystem:
-    // a failed write here must NOT discard the data we just read successfully.
-    await persistCmsDataQuietly(data);
+    // Seed the database the first time we boot from the bundled file or
+    // defaults; once the row exists, reads never re-write on every request.
+    if (source.from !== "db") await persistCmsDataQuietly(data);
     return data;
+  }
+
+  const initialData: CmsData = {
+    categories: defaultCategories,
+    galleryImages: defaultGalleryImages,
+    homePageSections: defaultHomePageSections,
+    aboutPageSections: defaultAboutPageSections,
+    contactPageSections: defaultContactPageSections,
+    footerSettings: defaultFooterSettings,
+    customOrderSettings: defaultCustomOrderSettings,
+    reviews: defaultReviews,
+  };
+  await persistCmsDataQuietly(initialData);
+  return initialData;
+}
+
+// Reads the CMS document from Postgres, falling back to the bundled
+// data/cms.json (used to seed the database on first boot and for local dev
+// before the row exists). Returns null when neither source is available.
+async function readRawCmsData(): Promise<{ parsed: Partial<CmsData>; from: "db" | "file" } | null> {
+  try {
+    const row = await prisma.cmsDocument.findUnique({ where: { key: CMS_DOC_KEY } });
+    if (row?.data) return { parsed: row.data as Partial<CmsData>, from: "db" };
   } catch {
-    const initialData: CmsData = {
-      categories: defaultCategories,
-      galleryImages: defaultGalleryImages,
-      homePageSections: defaultHomePageSections,
-      aboutPageSections: defaultAboutPageSections,
-      contactPageSections: defaultContactPageSections,
-      footerSettings: defaultFooterSettings,
-      customOrderSettings: defaultCustomOrderSettings,
-      reviews: defaultReviews,
-    };
-    await persistCmsDataQuietly(initialData);
-    return initialData;
+    // Database unreachable — fall back to the bundled file below.
+  }
+
+  try {
+    const raw = await readFile(cmsPath, "utf8");
+    return { parsed: JSON.parse(raw) as Partial<CmsData>, from: "file" };
+  } catch {
+    return null;
   }
 }
 
 async function writeCmsData(data: CmsData) {
-  await mkdir(path.dirname(cmsPath), { recursive: true });
-  await writeFile(cmsPath, JSON.stringify(data, null, 2));
+  await prisma.cmsDocument.upsert({
+    where: { key: CMS_DOC_KEY },
+    create: { key: CMS_DOC_KEY, data: data as unknown as Prisma.InputJsonValue },
+    update: { data: data as unknown as Prisma.InputJsonValue },
+  });
 }
 
-// Best-effort persistence used by read paths. On a writable filesystem this
-// keeps data/cms.json normalized; on a read-only serverless host the write
-// fails harmlessly and the in-memory data is still returned to the caller.
+// Best-effort persistence used by read paths to seed the database once. A
+// failure here must not discard the data we already hold in memory.
 async function persistCmsDataQuietly(data: CmsData) {
   try {
     await writeCmsData(data);
   } catch {
-    // Read-only filesystem — admin edits are persisted elsewhere in production.
+    // Database not yet reachable (e.g. local dev without DATABASE_URL).
   }
 }
 

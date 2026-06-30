@@ -4,6 +4,7 @@ import { BUSINESS_EMAIL, sendAdminEmail } from "@/lib/email";
 import { normalizeWhatsAppOrderPayload, sendCustomCakeWhatsAppOrder } from "@/lib/twilio-whatsapp";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 function escapeHtml(value: string) {
   return value
@@ -13,6 +14,9 @@ function escapeHtml(value: string) {
     .replace(/"/g, "&quot;");
 }
 
+// Receives a custom cake order. Email is the guaranteed delivery channel; the
+// Twilio WhatsApp message is a best-effort extra. This ships with the Amplify
+// app, replacing the old standalone Express server.
 export async function POST(request: Request) {
   try {
     const body = await readJsonBody(request);
@@ -36,7 +40,10 @@ export async function POST(request: Request) {
       const result = await sendCustomCakeWhatsAppOrder(order);
       sid = result.sid;
     } catch (whatsappError) {
-      console.warn("[order] WhatsApp delivery skipped:", whatsappError instanceof Error ? whatsappError.message : whatsappError);
+      console.warn(
+        "[order] WhatsApp delivery skipped:",
+        whatsappError instanceof Error ? whatsappError.message : whatsappError,
+      );
     }
 
     return NextResponse.json({

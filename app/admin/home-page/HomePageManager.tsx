@@ -181,7 +181,8 @@ export function HomePageManager({
     const confirmed = window.confirm("Remove this selected section image? Save changes afterward to update the section.");
     if (!confirmed) return;
 
-    const isUnsavedUploadedImage = imageUrl.startsWith("/uploads/cakes/") && imageUrl !== editing?.imageUrl;
+    // Covers both legacy same-origin uploads and S3-hosted uploads (".../cakes/...").
+    const isUnsavedUploadedImage = imageUrl.includes("/cakes/") && imageUrl !== editing?.imageUrl;
 
     if (isUnsavedUploadedImage) {
       await fetch("/api/admin/upload", {
@@ -310,7 +311,7 @@ export function HomePageManager({
 
     await fetch(`/api/admin/home-page/${section.id}`, { method: "DELETE" });
 
-    if (section.imageUrl?.startsWith("/uploads/cakes/")) {
+    if (section.imageUrl?.includes("/cakes/")) {
       await fetch("/api/admin/upload", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },

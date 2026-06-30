@@ -1,13 +1,13 @@
-import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { DeleteObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
+import { S3_BUCKET, S3_PUBLIC_BASE_URL, getS3Client, isS3Configured } from "@/lib/s3";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const uploadDir = path.join(process.cwd(), "public", "uploads", "cakes");
-const publicPrefix = "/uploads/cakes/";
+const keyPrefix = "cakes/";
 const allowedImageTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 const maxUploadBytes = 5 * 1024 * 1024;
 
@@ -20,16 +20,30 @@ function getSafeExtension(file: File) {
   return ".jpg";
 }
 
-function resolveUploadedPath(imageUrl: string) {
-  if (!imageUrl.startsWith(publicPrefix)) return null;
+// Resolves the S3 object key from a stored image URL. Accepts the full public
+// URL or a bare "cakes/<file>" key, and only ever returns keys under our prefix.
+function resolveObjectKey(imageUrl: string) {
+  let pathname = imageUrl;
 
-  const fileName = path.basename(imageUrl);
-  const resolved = path.resolve(uploadDir, fileName);
-  const allowedRoot = path.resolve(uploadDir);
-  return resolved.startsWith(allowedRoot) ? resolved : null;
+  if (S3_PUBLIC_BASE_URL && imageUrl.startsWith(S3_PUBLIC_BASE_URL)) {
+    pathname = imageUrl.slice(S3_PUBLIC_BASE_URL.length);
+  } else if (/^https?:\/\//.test(imageUrl)) {
+    try {
+      pathname = new URL(imageUrl).pathname;
+    } catch {
+      return null;
+    }
+  }
+
+  pathname = pathname.replace(/^\/+/, "");
+  return pathname.startsWith(keyPrefix) ? pathname : null;
 }
 
 export async function POST(request: Request) {
+  if (!isS3Configured()) {
+    return NextResponse.json({ error: "Image storage is not configured." }, { status: 503 });
+  }
+
   const formData = await request.formData();
   const file = formData.get("file");
 
@@ -45,23 +59,37 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Image must be 5MB or smaller." }, { status: 422 });
   }
 
-  await mkdir(uploadDir, { recursive: true });
-
-  const fileName = `${Date.now()}-${randomUUID()}${getSafeExtension(file)}`;
+  const key = `${keyPrefix}${Date.now()}-${randomUUID()}${getSafeExtension(file)}`;
   const bytes = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(uploadDir, fileName), bytes);
 
-  return NextResponse.json({ imageUrl: `${publicPrefix}${fileName}` }, { status: 201 });
+  await getS3Client().send(
+    new PutObjectCommand({
+      Bucket: S3_BUCKET,
+      Key: key,
+      Body: bytes,
+      ContentType: file.type,
+      CacheControl: "public, max-age=31536000, immutable",
+    }),
+  );
+
+  return NextResponse.json({ imageUrl: `${S3_PUBLIC_BASE_URL}/${key}` }, { status: 201 });
 }
 
 export async function DELETE(request: Request) {
-  const body = (await request.json().catch(() => null)) as { imageUrl?: string } | null;
-  const uploadedPath = body?.imageUrl ? resolveUploadedPath(body.imageUrl) : null;
-
-  if (!uploadedPath) {
+  if (!isS3Configured()) {
     return NextResponse.json({ ok: true });
   }
 
-  await unlink(uploadedPath).catch(() => undefined);
+  const body = (await request.json().catch(() => null)) as { imageUrl?: string } | null;
+  const key = body?.imageUrl ? resolveObjectKey(body.imageUrl) : null;
+
+  if (!key) {
+    return NextResponse.json({ ok: true });
+  }
+
+  await getS3Client()
+    .send(new DeleteObjectCommand({ Bucket: S3_BUCKET, Key: key }))
+    .catch(() => undefined);
+
   return NextResponse.json({ ok: true });
 }
