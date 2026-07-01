@@ -199,22 +199,22 @@
       "whyCards": [
         {
           "id": "baked-fresh",
-          "title": "Baked Fresh",
-          "text": "Small-batch cakes, cupcakes, and fillings made with premium ingredients.",
+          "title": "Serving Since 2013",
+          "text": "Over a Decade of Sweet Excellence.",
           "displayOrder": 1,
           "status": "ACTIVE"
         },
         {
           "id": "custom-magic",
-          "title": "Custom Magic",
-          "text": "Colors, toppers, flavors, and themes designed around your celebration.",
+          "title": "5000+ Happy Customers",
+          "text": "One promise—exceptional quality every time.",
           "displayOrder": 2,
           "status": "ACTIVE"
         },
         {
           "id": "party-ready",
-          "title": "Party Ready",
-          "text": "Neat packaging, careful timing, and desserts that photograph beautifully.",
+          "title": "25,000+ Custom Cake Designs",
+          "text": "Crafted to Make Every Celebration Unforgettable.",
           "displayOrder": 3,
           "status": "ACTIVE"
         }

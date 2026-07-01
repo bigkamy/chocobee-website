@@ -1041,6 +1041,38 @@ img {
   min-height: 5.2rem;
 }
 
+.admin-home-why-card-icon {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 0.6rem;
+  align-items: start;
+}
+
+.admin-home-why-card-icon-preview {
+  position: relative;
+  width: 4.5rem;
+  height: 4.5rem;
+  overflow: hidden;
+  border-radius: 0.85rem;
+  background: #be1919;
+  display: grid;
+  place-items: center;
+  padding: 0.6rem;
+}
+
+.admin-home-why-card-icon-empty {
+  font-size: 0.62rem;
+  line-height: 1.1;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.admin-home-why-card-icon-controls {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
 .admin-footer-page {
   max-width: 75rem;
   margin: 0 auto;
@@ -3241,19 +3273,19 @@ img {
 .admin-gallery-form-panel select,
 .admin-gallery-form-panel textarea {
   border-color: rgba(255, 215, 0, 0.2);
-  background: rgba(255, 255, 255, 0.1);
-  color: #fffaf7;
+  background: #fff;
+  color: #1c1c1c;
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 .admin-gallery-form-panel input::placeholder,
 .admin-gallery-form-panel textarea::placeholder {
-  color: rgba(255, 245, 240, 0.58);
+  color: #8a8a8a;
 }
 
 .admin-gallery-form-panel select option {
-  background: #321b18;
-  color: #fff5f0;
+  background: #fff;
+  color: #1c1c1c;
 }
 
 .admin-gallery-form-panel input:focus,
@@ -6018,6 +6050,12 @@ button.admin-action-icon.is-manage.is-open {
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.8;
+}
+
+.why-icon .why-icon-img {
+  width: 2.1rem;
+  height: 2.1rem;
+  object-fit: contain;
 }
 
 .treat-row {

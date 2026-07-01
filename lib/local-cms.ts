@@ -92,6 +92,7 @@ export type CmsHomeWhyCard = {
   id: string;
   title: string;
   text: string;
+  iconUrl?: string | null;
   displayOrder: number;
   status: CmsStatus;
 };
@@ -1240,6 +1241,7 @@ async function ensureCmsFile() {
                 id: card.id || slugify(card.title || `why-card-${index + 1}`),
                 title: card.title || `Why Card ${index + 1}`,
                 text: card.text || "",
+                iconUrl: card.iconUrl ?? null,
                 displayOrder: card.displayOrder ?? index + 1,
                 status: card.status ?? "ACTIVE",
               }))

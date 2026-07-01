@@ -199,6 +199,10 @@ export function GalleryManager({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!imageUrl) {
+      setUploadStatus("Please upload a cake image before saving.");
+      return;
+    }
     const form = new FormData(event.currentTarget);
     const title = String(form.get("title") ?? "");
     const slug = String(form.get("slug") || slugify(title));
@@ -491,19 +495,6 @@ export function GalleryManager({
 
         <form key={editing?.id ?? `new-image-${formVersion}`} onSubmit={handleSubmit} className="admin-resource-card admin-category-form admin-gallery-form-panel">
           <h2>{editing ? "Edit Cake Image" : "Add Cake Image"}</h2>
-          <label>
-            Image URL
-            <input
-              name="imageUrl"
-              value={imageUrl}
-              placeholder="Cloudinary image URL"
-              required
-              onChange={(event) => {
-                setImageUrl(event.currentTarget.value);
-                setPreview(event.currentTarget.value);
-              }}
-            />
-          </label>
           <div className="admin-upload-control">
             <label>
               Upload Image

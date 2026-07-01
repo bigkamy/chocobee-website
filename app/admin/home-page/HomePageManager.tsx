@@ -46,6 +46,7 @@ type HomeWhyCard = {
   id: string;
   title: string;
   text: string;
+  iconUrl?: string | null;
   displayOrder: number;
   status: "ACTIVE" | "INACTIVE";
 };
@@ -259,6 +260,7 @@ export function HomePageManager({
         id: `why-card-${nextIndex}`,
         title: `Why Card ${nextIndex}`,
         text: "",
+        iconUrl: "",
         displayOrder: nextIndex,
         status: "ACTIVE",
       },
@@ -271,6 +273,38 @@ export function HomePageManager({
     if (!confirmed) return;
 
     setWhyCards((currentCards) => currentCards.filter((_, cardIndex) => cardIndex !== index));
+  }
+
+  async function handleWhyCardIconUpload(index: number, file?: File) {
+    if (!file) return;
+
+    setUploadStatus("Uploading Why Us card icon...");
+
+    const body = new FormData();
+    body.append("file", file);
+
+    const response = await fetch("/api/admin/upload", {
+      method: "POST",
+      body,
+    });
+
+    const data = (await response.json()) as { imageUrl?: string; error?: string };
+
+    if (!response.ok || !data.imageUrl) {
+      setUploadStatus(data.error ?? "Icon upload failed.");
+      return;
+    }
+
+    updateWhyCard(index, { iconUrl: data.imageUrl });
+    setUploadStatus("Why Us card icon uploaded.");
+  }
+
+  function clearWhyCardIcon(index: number) {
+    const card = whyCards[index];
+    const confirmed = window.confirm(`Remove the icon from ${card?.title ?? "this Why Us card"}? Save changes afterward to update the section.`);
+    if (!confirmed) return;
+
+    updateWhyCard(index, { iconUrl: "" });
   }
 
   async function handleCategoryCardUpload(index: number, file?: File) {
@@ -565,6 +599,34 @@ export function HomePageManager({
                 <div className="admin-home-why-card-list">
                   {whyCards.map((card, index) => (
                     <article className="admin-home-why-card-editor" key={`${card.id}-${index}`}>
+                      <div className="admin-home-why-card-icon">
+                        <div className="admin-home-why-card-icon-preview">
+                          {card.iconUrl ? (
+                            <Image src={card.iconUrl} alt={`${card.title} icon`} fill sizes="72px" className="object-contain" />
+                          ) : (
+                            <span className="admin-home-why-card-icon-empty">No icon</span>
+                          )}
+                        </div>
+                        <div className="admin-home-why-card-icon-controls">
+                          <div className="admin-upload-control">
+                            <label>
+                              Upload Icon
+                              <input
+                                type="file"
+                                accept="image/png,image/webp,image/gif,image/jpeg"
+                                onChange={(event) => {
+                                  void handleWhyCardIconUpload(index, event.currentTarget.files?.[0]);
+                                }}
+                              />
+                            </label>
+                            {card.iconUrl ? (
+                              <button type="button" className="admin-upload-delete" onClick={() => clearWhyCardIcon(index)}>
+                                Remove
+                              </button>
+                            ) : null}
+                          </div>
+                        </div>
+                      </div>
                       <label>
                         Card Title
                         <input value={card.title} onChange={(event) => updateWhyCard(index, { title: event.currentTarget.value })} />

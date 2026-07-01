@@ -117,6 +117,7 @@ export const homePageSectionSchema = z.object({
         id: z.string().min(1),
         title: z.string().min(2),
         text: z.string().min(2),
+        iconUrl: z.string().optional().nullable(),
         displayOrder: z.coerce.number().int().default(0),
         status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
       }),
