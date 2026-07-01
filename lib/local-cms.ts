@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -1294,18 +1294,40 @@ async function readRawCmsData(): Promise<{ parsed: Partial<CmsData>; from: "db" 
 }
 
 async function writeCmsData(data: CmsData) {
-  await prisma.cmsDocument.upsert({
-    where: { key: CMS_DOC_KEY },
-    create: { key: CMS_DOC_KEY, data: data as unknown as Prisma.InputJsonValue },
-    update: { data: data as unknown as Prisma.InputJsonValue },
-  });
+  try {
+    await prisma.cmsDocument.upsert({
+      where: { key: CMS_DOC_KEY },
+      create: { key: CMS_DOC_KEY, data: data as unknown as Prisma.InputJsonValue },
+      update: { data: data as unknown as Prisma.InputJsonValue },
+    });
+    return;
+  } catch (dbError) {
+    // Database unreachable (e.g. local dev or an environment where DATABASE_URL
+    // is not yet configured). Fall back to the bundled JSON file so edits still
+    // persist wherever the filesystem is writable — the read path also prefers
+    // this file when the database is unavailable.
+    try {
+      await writeFile(cmsPath, JSON.stringify(data, null, 2), "utf8");
+      return;
+    } catch {
+      // No database AND a read-only filesystem: nothing can persist. Surface the
+      // original database error so the caller reports the failed save.
+      throw dbError;
+    }
+  }
 }
 
-// Best-effort persistence used by read paths to seed the database once. A
-// failure here must not discard the data we already hold in memory.
+// Best-effort DB seeding used by read paths on first boot. This intentionally
+// only targets the database (never the file) so that reads don't rewrite
+// data/cms.json on every request when no database is configured. A failure here
+// must not discard the data we already hold in memory.
 async function persistCmsDataQuietly(data: CmsData) {
   try {
-    await writeCmsData(data);
+    await prisma.cmsDocument.upsert({
+      where: { key: CMS_DOC_KEY },
+      create: { key: CMS_DOC_KEY, data: data as unknown as Prisma.InputJsonValue },
+      update: { data: data as unknown as Prisma.InputJsonValue },
+    });
   } catch {
     // Database not yet reachable (e.g. local dev without DATABASE_URL).
   }

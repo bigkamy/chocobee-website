@@ -636,6 +636,47 @@ img {
   transform: translateY(-0.05rem);
 }
 
+.admin-publish-toast {
+  position: fixed;
+  top: 1.25rem;
+  left: 50%;
+  z-index: 1000;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  background: linear-gradient(180deg, #22a06b 0%, #157a4f 100%);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  box-shadow: 0 0.75rem 1.75rem rgba(21, 122, 79, 0.35);
+  transform: translateX(-50%);
+  animation: admin-publish-toast-in 0.28s ease;
+}
+
+.admin-publish-toast-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+  font-size: 0.8rem;
+}
+
+@keyframes admin-publish-toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
 .admin-metrics-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

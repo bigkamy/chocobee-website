@@ -78,6 +78,12 @@ export function HomePageManager({
   const [categoryCards, setCategoryCards] = useState<HomeCategoryCard[]>([]);
   const [whyCards, setWhyCards] = useState<HomeWhyCard[]>([]);
   const [message, setMessage] = useState("");
+  const [publishedToast, setPublishedToast] = useState(false);
+
+  function showPublishedToast() {
+    setPublishedToast(true);
+    window.setTimeout(() => setPublishedToast(false), 3200);
+  }
 
   async function loadSections() {
     const response = await fetch("/api/admin/home-page", { cache: "no-store" });
@@ -147,6 +153,7 @@ export function HomePageManager({
     }
 
     setMessage("Home page section updated.");
+    showPublishedToast();
     cancelEditing();
     await loadSections();
   }
@@ -360,13 +367,26 @@ export function HomePageManager({
 
   return (
     <main className="admin-page">
+      {publishedToast ? (
+        <div className="admin-publish-toast" role="status" aria-live="polite">
+          <span className="admin-publish-toast-icon" aria-hidden="true">✓</span>
+          Update Published Successfully!
+        </div>
+      ) : null}
       <header className="admin-page-header">
         <div>
           <p>Home Page</p>
         </div>
         <div className="admin-header-actions">
-          <button type="button" className="admin-publish-button" onClick={() => void loadSections()}>
-            Refresh Sections
+          <button
+            type="button"
+            className="admin-publish-button"
+            onClick={async () => {
+              await loadSections();
+              showPublishedToast();
+            }}
+          >
+            Publish
           </button>
           <Link href="/" className="admin-outline-button">
             View Home Page
@@ -506,9 +526,14 @@ export function HomePageManager({
               <section className="admin-home-category-cards" aria-label="Our Categories cards">
                 <div className="admin-home-section-editor-heading">
                   <h3>Our Categories Image Cards</h3>
-                  <button type="button" className="admin-secondary-button" onClick={addCategoryCard}>
-                    Add Card
-                  </button>
+                  <div className="admin-header-actions">
+                    <button type="button" className="admin-secondary-button" onClick={addCategoryCard}>
+                      Add Card
+                    </button>
+                    <button type="submit" className="admin-publish-button">
+                      Publish
+                    </button>
+                  </div>
                 </div>
                 <div className="admin-home-category-card-list">
                   {categoryCards.map((card, index) => (
