@@ -151,9 +151,6 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
           <button type="button" className="admin-publish-button" onClick={() => void publishCategories()}>
             Publish Categories
           </button>
-          <a href="/gallery" className="admin-outline-button">
-            View Gallery
-          </a>
         </div>
       </header>
 

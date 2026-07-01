@@ -340,9 +340,6 @@ export function GalleryManager({
           <button type="button" className="admin-publish-button" onClick={() => void publishGallery()}>
             Publish Gallery
           </button>
-          <a href="/gallery" className="admin-outline-button">
-            View Website Gallery
-          </a>
         </div>
       </header>
 

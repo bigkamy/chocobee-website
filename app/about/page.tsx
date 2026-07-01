@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Breadcrumb } from "../Breadcrumb";
@@ -121,6 +122,71 @@ function TeamSection({ section }: { section: CmsAboutPageSection }) {
   );
 }
 
+const featureIconProps = {
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.9,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+  className: "h-5 w-5",
+  "aria-hidden": true,
+};
+
+const featureIcons: Record<string, ReactNode> = {
+  // Custom Designs — brush / palette
+  "custom-designs": (
+    <svg {...featureIconProps}>
+      <path d="M4 20c0-2 1.5-3 3-3s3 1 3 3-1.5 2-3 2-3-1-3-2Z" />
+      <path d="M9.5 15 20 4.5a1.8 1.8 0 0 0-2.5-2.5L7 12.5" />
+    </svg>
+  ),
+  // Premium Ingredients — leaf
+  "premium-ingredients": (
+    <svg {...featureIconProps}>
+      <path d="M4 20c8 1 15-4 16-16C8 3 3 10 4 20Z" />
+      <path d="M4 20C7 14 11 11 16 9" />
+    </svg>
+  ),
+  // Timely Delivery — clock
+  "timely-delivery": (
+    <svg {...featureIconProps}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" />
+    </svg>
+  ),
+  // Customer Satisfaction — heart
+  "customer-satisfaction": (
+    <svg {...featureIconProps}>
+      <path d="M12 20s-7-4.35-7-9a4 4 0 0 1 7-2.65A4 4 0 0 1 19 11c0 4.65-7 9-7 9Z" />
+    </svg>
+  ),
+  // Creative Concepts — lightbulb
+  "creative-concepts": (
+    <svg {...featureIconProps}>
+      <path d="M9 18h6" />
+      <path d="M10 21h4" />
+      <path d="M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.3 1 2.1h5c0-.8.4-1.6 1-2.1A6 6 0 0 0 12 3Z" />
+    </svg>
+  ),
+  // Hygiene & Quality — shield check
+  "hygiene-quality": (
+    <svg {...featureIconProps}>
+      <path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  ),
+};
+
+function FeatureIcon({ title }: { title: string }) {
+  const key = title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return featureIcons[key] ?? <CheckIcon />;
+}
+
 function FeaturesSection({ section }: { section: CmsAboutPageSection }) {
   const features = orderedActiveItems(section.items);
 
@@ -132,7 +198,7 @@ function FeaturesSection({ section }: { section: CmsAboutPageSection }) {
           {features.map((feature) => (
             <article key={feature.id} className="flex items-center gap-4 rounded-2xl border border-white/75 bg-white/75 p-5 shadow-[0_16px_38px_rgba(93,64,55,0.08)] transition hover:-translate-y-1">
               <span className="inline-grid h-12 w-12 flex-none place-items-center rounded-2xl bg-[#be1919] text-white">
-                <CheckIcon />
+                <FeatureIcon title={feature.title} />
               </span>
               <h3 className="text-base font-extrabold text-[#5d4037]">{feature.title}</h3>
             </article>

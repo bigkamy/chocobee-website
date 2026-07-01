@@ -2362,6 +2362,28 @@ img {
   gap: 0.75rem;
 }
 
+.admin-about-form-grid--stack {
+  grid-template-columns: 1fr;
+}
+
+.admin-about-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.admin-about-stat-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .admin-about-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .admin-about-editor label {
   color: #6b7280;
   font-size: 0.78rem;
@@ -2418,7 +2440,14 @@ img {
 
 .admin-about-item-list {
   display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .admin-about-item-list {
+    grid-template-columns: 1fr;
+  }
 }
 
 .admin-about-item-card {
@@ -2481,27 +2510,11 @@ img {
   text-align: center;
 }
 
-.admin-about-item-preview-row strong,
-.admin-about-item-preview-row span {
-  display: block;
-}
-
-.admin-about-item-preview-row strong {
-  color: #202124;
-  font-size: 0.9rem;
-}
-
-.admin-about-item-preview-row span {
-  margin-top: 0.15rem;
-  color: #6b7280;
-  font-size: 0.76rem;
-}
-
 .admin-about-save-row {
   position: sticky;
   bottom: 1rem;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   border: 1px solid #e5e7eb;
   border-radius: 0.8rem;
   background: rgba(255, 255, 255, 0.92);

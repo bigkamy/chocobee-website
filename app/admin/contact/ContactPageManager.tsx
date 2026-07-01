@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import type { CmsContactPageSection, CmsContactSectionItem, CmsContactSectionType } from "@/lib/local-cms";
 import { EditIcon, TrashIcon } from "../ActionIcons";
@@ -59,6 +58,12 @@ export function ContactPageManager({ initialSections }: { initialSections: CmsCo
   const [editing, setEditing] = useState<CmsContactPageSection | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [message, setMessage] = useState("");
+  const [publishedToast, setPublishedToast] = useState(false);
+
+  function showPublishedToast() {
+    setPublishedToast(true);
+    window.setTimeout(() => setPublishedToast(false), 3200);
+  }
 
   const stats = useMemo(
     () => ({
@@ -159,20 +164,27 @@ export function ContactPageManager({ initialSections }: { initialSections: CmsCo
 
   return (
     <main className="admin-page admin-contact-page">
+      {publishedToast ? (
+        <div className="admin-publish-toast" role="status" aria-live="polite">
+          <span className="admin-publish-toast-icon" aria-hidden="true">✓</span>
+          Update Published Successfully!
+        </div>
+      ) : null}
       <header className="admin-page-header admin-contact-header">
         <div>
           <p>Contact Page</p>
         </div>
         <div className="admin-header-actions">
-          <button type="button" className="admin-publish-button admin-contact-small-button" onClick={startAdding}>
-            Add Section
+          <button
+            type="button"
+            className="admin-publish-button admin-contact-small-button"
+            onClick={async () => {
+              await loadSections();
+              showPublishedToast();
+            }}
+          >
+            Publish
           </button>
-          <button type="button" className="admin-outline-button admin-contact-small-button" onClick={() => void loadSections()}>
-            Refresh
-          </button>
-          <Link href="/contact" className="admin-outline-button admin-contact-small-button">
-            View Contact Page
-          </Link>
         </div>
       </header>
 

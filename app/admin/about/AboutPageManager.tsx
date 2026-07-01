@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { FormEvent, useMemo, useState } from "react";
 import type { CmsAboutPageSection, CmsAboutSectionItem, CmsAboutSectionType } from "@/lib/local-cms";
 import { EditIcon, TrashIcon } from "../ActionIcons";
@@ -18,53 +17,6 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
-function blankSection(order: number): CmsAboutPageSection {
-  return {
-    id: `about-section-${order}`,
-    sectionKey: `about-section-${order}`,
-    sectionType: "content",
-    label: `About Section ${order}`,
-    eyebrow: "",
-    title: `About Section ${order}`,
-    subtitle: "",
-    content: "",
-    imageUrl: "",
-    imageAlt: "",
-    ctaLabel: "",
-    ctaHref: "",
-    secondaryCtaLabel: "",
-    secondaryCtaHref: "",
-    displayOrder: order,
-    status: "ACTIVE",
-    updatedAt: new Date().toISOString(),
-    items: [],
-  };
-}
-
-function blankItem(order: number, sectionType: CmsAboutSectionType): CmsAboutSectionItem {
-  const labelMap: Record<CmsAboutSectionType, string> = {
-    story: "Slider Image",
-    chef: "Stat",
-    team: "Team Member",
-    features: "Feature",
-    cta: "CTA Item",
-    content: "Content Item",
-  };
-
-  return {
-    id: `${sectionType}-item-${order}`,
-    label: labelMap[sectionType],
-    title: sectionType === "chef" ? "100+" : sectionType === "features" ? "New Feature" : `Item ${order}`,
-    subtitle: sectionType === "chef" ? "Metric Label" : "",
-    content: "",
-    imageUrl: "",
-    imageAlt: "",
-    href: "",
-    displayOrder: order,
-    status: "ACTIVE",
-  };
-}
-
 function usesSectionImage(sectionType: CmsAboutSectionType) {
   return sectionType === "chef" || sectionType === "content";
 }
@@ -75,6 +27,12 @@ export function AboutPageManager({ initialSections }: { initialSections: CmsAbou
   const [isNew, setIsNew] = useState(false);
   const [message, setMessage] = useState("");
   const [uploadStatus, setUploadStatus] = useState("");
+  const [publishedToast, setPublishedToast] = useState(false);
+
+  function showPublishedToast() {
+    setPublishedToast(true);
+    window.setTimeout(() => setPublishedToast(false), 3200);
+  }
 
   const stats = useMemo(
     () => ({
@@ -94,13 +52,6 @@ export function AboutPageManager({ initialSections }: { initialSections: CmsAbou
   function startEditing(section: CmsAboutPageSection) {
     setEditing({ ...section, items: section.items.map((item) => ({ ...item })) });
     setIsNew(false);
-    setMessage("");
-    setUploadStatus("");
-  }
-
-  function startAdding() {
-    setEditing(blankSection(sections.length + 1));
-    setIsNew(true);
     setMessage("");
     setUploadStatus("");
   }
@@ -125,10 +76,21 @@ export function AboutPageManager({ initialSections }: { initialSections: CmsAbou
     });
   }
 
-  function addItem() {
+  function addItem(label: string) {
     setEditing((current) => {
       if (!current) return current;
-      return { ...current, items: [...current.items, blankItem(current.items.length + 1, current.sectionType)] };
+      const order = current.items.length + 1;
+      const newItem: CmsAboutSectionItem = {
+        id: `about-item-${order}-${current.items.length}`,
+        label,
+        title: "",
+        subtitle: "",
+        imageUrl: "",
+        imageAlt: "",
+        displayOrder: order,
+        status: "ACTIVE",
+      };
+      return { ...current, items: [...current.items, newItem] };
     });
   }
 
@@ -206,20 +168,27 @@ export function AboutPageManager({ initialSections }: { initialSections: CmsAbou
 
   return (
     <main className="admin-page admin-about-page">
+      {publishedToast ? (
+        <div className="admin-publish-toast" role="status" aria-live="polite">
+          <span className="admin-publish-toast-icon" aria-hidden="true">✓</span>
+          Update Published Successfully!
+        </div>
+      ) : null}
       <header className="admin-page-header admin-about-header">
         <div>
           <p>About Page</p>
         </div>
         <div className="admin-header-actions">
-          <button type="button" className="admin-publish-button admin-about-small-button" onClick={startAdding}>
-            Add Section
+          <button
+            type="button"
+            className="admin-publish-button admin-about-small-button"
+            onClick={async () => {
+              await loadSections();
+              showPublishedToast();
+            }}
+          >
+            Publish
           </button>
-          <button type="button" className="admin-outline-button admin-about-small-button" onClick={() => void loadSections()}>
-            Refresh
-          </button>
-          <Link href="/about" className="admin-outline-button admin-about-small-button">
-            View About Page
-          </Link>
         </div>
       </header>
 
@@ -245,9 +214,6 @@ export function AboutPageManager({ initialSections }: { initialSections: CmsAbou
       <section className="admin-table-card admin-about-sections-card">
         <div>
           <h2>All About Page Sections</h2>
-          <button type="button" onClick={startAdding}>
-            Add New
-          </button>
         </div>
         {message ? <p className="admin-muted" role="status">{message}</p> : null}
         <table>
@@ -297,9 +263,6 @@ export function AboutPageManager({ initialSections }: { initialSections: CmsAbou
                 <span>{isNew ? "New Section" : "Editing Section"}</span>
                 <h2>{editing.label} <code className="admin-section-id">#{editing.sectionKey}</code></h2>
               </div>
-              <button type="button" className="admin-secondary-button" onClick={() => setEditing(null)}>
-                Cancel
-              </button>
             </div>
 
             <div className="admin-about-form-grid">
@@ -335,21 +298,19 @@ export function AboutPageManager({ initialSections }: { initialSections: CmsAbou
               </label>
             </div>
 
-            <label>
-              Content
-              <textarea value={editing.content ?? ""} onChange={(event) => updateEditing({ content: event.currentTarget.value })} />
-            </label>
+            {editing.sectionType !== "features" ? (
+              <label>
+                Content
+                <textarea value={editing.content ?? ""} onChange={(event) => updateEditing({ content: event.currentTarget.value })} />
+              </label>
+            ) : null}
 
             {usesSectionImage(editing.sectionType) ? (
               <div className="admin-about-media-grid">
                 <div className="admin-gallery-preview admin-about-image-preview">
                   {editing.imageUrl ? <Image src={editing.imageUrl} alt={editing.imageAlt || editing.title} fill sizes="320px" className="object-cover" /> : null}
                 </div>
-                <div className="admin-about-form-grid">
-                  <label>
-                    Section Image URL
-                    <input value={editing.imageUrl ?? ""} onChange={(event) => updateEditing({ imageUrl: event.currentTarget.value })} />
-                  </label>
+                <div className="admin-about-form-grid admin-about-form-grid--stack">
                   <label>
                     Image Alt Text
                     <input value={editing.imageAlt ?? ""} onChange={(event) => updateEditing({ imageAlt: event.currentTarget.value })} />
@@ -359,135 +320,92 @@ export function AboutPageManager({ initialSections }: { initialSections: CmsAbou
                       Upload / Replace Image
                       <input type="file" accept="image/*" onChange={(event) => void uploadImage("section", undefined, event.currentTarget.files?.[0])} />
                     </label>
-                    <button type="button" className="admin-upload-delete" onClick={() => updateEditing({ imageUrl: "" })}>
-                      Remove
-                    </button>
                   </div>
                   {uploadStatus ? <p className="admin-upload-status">{uploadStatus}</p> : null}
                 </div>
               </div>
-            ) : (
-              <p className="admin-about-control-note">
-                This section uses Nested Content below for its images and content cards.
-              </p>
-            )}
+            ) : null}
 
-            <div className="admin-about-form-grid">
-              <label>
-                CTA Label
-                <input value={editing.ctaLabel ?? ""} onChange={(event) => updateEditing({ ctaLabel: event.currentTarget.value })} />
-              </label>
-              <label>
-                CTA Link
-                <input value={editing.ctaHref ?? ""} onChange={(event) => updateEditing({ ctaHref: event.currentTarget.value })} />
-              </label>
-              <label>
-                Secondary CTA Label
-                <input value={editing.secondaryCtaLabel ?? ""} onChange={(event) => updateEditing({ secondaryCtaLabel: event.currentTarget.value })} />
-              </label>
-              <label>
-                Secondary CTA Link
-                <input value={editing.secondaryCtaHref ?? ""} onChange={(event) => updateEditing({ secondaryCtaHref: event.currentTarget.value })} />
-              </label>
-              <label>
-                Display Order
-                <input type="number" value={editing.displayOrder} onChange={(event) => updateEditing({ displayOrder: Number(event.currentTarget.value) })} />
-              </label>
-              <label>
-                Status
-                <select value={editing.status} onChange={(event) => updateEditing({ status: event.currentTarget.value as SectionStatus })}>
-                  <option value="ACTIVE">Show Section</option>
-                  <option value="INACTIVE">Hide Section</option>
-                </select>
-              </label>
-            </div>
-
-            <section className="admin-about-items-panel">
-              <div className="admin-about-editor-heading">
-                <div>
-                  <span>Nested Content</span>
-                  <h2>Items inside this section</h2>
+            {editing.sectionType === "chef" ? (
+              <section className="admin-about-items-panel">
+                <div className="admin-about-editor-heading">
+                  <div>
+                    <h2>Stats</h2>
+                    <p>Update the numbers and labels shown on the About page.</p>
+                  </div>
                 </div>
-                <button type="button" className="admin-secondary-button" onClick={addItem}>
-                  Add Item
-                </button>
-              </div>
-              <div className="admin-about-item-list">
-                {editing.items.map((item, index) => (
-                  <article className="admin-about-item-card" key={`${item.id}-${index}`}>
-                    <div className="admin-about-item-card-header">
-                      <strong>{item.label}</strong>
-                      <button type="button" className="admin-action-icon" onClick={() => deleteItem(index)} aria-label={`Delete ${item.label}`} title="Delete">
-                        <TrashIcon />
-                      </button>
-                    </div>
-                    <div className="admin-about-item-preview-row">
-                      <div className="admin-about-item-thumb">
-                        {item.imageUrl ? (
-                          <Image src={item.imageUrl} alt={item.imageAlt || item.title} fill sizes="96px" className="object-cover" />
-                        ) : (
-                          <span>No image</span>
-                        )}
-                      </div>
-                      <div>
-                        <strong>{item.title || "Untitled item"}</strong>
-                        <span>{item.imageUrl ? "Thumbnail preview" : "Add an image URL or upload an image"}</span>
-                      </div>
-                    </div>
-                    <div className="admin-about-form-grid">
+                <div className="admin-about-stats-grid">
+                  {editing.items.map((item, index) => (
+                    <div className="admin-about-stat-field" key={`${item.id}-${index}`}>
                       <label>
-                        Item Label
-                        <input value={item.label} onChange={(event) => updateItem(index, { label: event.currentTarget.value })} />
-                      </label>
-                      <label>
-                        Title / Value
+                        Number
                         <input value={item.title} onChange={(event) => updateItem(index, { title: event.currentTarget.value })} />
                       </label>
                       <label>
-                        Subtitle / Role
+                        Label
                         <input value={item.subtitle ?? ""} onChange={(event) => updateItem(index, { subtitle: event.currentTarget.value })} />
                       </label>
-                      <label>
-                        Link
-                        <input value={item.href ?? ""} onChange={(event) => updateItem(index, { href: event.currentTarget.value })} />
-                      </label>
-                      <label>
-                        Image URL
-                        <input value={item.imageUrl ?? ""} onChange={(event) => updateItem(index, { imageUrl: event.currentTarget.value })} />
-                      </label>
-                      <label>
-                        Image Alt
-                        <input value={item.imageAlt ?? ""} onChange={(event) => updateItem(index, { imageAlt: event.currentTarget.value })} />
-                      </label>
-                      <label>
-                        Display Order
-                        <input type="number" value={item.displayOrder} onChange={(event) => updateItem(index, { displayOrder: Number(event.currentTarget.value) })} />
-                      </label>
-                      <label>
-                        Status
-                        <select value={item.status} onChange={(event) => updateItem(index, { status: event.currentTarget.value as SectionStatus })}>
-                          <option value="ACTIVE">Show Item</option>
-                          <option value="INACTIVE">Hide Item</option>
-                        </select>
-                      </label>
                     </div>
-                    <label>
-                      Item Content
-                      <textarea value={item.content ?? ""} onChange={(event) => updateItem(index, { content: event.currentTarget.value })} />
-                    </label>
-                    <div className="admin-upload-control">
-                      <label>
-                        Upload Item Image
-                        <input type="file" accept="image/*" onChange={(event) => void uploadImage("item", index, event.currentTarget.files?.[0])} />
-                      </label>
-                      <button type="button" className="admin-upload-delete" onClick={() => updateItem(index, { imageUrl: "" })}>
-                        Remove
-                      </button>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </section>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {editing.sectionType === "team" ? (
+              <section className="admin-about-items-panel">
+                <div className="admin-about-editor-heading">
+                  <div>
+                    <h2>Team Members</h2>
+                    <p>Add, edit, or remove the people shown on the About page.</p>
+                  </div>
+                  <button type="button" className="admin-secondary-button" onClick={() => addItem("Team Member")}>
+                    Add Member
+                  </button>
+                </div>
+                <div className="admin-about-item-list">
+                  {editing.items.map((item, index) => (
+                    <article className="admin-about-item-card" key={`${item.id}-${index}`}>
+                      <div className="admin-about-item-card-header">
+                        <strong>{item.title || "New member"}</strong>
+                        <button type="button" className="admin-action-icon" onClick={() => deleteItem(index)} aria-label={`Delete ${item.title || "member"}`} title="Delete">
+                          <TrashIcon />
+                        </button>
+                      </div>
+                      <div className="admin-about-item-preview-row">
+                        <div className="admin-about-item-thumb">
+                          {item.imageUrl ? (
+                            <Image src={item.imageUrl} alt={item.imageAlt || item.title} fill sizes="96px" className="object-cover" />
+                          ) : (
+                            <span>No image</span>
+                          )}
+                        </div>
+                        <div className="admin-upload-control">
+                          <label>
+                            Upload / Replace Image
+                            <input type="file" accept="image/*" onChange={(event) => void uploadImage("item", index, event.currentTarget.files?.[0])} />
+                          </label>
+                        </div>
+                      </div>
+                      <div className="admin-about-form-grid admin-about-form-grid--stack">
+                        <label>
+                          Name
+                          <input value={item.title} onChange={(event) => updateItem(index, { title: event.currentTarget.value })} />
+                        </label>
+                        <label>
+                          Role
+                          <input value={item.subtitle ?? ""} onChange={(event) => updateItem(index, { subtitle: event.currentTarget.value })} />
+                        </label>
+                        <label>
+                          Image Alt Text
+                          <input value={item.imageAlt ?? ""} onChange={(event) => updateItem(index, { imageAlt: event.currentTarget.value })} />
+                        </label>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+                {uploadStatus ? <p className="admin-upload-status">{uploadStatus}</p> : null}
+              </section>
+            ) : null}
 
             <div className="admin-about-save-row">
               <button type="submit">{isNew ? "Create Section" : "Save Section"}</button>

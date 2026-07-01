@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { FormEvent, useState } from "react";
 import type { CmsFooterLink, CmsFooterSettings, CmsFooterSocialLink } from "@/lib/local-cms";
 
@@ -37,8 +36,7 @@ function nextLink(group: CmsFooterLink[], label: string): CmsFooterLink {
 
 export function FooterManager({ initialSettings }: { initialSettings: CmsFooterSettings }) {
   const [settings, setSettings] = useState(initialSettings);
-  const [savedSettings, setSavedSettings] = useState(initialSettings);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState("");
   const [uploadStatus, setUploadStatus] = useState("");
@@ -128,17 +126,8 @@ export function FooterManager({ initialSettings }: { initialSettings: CmsFooterS
     }
 
     setSettings(data.item);
-    setSavedSettings(data.item);
-    setIsEditing(false);
-    setMessage("Footer updated successfully.");
+    setMessage("Footer published successfully.");
     window.setTimeout(() => setMessage(""), 2600);
-  }
-
-  function cancelEditing() {
-    setSettings(savedSettings);
-    setIsEditing(false);
-    setMessage("");
-    setUploadStatus("");
   }
 
   function clearIdentityInfo() {
@@ -166,23 +155,9 @@ export function FooterManager({ initialSettings }: { initialSettings: CmsFooterS
           <span>Last updated {formatDate(settings.updatedAt)}</span>
         </div>
         <div className="admin-header-actions">
-          <span className="admin-footer-mode-pill" data-editing={isEditing}>
-            {isEditing ? "Editing mode" : "View only"}
-          </span>
-          <Link href="/" className="admin-outline-button">
-            View Website
-          </Link>
-          {isEditing ? (
-            <button type="button" className="admin-outline-button admin-footer-compact-button" onClick={cancelEditing}>
-              <XIcon />
-              Cancel
-            </button>
-          ) : (
-            <button type="button" className="admin-publish-button admin-footer-compact-button" onClick={() => setIsEditing(true)}>
-              <EditIcon />
-              Edit Footer
-            </button>
-          )}
+          <button type="submit" form="footer-form" className="admin-publish-button admin-footer-compact-button" disabled={isSaving}>
+            {isSaving ? "Publishing..." : "Publish"}
+          </button>
         </div>
       </header>
 
@@ -205,7 +180,7 @@ export function FooterManager({ initialSettings }: { initialSettings: CmsFooterS
         </article>
       </section>
 
-      <form onSubmit={handleSubmit} className="admin-footer-form">
+      <form id="footer-form" onSubmit={handleSubmit} className="admin-footer-form">
         {message ? <p className="admin-footer-toast" role="status">{message}</p> : null}
 
         <section className="admin-resource-card admin-footer-panel admin-footer-identity-panel">
@@ -552,14 +527,6 @@ function TrashIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
       <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3" />
-    </svg>
-  );
-}
-
-function XIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="m6 6 12 12M18 6 6 18" />
     </svg>
   );
 }
