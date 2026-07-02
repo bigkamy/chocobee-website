@@ -1,7 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { EditIcon, TrashIcon } from "../ActionIcons";
+import { EditIcon, GripIcon, TrashIcon } from "../ActionIcons";
 
 type Category = {
   id: string;
@@ -34,6 +34,8 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
   const [editing, setEditing] = useState<Category | null>(null);
   const [subcategoryCtas, setSubcategoryCtas] = useState<SubcategoryCta[]>([]);
   const [message, setMessage] = useState("");
+  const [categoryDrag, setCategoryDrag] = useState<{ from: number | null; over: number | null }>({ from: null, over: null });
+  const [subcategoryDrag, setSubcategoryDrag] = useState<{ from: number | null; over: number | null }>({ from: null, over: null });
 
   async function loadCategories() {
     const response = await fetch("/api/admin/categories", { cache: "no-store" });
@@ -51,7 +53,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
       name,
       slug,
       description: String(form.get("description") ?? ""),
-      subcategoryCtas,
+      subcategoryCtas: subcategoryCtas.map((cta, index) => ({ ...cta, displayOrder: index + 1 })),
       displayOrder: Number(form.get("displayOrder") ?? 0),
       status: String(form.get("status") ?? "ACTIVE") as Category["status"],
     };
@@ -121,7 +123,49 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
   }
 
   function deleteSubcategoryCta(index: number) {
-    setSubcategoryCtas((current) => current.filter((_, ctaIndex) => ctaIndex !== index));
+    setSubcategoryCtas((current) =>
+      current
+        .filter((_, ctaIndex) => ctaIndex !== index)
+        .map((cta, ctaIndex) => ({ ...cta, displayOrder: ctaIndex + 1 })),
+    );
+  }
+
+  function reorderSubcategoryCtas(from: number, to: number) {
+    setSubcategoryCtas((current) => {
+      if (from === to || from < 0 || to < 0 || from >= current.length || to >= current.length) return current;
+      const next = [...current];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next.map((cta, ctaIndex) => ({ ...cta, displayOrder: ctaIndex + 1 }));
+    });
+  }
+
+  async function reorderCategories(from: number, to: number) {
+    if (from === to || from < 0 || to < 0 || from >= categories.length || to >= categories.length) return;
+
+    const ordered = [...categories];
+    const [moved] = ordered.splice(from, 1);
+    ordered.splice(to, 0, moved);
+    const renumbered = ordered.map((category, categoryIndex) => ({ ...category, displayOrder: categoryIndex + 1 }));
+    const changed = renumbered.filter((category) => {
+      const previous = categories.find((item) => item.id === category.id);
+      return !previous || previous.displayOrder !== category.displayOrder;
+    });
+
+    setCategories(renumbered);
+
+    await Promise.all(
+      changed.map((category) =>
+        fetch(`/api/admin/categories/${category.id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ displayOrder: category.displayOrder }),
+        }),
+      ),
+    );
+
+    setMessage("Category order updated.");
+    await loadCategories();
   }
 
   async function deleteCategory(id: string) {
@@ -155,8 +199,9 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
       </header>
 
       <section className="admin-categories-layout">
-        <form onSubmit={handleSubmit} className="admin-resource-card admin-category-form admin-categories-form" key={editing?.id ?? "new-category"}>
-          <h2>{editing ? "Edit Category" : "Add Category"}</h2>
+        <div className="admin-categories-form-wrap">
+          <h2 className="admin-categories-form-title">{editing ? "Edit Category" : "Add Category"}</h2>
+          <form onSubmit={handleSubmit} className="admin-resource-card admin-category-form admin-categories-form" key={editing?.id ?? "new-category"}>
           <label>
             Category Name
             <input name="name" defaultValue={editing?.name} placeholder="Birthday Cakes" required />
@@ -164,10 +209,6 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
           <label>
             Slug
             <input name="slug" defaultValue={editing?.slug} placeholder="birthday-cakes" required />
-          </label>
-          <label>
-            Description
-            <textarea name="description" defaultValue={editing?.description ?? ""} placeholder="Short SEO-friendly category description" />
           </label>
           <label>
             Display Order
@@ -180,6 +221,10 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
               <option value="INACTIVE">Inactive</option>
             </select>
           </label>
+          <label className="admin-category-description">
+            Description
+            <textarea name="description" defaultValue={editing?.description ?? ""} placeholder="Short SEO-friendly category description" />
+          </label>
           <div className="admin-category-subcategory-panel">
             <div>
               <h3>Subcategory CTA</h3>
@@ -188,32 +233,55 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
               </button>
             </div>
             {subcategoryCtas.length ? (
-              <div className="admin-category-subcategory-list">
+              <div className="admin-subcategory-grid" role="table">
+                <div className="admin-subcategory-grid-head" role="row">
+                  <span role="columnheader" aria-label="Reorder" />
+                  <span role="columnheader">Label</span>
+                  <span role="columnheader">Link</span>
+                  <span role="columnheader">Status</span>
+                  <span role="columnheader" aria-label="Delete" />
+                </div>
                 {subcategoryCtas.map((cta, index) => (
-                  <article key={`${cta.id}-${index}`}>
-                    <label>
-                      Label
-                      <input value={cta.label} onChange={(event) => updateSubcategoryCta(index, { label: event.currentTarget.value })} />
-                    </label>
-                    <label>
-                      Link
-                      <input value={cta.href} onChange={(event) => updateSubcategoryCta(index, { href: event.currentTarget.value })} />
-                    </label>
-                    <label>
-                      Order
-                      <input type="number" value={cta.displayOrder} onChange={(event) => updateSubcategoryCta(index, { displayOrder: Number(event.currentTarget.value) })} />
-                    </label>
-                    <label>
-                      Status
-                      <select value={cta.status} onChange={(event) => updateSubcategoryCta(index, { status: event.currentTarget.value as SubcategoryCta["status"] })}>
-                        <option value="ACTIVE">Active</option>
-                        <option value="INACTIVE">Inactive</option>
-                      </select>
-                    </label>
-                    <button type="button" className="admin-action-icon" onClick={() => deleteSubcategoryCta(index)} aria-label="Delete subcategory CTA" title="Delete">
+                  <div
+                    className={`admin-subcategory-grid-row${subcategoryDrag.from === index ? " is-dragging" : ""}${subcategoryDrag.over === index && subcategoryDrag.from !== index ? " is-drag-over" : ""}`}
+                    role="row"
+                    key={`${cta.id}-${index}`}
+                    onDragOver={(event) => {
+                      if (subcategoryDrag.from === null) return;
+                      event.preventDefault();
+                      setSubcategoryDrag((current) => (current.over === index ? current : { ...current, over: index }));
+                    }}
+                    onDrop={(event) => {
+                      event.preventDefault();
+                      if (subcategoryDrag.from !== null) reorderSubcategoryCtas(subcategoryDrag.from, index);
+                      setSubcategoryDrag({ from: null, over: null });
+                    }}
+                  >
+                    <span
+                      className="admin-drag-handle"
+                      role="button"
+                      tabIndex={0}
+                      draggable
+                      aria-label="Drag to reorder"
+                      title="Drag to reorder"
+                      onDragStart={(event) => {
+                        event.dataTransfer.effectAllowed = "move";
+                        setSubcategoryDrag({ from: index, over: index });
+                      }}
+                      onDragEnd={() => setSubcategoryDrag({ from: null, over: null })}
+                    >
+                      <GripIcon />
+                    </span>
+                    <input aria-label="Label" value={cta.label} onChange={(event) => updateSubcategoryCta(index, { label: event.currentTarget.value })} />
+                    <input aria-label="Link" value={cta.href} onChange={(event) => updateSubcategoryCta(index, { href: event.currentTarget.value })} />
+                    <select aria-label="Status" value={cta.status} onChange={(event) => updateSubcategoryCta(index, { status: event.currentTarget.value as SubcategoryCta["status"] })}>
+                      <option value="ACTIVE">Active</option>
+                      <option value="INACTIVE">Inactive</option>
+                    </select>
+                    <button type="button" className="admin-action-icon admin-subcategory-delete" onClick={() => deleteSubcategoryCta(index)} aria-label="Delete subcategory CTA" title="Delete">
                       <TrashIcon />
                     </button>
-                  </article>
+                  </div>
                 ))}
               </div>
             ) : (
@@ -227,7 +295,8 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
             </button>
           ) : null}
           {message ? <p role="status">{message}</p> : null}
-        </form>
+          </form>
+        </div>
 
         <section className="admin-table-card admin-categories-table">
           <div>
@@ -239,33 +308,64 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
         <table>
           <thead>
             <tr>
+              <th aria-label="Reorder" className="admin-category-drag-col" />
               <th>Name</th>
               <th>Slug</th>
               <th>Description</th>
               <th>Sub CTAs</th>
-              <th>Order</th>
               <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {categories.map((category) => (
-              <tr key={category.id} className={editing?.id === category.id ? "admin-category-selected-row" : undefined}>
+            {categories.map((category, index) => (
+              <tr
+                key={category.id}
+                className={`${editing?.id === category.id ? "admin-category-selected-row" : ""}${categoryDrag.from === index ? " is-dragging" : ""}${categoryDrag.over === index && categoryDrag.from !== index ? " is-drag-over" : ""}`.trim() || undefined}
+                onDragOver={(event) => {
+                  if (categoryDrag.from === null) return;
+                  event.preventDefault();
+                  setCategoryDrag((current) => (current.over === index ? current : { ...current, over: index }));
+                }}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  if (categoryDrag.from !== null) void reorderCategories(categoryDrag.from, index);
+                  setCategoryDrag({ from: null, over: null });
+                }}
+              >
+                <td className="admin-category-drag-col">
+                  <span
+                    className="admin-drag-handle"
+                    role="button"
+                    tabIndex={0}
+                    draggable
+                    aria-label={`Drag ${category.name} to reorder`}
+                    title="Drag to reorder"
+                    onDragStart={(event) => {
+                      event.dataTransfer.effectAllowed = "move";
+                      setCategoryDrag({ from: index, over: index });
+                    }}
+                    onDragEnd={() => setCategoryDrag({ from: null, over: null })}
+                  >
+                    <GripIcon />
+                  </span>
+                </td>
                 <td>{category.name}</td>
                 <td>{category.slug}</td>
                 <td>{category.description}</td>
                 <td>{category.subcategoryCtas?.filter((cta) => cta.status === "ACTIVE").length ?? 0}</td>
-                <td>{category.displayOrder}</td>
                 <td>
                   <span>{category.status === "ACTIVE" ? "Active" : "Inactive"}</span>
                 </td>
                 <td>
-                  <button type="button" className="admin-action-icon" onClick={() => startEditing(category)} aria-label={`Edit ${category.name}`} title="Edit">
-                    <EditIcon />
-                  </button>
-                  <button type="button" className="admin-action-icon" onClick={() => deleteCategory(category.id)} aria-label={`Delete ${category.name}`} title="Delete">
-                    <TrashIcon />
-                  </button>
+                  <div className="admin-category-actions">
+                    <button type="button" className="admin-action-icon" onClick={() => startEditing(category)} aria-label={`Edit ${category.name}`} title="Edit">
+                      <EditIcon />
+                    </button>
+                    <button type="button" className="admin-action-icon" onClick={() => deleteCategory(category.id)} aria-label={`Delete ${category.name}`} title="Delete">
+                      <TrashIcon />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
