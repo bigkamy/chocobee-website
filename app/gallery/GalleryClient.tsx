@@ -111,6 +111,14 @@ function CakeIcon() {
   );
 }
 
+function ChevronIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" className={className}>
+      <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
+    </svg>
+  );
+}
+
 function WhatsAppIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" className="h-6 w-6">
@@ -124,6 +132,7 @@ function WhatsAppIcon() {
 export function GalleryClient() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeSubcategoryId, setActiveSubcategoryId] = useState("");
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const [categories, setCategories] = useState<Category[]>(fallbackCategories);
   const [items, setItems] = useState<GalleryItem[]>(galleryItems);
   const [visibleCount, setVisibleCount] = useState(initialVisible);
@@ -212,6 +221,15 @@ export function GalleryClient() {
     setActiveCategory(category.name);
     setActiveSubcategoryId("");
     setVisibleCount(initialVisible);
+    setExpandedCategories((current) =>
+      current.includes(category.slug) ? current : [...current, category.slug],
+    );
+  };
+
+  const toggleCategoryExpanded = (slug: string) => {
+    setExpandedCategories((current) =>
+      current.includes(slug) ? current.filter((value) => value !== slug) : [...current, slug],
+    );
   };
 
   const handleSubcategoryChange = (category: Category, subcategoryId: string) => {
@@ -263,21 +281,52 @@ export function GalleryClient() {
                     const subcategoryCtas = category.subcategoryCtas
                       ?.filter((cta) => cta.status === "ACTIVE")
                       .sort((a, b) => a.displayOrder - b.displayOrder || a.label.localeCompare(b.label)) ?? [];
+                    const hasSubcategories = subcategoryCtas.length > 0;
+                    const isExpanded = expandedCategories.includes(category.slug);
                     return (
                       <div className="gallery-category-group" key={category.slug}>
-                        <button
-                          type="button"
-                          onClick={() => handleCategoryChange(category)}
-                          className={`rounded-2xl px-4 py-3 text-left text-sm font-bold transition ${
+                        <div
+                          className={`flex items-stretch overflow-hidden rounded-2xl text-sm font-bold transition ${
                             isActive
                               ? "bg-[#be1919] text-white"
-                              : "bg-[#fff5f0] text-[#6f4b40] hover:-translate-y-0.5 hover:bg-[#ffedf1] hover:text-[#be1919]"
+                              : "bg-[#fff5f0] text-[#6f4b40] hover:bg-[#ffedf1] hover:text-[#be1919]"
                           }`}
-                          aria-pressed={isActive}
                         >
-                          {category.name}
-                        </button>
-                        {isActive && subcategoryCtas.length ? (
+                          <button
+                            type="button"
+                            onClick={() => handleCategoryChange(category)}
+                            className="flex flex-1 items-center gap-2 px-4 py-3 text-left"
+                            aria-pressed={isActive}
+                          >
+                            <span className="flex-1">{category.name}</span>
+                            {hasSubcategories ? (
+                              <span
+                                className={`inline-flex min-w-[1.4rem] items-center justify-center rounded-full px-1.5 py-0.5 text-[0.65rem] font-extrabold leading-none ${
+                                  isActive ? "bg-white/25 text-white" : "bg-[#be1919]/12 text-[#be1919]"
+                                }`}
+                                aria-label={`${subcategoryCtas.length} subcategories`}
+                              >
+                                {subcategoryCtas.length}
+                              </span>
+                            ) : null}
+                          </button>
+                          {hasSubcategories ? (
+                            <button
+                              type="button"
+                              onClick={() => toggleCategoryExpanded(category.slug)}
+                              className={`flex items-center px-3 transition ${
+                                isActive ? "text-white/90 hover:text-white" : "text-[#be1919]/70 hover:text-[#be1919]"
+                              }`}
+                              aria-expanded={isExpanded}
+                              aria-label={`${isExpanded ? "Collapse" : "Expand"} ${category.name} subcategories`}
+                            >
+                              <ChevronIcon
+                                className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                              />
+                            </button>
+                          ) : null}
+                        </div>
+                        {isExpanded && hasSubcategories ? (
                           <div className="gallery-subcategory-ctas" aria-label={`${category.name} subcategories`}>
                             {subcategoryCtas.map((cta) => (
                               <button
