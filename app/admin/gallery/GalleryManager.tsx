@@ -757,7 +757,7 @@ export function GalleryManager({
           <label>
             Age Group
             <select name="ageGroup" defaultValue={editing?.ageGroup ?? ""}>
-              <option value="">Not set</option>
+              <option value="">All</option>
               {GALLERY_AGE_GROUPS.map((value) => (
                 <option key={value} value={value}>{value}</option>
               ))}
@@ -766,7 +766,7 @@ export function GalleryManager({
           <label>
             Flavour
             <select name="flavour" defaultValue={editing?.flavour ?? ""}>
-              <option value="">Not set</option>
+              <option value="">All</option>
               {GALLERY_FLAVOURS.map((value) => (
                 <option key={value} value={value}>{value}</option>
               ))}
@@ -775,7 +775,7 @@ export function GalleryManager({
           <label>
             Tier
             <select name="tier" defaultValue={editing?.tier ?? ""}>
-              <option value="">Not set</option>
+              <option value="">All</option>
               {GALLERY_TIERS.map((value) => (
                 <option key={value} value={value}>{value}</option>
               ))}
