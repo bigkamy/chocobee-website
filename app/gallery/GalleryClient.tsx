@@ -33,6 +33,7 @@ type GalleryItem = {
   subcategoryCtaIds?: string[];
   featured?: boolean;
   altText: string;
+  minCakeSizeKg?: number | null;
 };
 
 type GalleryApiItem = Omit<GalleryItem, "category"> & {
@@ -389,6 +390,9 @@ export function GalleryClient() {
                     <div className="p-3">
                       <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-[#be1919]">{item.category}</p>
                       <h3 className="mt-1 text-sm font-extrabold text-[#5d4037]">{item.title}</h3>
+                      <p className="mt-1 inline-flex items-center gap-1 rounded-full bg-[#fff5f0] px-2 py-0.5 text-[0.68rem] font-bold text-[#7d5b4f]">
+                        Min. {item.minCakeSizeKg ?? 0.5} kg
+                      </p>
                       <a
                         href={`/cakes/${item.slug}`}
                         aria-label={`View details for ${item.title}`}

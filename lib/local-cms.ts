@@ -51,6 +51,7 @@ export type CmsGalleryImage = {
   metaDescription?: string | null;
   altText: string;
   keywords?: string | null;
+  minCakeSizeKg?: number | null;
   featured: boolean;
   status: CmsStatus;
   createdAt: string;
@@ -1207,6 +1208,7 @@ async function ensureCmsFile() {
         categorySlugs: image.categorySlugs?.length ? image.categorySlugs : image.categorySlug ? [image.categorySlug] : [],
         subcategoryCtaIds: image.subcategoryCtaIds ?? [],
         homeGroups: image.homeGroups ?? [],
+        minCakeSizeKg: image.minCakeSizeKg ?? 0.5,
       })),
       homePageSections: (parsed.homePageSections ?? defaultHomePageSections).map((section) => ({
         ...section,

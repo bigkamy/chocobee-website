@@ -35,6 +35,7 @@ type GalleryImage = {
   metaDescription?: string | null;
   altText: string;
   keywords?: string | null;
+  minCakeSizeKg?: number | null;
   featured: boolean;
   status: "ACTIVE" | "INACTIVE";
 };
@@ -280,6 +281,7 @@ export function GalleryManager({
       metaDescription: String(form.get("metaDescription") ?? ""),
       altText: String(form.get("altText") || title),
       keywords: String(form.get("keywords") ?? ""),
+      minCakeSizeKg: Number(form.get("minCakeSizeKg")) > 0 ? Number(form.get("minCakeSizeKg")) : 0.5,
       featured: form.get("featured") === "on",
       status: String(form.get("status") ?? "ACTIVE") as GalleryImage["status"],
     };
@@ -709,6 +711,21 @@ export function GalleryManager({
           ) : (
             selectedEditingSubcategories.map((subcategoryId) => <input key={subcategoryId} name="subcategoryCtaIds" type="hidden" value={subcategoryId} />)
           )}
+          <label>
+            Minimum Cake Size Required
+            <span className="admin-size-field">
+              <input
+                name="minCakeSizeKg"
+                type="number"
+                inputMode="decimal"
+                step="0.5"
+                min="0.5"
+                defaultValue={editing?.minCakeSizeKg ?? 0.5}
+                required
+              />
+              <span className="admin-size-unit">kg</span>
+            </span>
+          </label>
           <label className="admin-gallery-modal-full">
             Short Description
             <textarea name="description" defaultValue={editing?.description ?? ""} placeholder="Short cake description" />

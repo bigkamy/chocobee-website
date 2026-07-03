@@ -3678,6 +3678,23 @@ tr.is-drag-over td {
   background: #fff5f0;
 }
 
+.admin-size-field {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.admin-size-field input {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-size-unit {
+  font-weight: 800;
+  color: #be1919;
+  font-size: 0.95rem;
+}
+
 .admin-gallery-modal-message {
   margin: 0;
   color: #157a4f;

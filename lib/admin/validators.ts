@@ -47,6 +47,7 @@ export const gallerySchema = z.object({
   metaDescription: z.string().optional().nullable(),
   altText: z.string().min(2),
   keywords: z.string().optional().nullable(),
+  minCakeSizeKg: z.coerce.number().positive().default(0.5),
   featured: z.coerce.boolean().default(false),
   status,
 });
