@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Breadcrumb } from "@/app/Breadcrumb";
+import { CakeImageLightbox } from "./CakeImageLightbox";
 import { CakeShareActions } from "@/app/CakeShareActions";
 import { Footer } from "@/app/Footer";
 import { NavBar } from "@/app/NavBar";
@@ -64,9 +64,7 @@ export default async function CakeDetailPage({ params }: PageProps) {
           <Breadcrumb items={[{ label: "Gallery", href: "/gallery" }, { label: cake.title }]} />
         </div>
         <section className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[0.9fr_1fr] lg:items-center">
-          <div className="relative min-h-[32rem] overflow-hidden rounded-[2rem] bg-white shadow-[0_24px_70px_rgba(93,64,55,0.14)]">
-            <Image src={cake.imageUrl} alt={cake.altText} fill priority sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" />
-          </div>
+          <CakeImageLightbox imageUrl={cake.imageUrl} altText={cake.altText} title={cake.title} />
 
           <div>
             <Link href="/gallery" className="text-sm font-extrabold text-[#be1919]">

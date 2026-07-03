@@ -7,16 +7,22 @@
       "description": "Custom birthday cakes for joyful celebrations.",
       "displayOrder": 1,
       "status": "ACTIVE",
-      "subcategoryCtas": []
-    },
-    {
-      "id": "wedding-cakes",
-      "name": "Wedding Cakes",
-      "slug": "wedding-cakes",
-      "description": "Elegant wedding cakes with premium finishes.",
-      "displayOrder": 2,
-      "status": "ACTIVE",
-      "subcategoryCtas": []
+      "subcategoryCtas": [
+        {
+          "id": "subcategory-cta-1",
+          "label": "vgggvgf",
+          "href": "/gallery",
+          "displayOrder": 1,
+          "status": "ACTIVE"
+        },
+        {
+          "id": "subcategory-cta-2",
+          "label": "jghjgjjj",
+          "href": "/gallery",
+          "displayOrder": 2,
+          "status": "ACTIVE"
+        }
+      ]
     },
     {
       "id": "designer-cakes",
@@ -44,6 +50,60 @@
       "displayOrder": 5,
       "status": "ACTIVE",
       "subcategoryCtas": []
+    },
+    {
+      "name": "wedding",
+      "slug": "wedding-cakes",
+      "description": "",
+      "subcategoryCtas": [],
+      "displayOrder": 6,
+      "status": "ACTIVE",
+      "id": "wedding-cakes"
+    },
+    {
+      "name": "kiss",
+      "slug": "kiss",
+      "description": "",
+      "subcategoryCtas": [],
+      "displayOrder": 6,
+      "status": "ACTIVE",
+      "id": "kiss"
+    },
+    {
+      "name": "sala",
+      "slug": "sala",
+      "description": "",
+      "subcategoryCtas": [],
+      "displayOrder": 8,
+      "status": "ACTIVE",
+      "id": "sala"
+    },
+    {
+      "name": "kala",
+      "slug": "kala",
+      "description": "",
+      "subcategoryCtas": [],
+      "displayOrder": 9,
+      "status": "ACTIVE",
+      "id": "kala"
+    },
+    {
+      "name": "nala",
+      "slug": "nala",
+      "description": "",
+      "subcategoryCtas": [],
+      "displayOrder": 10,
+      "status": "ACTIVE",
+      "id": "nala"
+    },
+    {
+      "name": "jala",
+      "slug": "jala",
+      "description": "",
+      "subcategoryCtas": [],
+      "displayOrder": 11,
+      "status": "ACTIVE",
+      "id": "jala"
     }
   ],
   "galleryImages": [
@@ -202,21 +262,24 @@
           "title": "Serving Since 2013",
           "text": "Over a Decade of Sweet Excellence.",
           "displayOrder": 1,
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "iconUrl": null
         },
         {
           "id": "custom-magic",
           "title": "5000+ Happy Customers",
           "text": "One promise—exceptional quality every time.",
           "displayOrder": 2,
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "iconUrl": null
         },
         {
           "id": "party-ready",
           "title": "25,000+ Custom Cake Designs",
           "text": "Crafted to Make Every Celebration Unforgettable.",
           "displayOrder": 3,
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "iconUrl": null
         }
       ],
       "categoryCards": []
