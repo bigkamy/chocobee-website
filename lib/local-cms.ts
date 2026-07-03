@@ -52,6 +52,10 @@ export type CmsGalleryImage = {
   altText: string;
   keywords?: string | null;
   minCakeSizeKg?: number | null;
+  gender?: string | null;
+  ageGroup?: string | null;
+  flavour?: string | null;
+  tier?: string | null;
   featured: boolean;
   status: CmsStatus;
   createdAt: string;
@@ -1209,6 +1213,10 @@ async function ensureCmsFile() {
         subcategoryCtaIds: image.subcategoryCtaIds ?? [],
         homeGroups: image.homeGroups ?? [],
         minCakeSizeKg: image.minCakeSizeKg ?? 0.5,
+        gender: image.gender ?? null,
+        ageGroup: image.ageGroup ?? null,
+        flavour: image.flavour ?? null,
+        tier: image.tier ?? null,
       })),
       homePageSections: (parsed.homePageSections ?? defaultHomePageSections).map((section) => ({
         ...section,

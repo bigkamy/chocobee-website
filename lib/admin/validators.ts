@@ -48,6 +48,10 @@ export const gallerySchema = z.object({
   altText: z.string().min(2),
   keywords: z.string().optional().nullable(),
   minCakeSizeKg: z.coerce.number().positive().default(0.5),
+  gender: z.string().optional().nullable(),
+  ageGroup: z.string().optional().nullable(),
+  flavour: z.string().optional().nullable(),
+  tier: z.string().optional().nullable(),
   featured: z.coerce.boolean().default(false),
   status,
 });

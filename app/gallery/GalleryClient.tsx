@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Breadcrumb } from "../Breadcrumb";
 import { NavBar } from "../NavBar";
 import { WhatsAppEnquiryButton } from "../WhatsAppEnquiryButton";
+import { GALLERY_AGE_GROUPS, GALLERY_FLAVOURS, GALLERY_GENDERS, GALLERY_SIZE_BUCKETS, GALLERY_TIERS, sizeBucketOf } from "@/lib/gallery-filters";
 
 type SubcategoryCta = {
   id: string;
@@ -34,6 +35,10 @@ type GalleryItem = {
   featured?: boolean;
   altText: string;
   minCakeSizeKg?: number | null;
+  gender?: string | null;
+  ageGroup?: string | null;
+  flavour?: string | null;
+  tier?: string | null;
 };
 
 type GalleryApiItem = Omit<GalleryItem, "category"> & {
@@ -130,6 +135,36 @@ function WhatsAppIcon() {
   );
 }
 
+function FilterSelect({
+  label,
+  value,
+  onChange,
+  options,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  options: readonly string[];
+}) {
+  return (
+    <label className="flex flex-col gap-1 text-[0.6rem] font-extrabold uppercase tracking-[0.12em] text-[#be1919]">
+      {label}
+      <select
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="rounded-xl border border-[#be1919]/20 bg-white px-2 py-2 text-xs font-bold text-[#5d4037] shadow-sm outline-none transition focus:border-[#be1919]"
+      >
+        <option value="">All</option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    </label>
+  );
+}
+
 export function GalleryClient() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeSubcategoryId, setActiveSubcategoryId] = useState("");
@@ -137,6 +172,11 @@ export function GalleryClient() {
   const [categories, setCategories] = useState<Category[]>(fallbackCategories);
   const [items, setItems] = useState<GalleryItem[]>(galleryItems);
   const [visibleCount, setVisibleCount] = useState(initialVisible);
+  const [genderFilter, setGenderFilter] = useState("");
+  const [ageFilter, setAgeFilter] = useState("");
+  const [sizeFilter, setSizeFilter] = useState("");
+  const [flavourFilter, setFlavourFilter] = useState("");
+  const [tierFilter, setTierFilter] = useState("");
 
   useEffect(() => {
     let isMounted = true;
@@ -205,16 +245,36 @@ export function GalleryClient() {
     };
   }, [activeCategory, categories]);
 
+  const hasAttributeFilters = Boolean(genderFilter || ageFilter || sizeFilter || flavourFilter || tierFilter);
+
+  const applyFilter = (setter: (value: string) => void) => (value: string) => {
+    setter(value);
+    setVisibleCount(initialVisible);
+  };
+
   const filteredItems = useMemo(() => {
-    const categoryFilteredItems =
+    let list =
       activeCategory === "All"
         ? items
         : items.filter((item) => item.category === activeCategory || item.categorySlugs?.includes(toSlug(activeCategory)));
 
-    return activeSubcategoryId
-      ? categoryFilteredItems.filter((item) => item.subcategoryCtaIds?.includes(activeSubcategoryId))
-      : categoryFilteredItems;
-  }, [activeCategory, activeSubcategoryId, items]);
+    if (activeSubcategoryId) list = list.filter((item) => item.subcategoryCtaIds?.includes(activeSubcategoryId));
+    if (genderFilter) list = list.filter((item) => item.gender === genderFilter);
+    if (ageFilter) list = list.filter((item) => item.ageGroup === ageFilter);
+    if (flavourFilter) list = list.filter((item) => item.flavour === flavourFilter);
+    if (tierFilter) list = list.filter((item) => item.tier === tierFilter);
+    if (sizeFilter) list = list.filter((item) => sizeBucketOf(item.minCakeSizeKg) === sizeFilter);
+    return list;
+  }, [activeCategory, activeSubcategoryId, items, genderFilter, ageFilter, sizeFilter, flavourFilter, tierFilter]);
+
+  const clearAttributeFilters = () => {
+    setGenderFilter("");
+    setAgeFilter("");
+    setSizeFilter("");
+    setFlavourFilter("");
+    setTierFilter("");
+    setVisibleCount(initialVisible);
+  };
 
   const visibleItems = filteredItems.slice(0, visibleCount);
 
@@ -350,6 +410,23 @@ export function GalleryClient() {
             </aside>
 
             <section aria-live="polite">
+              <div className="mb-4 rounded-[20px] border border-white/70 bg-white/80 p-3 shadow-[0_10px_30px_rgba(93,64,55,0.08)] backdrop-blur">
+                <div className="mb-2 flex items-center justify-between">
+                  <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#5d4037]">Filter Cakes</p>
+                  {hasAttributeFilters ? (
+                    <button type="button" onClick={clearAttributeFilters} className="text-xs font-extrabold text-[#be1919] underline">
+                      Clear filters
+                    </button>
+                  ) : null}
+                </div>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+                  <FilterSelect label="Gender" value={genderFilter} onChange={applyFilter(setGenderFilter)} options={GALLERY_GENDERS} />
+                  <FilterSelect label="Age" value={ageFilter} onChange={applyFilter(setAgeFilter)} options={GALLERY_AGE_GROUPS} />
+                  <FilterSelect label="Size" value={sizeFilter} onChange={applyFilter(setSizeFilter)} options={GALLERY_SIZE_BUCKETS} />
+                  <FilterSelect label="Flavour" value={flavourFilter} onChange={applyFilter(setFlavourFilter)} options={GALLERY_FLAVOURS} />
+                  <FilterSelect label="Tier" value={tierFilter} onChange={applyFilter(setTierFilter)} options={GALLERY_TIERS} />
+                </div>
+              </div>
               <div className="mb-4 flex items-center justify-between gap-3">
                 <p className="text-sm font-bold text-[#7d5b4f]">
                   Showing <span className="text-[#be1919]">{visibleItems.length}</span> of {filteredItems.length} designs
