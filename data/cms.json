@@ -133,7 +133,8 @@
       "featured": true,
       "status": "ACTIVE",
       "createdAt": "2026-06-30T08:19:04.224Z",
-      "subcategoryCtaIds": []
+      "subcategoryCtaIds": [],
+      "minCakeSizeKg": 0.5
     },
     {
       "id": "royal-wedding-lace-cake",
@@ -161,7 +162,8 @@
       "featured": true,
       "status": "ACTIVE",
       "createdAt": "2026-06-30T08:19:04.224Z",
-      "subcategoryCtaIds": []
+      "subcategoryCtaIds": [],
+      "minCakeSizeKg": 0.5
     },
     {
       "id": "kids-candy-theme-cake",
@@ -188,7 +190,8 @@
       "featured": false,
       "status": "ACTIVE",
       "createdAt": "2026-06-30T08:19:04.224Z",
-      "subcategoryCtaIds": []
+      "subcategoryCtaIds": [],
+      "minCakeSizeKg": 0.5
     },
     {
       "title": "sadsadasdasd",
@@ -217,7 +220,8 @@
       "categorySlugs": [
         "birthday-cakes"
       ],
-      "createdAt": "2026-06-30T08:33:20.596Z"
+      "createdAt": "2026-06-30T08:33:20.596Z",
+      "minCakeSizeKg": 0.5
     }
   ],
   "homePageSections": [
