@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Breadcrumb } from "../Breadcrumb";
 import { NavBar } from "../NavBar";
 import { WhatsAppEnquiryButton } from "../WhatsAppEnquiryButton";
-import { GALLERY_AGE_GROUPS, GALLERY_FLAVOURS, GALLERY_GENDERS, GALLERY_SIZE_BUCKETS, GALLERY_TIERS, sizeBucketOf } from "@/lib/gallery-filters";
+import { GALLERY_AGE_GROUPS, GALLERY_FILTER_KEYS, GALLERY_FLAVOURS, GALLERY_GENDERS, GALLERY_SIZE_BUCKETS, GALLERY_TIERS, sizeBucketOf } from "@/lib/gallery-filters";
 
 type SubcategoryCta = {
   id: string;
@@ -178,6 +178,7 @@ export function GalleryClient() {
   const [sizeFilter, setSizeFilter] = useState("");
   const [flavourFilter, setFlavourFilter] = useState("");
   const [tierFilter, setTierFilter] = useState("");
+  const [enabledFilterFields, setEnabledFilterFields] = useState<string[]>([...GALLERY_FILTER_KEYS]);
 
   useEffect(() => {
     let isMounted = true;
@@ -205,6 +206,19 @@ export function GalleryClient() {
 
     return () => {
       isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/gallery-filters", { cache: "no-store" })
+      .then((response) => (response.ok ? response.json() : null))
+      .then((data: { fields?: string[] } | null) => {
+        if (active && Array.isArray(data?.fields)) setEnabledFilterFields(data.fields);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
     };
   }, []);
 
@@ -411,6 +425,7 @@ export function GalleryClient() {
             </aside>
 
             <section aria-live="polite">
+              {enabledFilterFields.length ? (
               <div className="mb-4 rounded-[20px] border border-white/70 bg-white/80 p-3 shadow-[0_10px_30px_rgba(93,64,55,0.08)] backdrop-blur">
                 <div className="mb-2 flex items-center justify-between">
                   <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#5d4037]">Filter Cakes</p>
@@ -421,13 +436,14 @@ export function GalleryClient() {
                   ) : null}
                 </div>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-                  <FilterSelect label="Gender" value={genderFilter} onChange={applyFilter(setGenderFilter)} options={GALLERY_GENDERS} />
-                  <FilterSelect label="Age" value={ageFilter} onChange={applyFilter(setAgeFilter)} options={GALLERY_AGE_GROUPS} />
-                  <FilterSelect label="Size" value={sizeFilter} onChange={applyFilter(setSizeFilter)} options={GALLERY_SIZE_BUCKETS} />
-                  <FilterSelect label="Flavour" value={flavourFilter} onChange={applyFilter(setFlavourFilter)} options={GALLERY_FLAVOURS} />
-                  <FilterSelect label="Tier" value={tierFilter} onChange={applyFilter(setTierFilter)} options={GALLERY_TIERS} />
+                  {enabledFilterFields.includes("gender") ? <FilterSelect label="Gender" value={genderFilter} onChange={applyFilter(setGenderFilter)} options={GALLERY_GENDERS} /> : null}
+                  {enabledFilterFields.includes("age") ? <FilterSelect label="Age" value={ageFilter} onChange={applyFilter(setAgeFilter)} options={GALLERY_AGE_GROUPS} /> : null}
+                  {enabledFilterFields.includes("size") ? <FilterSelect label="Size" value={sizeFilter} onChange={applyFilter(setSizeFilter)} options={GALLERY_SIZE_BUCKETS} /> : null}
+                  {enabledFilterFields.includes("flavour") ? <FilterSelect label="Flavour" value={flavourFilter} onChange={applyFilter(setFlavourFilter)} options={GALLERY_FLAVOURS} /> : null}
+                  {enabledFilterFields.includes("tier") ? <FilterSelect label="Tier" value={tierFilter} onChange={applyFilter(setTierFilter)} options={GALLERY_TIERS} /> : null}
                 </div>
               </div>
+              ) : null}
               <div className="mb-4 flex items-center justify-between gap-3">
                 <p className="text-sm font-bold text-[#7d5b4f]">
                   Showing <span className="text-[#be1919]">{visibleItems.length}</span> of {filteredItems.length} designs

@@ -2,6 +2,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { GALLERY_FILTER_KEYS } from "./gallery-filters";
 
 export type CmsStatus = "ACTIVE" | "INACTIVE";
 
@@ -268,6 +269,7 @@ type CmsData = {
   contactPageSections: CmsContactPageSection[];
   footerSettings: CmsFooterSettings;
   customOrderSettings: CmsCustomOrderSettings;
+  galleryFilterFields: string[];
 };
 
 // Bundled defaults shipped with the build; only used to seed Postgres on first
@@ -281,6 +283,19 @@ export function slugify(value: string) {
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+export async function getGalleryFilterFields(): Promise<string[]> {
+  const data = await ensureCmsFile();
+  const fields = data.galleryFilterFields?.length ? data.galleryFilterFields : [...GALLERY_FILTER_KEYS];
+  return GALLERY_FILTER_KEYS.filter((key) => fields.includes(key));
+}
+
+export async function setGalleryFilterFields(fields: string[]): Promise<string[]> {
+  const data = await ensureCmsFile();
+  data.galleryFilterFields = GALLERY_FILTER_KEYS.filter((key) => fields.includes(key));
+  await writeCmsData(data);
+  return data.galleryFilterFields;
 }
 
 export const defaultCategories: CmsCategory[] = [
@@ -1265,6 +1280,9 @@ async function ensureCmsFile() {
       footerSettings: normalizeFooterSettings(parsed.footerSettings),
       customOrderSettings: normalizeCustomOrderSettings(parsed.customOrderSettings),
       reviews: normalizeReviews(parsed.reviews),
+      galleryFilterFields: parsed.galleryFilterFields?.length
+        ? GALLERY_FILTER_KEYS.filter((key) => parsed.galleryFilterFields!.includes(key))
+        : [...GALLERY_FILTER_KEYS],
     };
     // Seed the database the first time we boot from the bundled file or
     // defaults; once the row exists, reads never re-write on every request.
@@ -1281,6 +1299,7 @@ async function ensureCmsFile() {
     footerSettings: defaultFooterSettings,
     customOrderSettings: defaultCustomOrderSettings,
     reviews: defaultReviews,
+    galleryFilterFields: [...GALLERY_FILTER_KEYS],
   };
   await persistCmsDataQuietly(initialData);
   return initialData;

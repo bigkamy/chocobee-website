@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { GALLERY_AGE_GROUPS, GALLERY_FLAVOURS, GALLERY_GENDERS, GALLERY_TIERS } from "@/lib/gallery-filters";
+import { GALLERY_AGE_GROUPS, GALLERY_FILTER_FIELDS, GALLERY_FLAVOURS, GALLERY_GENDERS, GALLERY_TIERS } from "@/lib/gallery-filters";
 
 type Category = {
   id: string;
@@ -114,11 +114,16 @@ function CloseIcon() {
 export function GalleryManager({
   initialCategories,
   initialImages,
+  initialFilterFields,
 }: {
   initialCategories: Category[];
   initialImages: GalleryImage[];
+  initialFilterFields: string[];
 }) {
   const [images, setImages] = useState(initialImages);
+  const [filterFields, setFilterFields] = useState<string[]>(initialFilterFields);
+  const [savingFilterFields, setSavingFilterFields] = useState(false);
+  const [filterFieldsMessage, setFilterFieldsMessage] = useState("");
   const [editing, setEditing] = useState<GalleryImage | null>(null);
   const selectedEditingCategories = editing?.categoryIds ?? (editing?.categoryId ? [editing.categoryId] : []);
   const selectedEditingSubcategories = editing?.subcategoryCtaIds ?? [];
@@ -174,6 +179,29 @@ export function GalleryManager({
   async function publishGallery() {
     await refreshImages();
     setMessage("Image gallery published to the live website.");
+  }
+
+  function toggleFilterField(key: string) {
+    setFilterFields((current) => (current.includes(key) ? current.filter((field) => field !== key) : [...current, key]));
+    setFilterFieldsMessage("");
+  }
+
+  async function saveFilterFields() {
+    setSavingFilterFields(true);
+    setFilterFieldsMessage("");
+    try {
+      const response = await fetch("/api/admin/gallery-filters", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fields: filterFields }),
+      });
+      if (!response.ok) throw new Error("save failed");
+      setFilterFieldsMessage("Filter fields saved.");
+    } catch {
+      setFilterFieldsMessage("Could not save filter fields.");
+    } finally {
+      setSavingFilterFields(false);
+    }
   }
 
   function startEditing(image: GalleryImage) {
@@ -420,6 +448,25 @@ export function GalleryManager({
           </button>
         </div>
       </header>
+
+      <article className="admin-resource-card admin-gallery-filter-fields">
+        <h2>Gallery Filter Fields</h2>
+        <p className="admin-muted">Choose which filter dropdowns appear in the public gallery filter bar.</p>
+        <div className="admin-filter-fields-list">
+          {GALLERY_FILTER_FIELDS.map((field) => (
+            <label key={field.key} className="admin-category-check-option">
+              <input type="checkbox" checked={filterFields.includes(field.key)} onChange={() => toggleFilterField(field.key)} />
+              <span>{field.label}</span>
+            </label>
+          ))}
+        </div>
+        <div className="admin-filter-fields-actions">
+          <button type="button" onClick={() => void saveFilterFields()} disabled={savingFilterFields}>
+            {savingFilterFields ? "Saving..." : "Save Filter Fields"}
+          </button>
+          {filterFieldsMessage ? <span role="status">{filterFieldsMessage}</span> : null}
+        </div>
+      </article>
 
       <section className="admin-gallery-control-layout">
         <div className="admin-gallery-left-panel">

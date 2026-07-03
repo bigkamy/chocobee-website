@@ -28,6 +28,19 @@ export const GALLERY_TIERS = ["Single Tier", "2-Tier", "3-Tier", "Multi-Tier"] a
 
 export const GALLERY_SIZE_BUCKETS = ["Up to 1 kg", "1-2 kg", "2-3 kg", "3 kg & above"] as const;
 
+// The toggleable gallery filter fields (admin can turn each on/off).
+export const GALLERY_FILTER_FIELDS = [
+  { key: "gender", label: "Gender" },
+  { key: "age", label: "Age" },
+  { key: "size", label: "Size" },
+  { key: "flavour", label: "Flavour" },
+  { key: "tier", label: "Tier" },
+] as const;
+
+export const GALLERY_FILTER_KEYS = GALLERY_FILTER_FIELDS.map((field) => field.key);
+
+export type GalleryFilterKey = (typeof GALLERY_FILTER_FIELDS)[number]["key"];
+
 // Maps a minimum cake size (kg) to its filter bucket label.
 export function sizeBucketOf(kg: number | null | undefined): (typeof GALLERY_SIZE_BUCKETS)[number] {
   const value = typeof kg === "number" && kg > 0 ? kg : 0.5;
