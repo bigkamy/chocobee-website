@@ -3385,7 +3385,7 @@ tr.is-drag-over td {
 
 .admin-gallery-control-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 24rem);
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
   gap: 1rem;
 }
@@ -3394,6 +3394,313 @@ tr.is-drag-over td {
   display: grid;
   min-width: 0;
   gap: 1rem;
+}
+
+/* Add Image trigger buttons */
+.admin-add-image-button {
+  display: inline-flex;
+  min-height: 2.4rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid #a91515;
+  border-radius: 0.6rem;
+  padding: 0 1rem;
+  background: linear-gradient(180deg, #d23a3a 0%, #be1919 100%);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  box-shadow: 0 0.4rem 0.9rem rgba(190, 25, 25, 0.18);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+
+.admin-add-image-button svg {
+  width: 1.05rem;
+  height: 1.05rem;
+}
+
+.admin-add-image-button:hover {
+  transform: translateY(-0.05rem);
+  box-shadow: 0 0.55rem 1.2rem rgba(190, 25, 25, 0.26);
+}
+
+.admin-add-image-button--soft {
+  border-color: rgba(190, 25, 25, 0.22);
+  background: #fff;
+  color: #be1919;
+  box-shadow: 0 1px 2px rgba(190, 25, 25, 0.08);
+}
+
+.admin-add-image-button--soft:hover {
+  background: #fff5f5;
+  box-shadow: 0 0.4rem 0.9rem rgba(190, 25, 25, 0.14);
+}
+
+.admin-gallery-heading-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.admin-gallery-empty .admin-add-image-button {
+  margin-top: 0.4rem;
+}
+
+/* Add / Edit image modal */
+.admin-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  background: rgba(46, 22, 20, 0.5);
+  backdrop-filter: blur(4px);
+  animation: admin-modal-fade 0.18s ease;
+}
+
+@keyframes admin-modal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.admin-gallery-modal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 46rem;
+  max-height: 92vh;
+  overflow: hidden;
+  border: 1px solid rgba(190, 25, 25, 0.1);
+  border-radius: 1.4rem;
+  background: linear-gradient(180deg, #ffffff 0%, #fffaf8 100%);
+  box-shadow: 0 2rem 4.5rem rgba(48, 18, 16, 0.32);
+  animation: admin-modal-pop 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes admin-modal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(0.8rem) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.admin-gallery-modal-header {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.4rem;
+  border-bottom: 1px solid rgba(190, 25, 25, 0.1);
+  background: linear-gradient(180deg, #fff6f4 0%, rgba(255, 246, 244, 0) 100%);
+}
+
+.admin-gallery-modal-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.admin-gallery-modal-heading-icon {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.85rem;
+  height: 2.85rem;
+  border-radius: 0.9rem;
+  background: linear-gradient(145deg, #be1919 0%, #e0392f 100%);
+  color: #fff;
+  box-shadow: 0 0.6rem 1.3rem rgba(190, 25, 25, 0.3);
+}
+
+.admin-gallery-modal-heading-icon svg {
+  width: 1.4rem;
+  height: 1.4rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.admin-gallery-modal-heading h2 {
+  margin: 0;
+  color: #2a1512;
+  font-size: 1.15rem;
+  font-weight: 800;
+}
+
+.admin-gallery-modal-heading p {
+  margin: 0.15rem 0 0;
+  color: #8a6a5f;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.admin-gallery-modal-close {
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid rgba(190, 25, 25, 0.14);
+  border-radius: 0.7rem;
+  background: #fff;
+  color: #8a6a5f;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
+}
+
+.admin-gallery-modal-close svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.admin-gallery-modal-close:hover {
+  border-color: rgba(190, 25, 25, 0.4);
+  background: #fff5f5;
+  color: #be1919;
+}
+
+.admin-gallery-modal-form {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1rem;
+  overflow-y: auto;
+  padding: 1.4rem;
+}
+
+.admin-gallery-modal-form > .admin-upload-control,
+.admin-gallery-modal-form > .admin-upload-status,
+.admin-gallery-modal-form > .admin-gallery-preview,
+.admin-gallery-modal-form > .admin-category-field,
+.admin-gallery-modal-form > .admin-checkbox-label,
+.admin-gallery-modal-form > .admin-gallery-modal-full,
+.admin-gallery-modal-form > .admin-gallery-modal-message,
+.admin-gallery-modal-form > .admin-gallery-modal-actions {
+  grid-column: 1 / -1;
+}
+
+/* Light-theme overrides for the shared category/upload controls inside the modal */
+.admin-gallery-modal-form .admin-category-toggle {
+  border-color: #dfe4eb !important;
+  background: #fbfcfe !important;
+  color: #1f2937 !important;
+}
+
+.admin-gallery-modal-form .admin-category-toggle:hover {
+  border-color: rgba(190, 25, 25, 0.35) !important;
+  background: #fff !important;
+}
+
+.admin-gallery-modal-form .admin-category-toggle span:first-child {
+  color: #1f2937;
+}
+
+.admin-gallery-modal-form .admin-category-toggle span:nth-child(2) {
+  color: #9a7a6f;
+}
+
+.admin-gallery-modal-form .admin-category-checklist {
+  border-color: rgba(190, 25, 25, 0.14);
+  background: #fff8f8;
+}
+
+/* Category field: two columns, capped at 5 options (rows) per column */
+.admin-gallery-modal-form #admin-image-category-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: max-content;
+  gap: 0.3rem 0.65rem;
+  max-height: 11.75rem;
+  overflow-y: auto;
+}
+
+.admin-gallery-modal-form .admin-category-check-option {
+  color: #3a2a26 !important;
+}
+
+.admin-gallery-modal-form .admin-category-check-option:hover {
+  background: rgba(190, 25, 25, 0.07);
+}
+
+.admin-gallery-modal-form .admin-category-check-option input {
+  accent-color: #be1919;
+}
+
+.admin-gallery-modal-form .admin-subcategory-group {
+  border-color: rgba(190, 25, 25, 0.14);
+  background: #fffaf8;
+}
+
+.admin-gallery-modal-form .admin-subcategory-group > strong {
+  color: #be1919;
+}
+
+.admin-gallery-modal-form .admin-upload-control input[type="file"] {
+  border: 1px solid #dfe4eb;
+  border-radius: 0.55rem;
+  background: #fbfcfe;
+  color: #475569;
+}
+
+.admin-gallery-modal-form .admin-upload-control input[type="file"]::file-selector-button {
+  background: #be1919;
+  color: #fff;
+}
+
+.admin-gallery-modal-form .admin-upload-delete {
+  border: 1px solid #e2d2d2 !important;
+  background: #fff !important;
+  color: #be1919 !important;
+}
+
+.admin-gallery-modal-form .admin-upload-status {
+  color: #8a6a5f;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.admin-gallery-modal-form .admin-gallery-preview {
+  border: 1px solid rgba(190, 25, 25, 0.12);
+  background: #fff5f0;
+}
+
+.admin-gallery-modal-message {
+  margin: 0;
+  color: #157a4f;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.admin-gallery-modal-actions {
+  position: sticky;
+  bottom: -1.4rem;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  margin: 0.5rem -1.4rem -1.4rem;
+  padding: 0.95rem 1.4rem 1.4rem;
+  border-top: 1px solid rgba(190, 25, 25, 0.1);
+  background: #fffaf8;
+}
+
+.admin-gallery-modal-actions button {
+  min-width: 8rem;
+  padding: 0 1.3rem;
 }
 
 .admin-gallery-filter-row {
@@ -6611,6 +6918,32 @@ button.admin-action-icon.is-manage.is-open {
   .admin-gallery-row-controls,
   .admin-gallery-row-stacked-controls {
     grid-template-columns: 1fr;
+  }
+
+  .admin-modal-overlay {
+    padding: 0.75rem;
+  }
+
+  .admin-gallery-modal {
+    max-height: 94vh;
+  }
+
+  .admin-gallery-modal-header {
+    padding: 1rem 1.1rem;
+  }
+
+  .admin-gallery-modal-form {
+    padding: 1.1rem;
+  }
+
+  .admin-gallery-modal-actions {
+    margin: 0.5rem -1.1rem -1.1rem;
+    padding: 0.85rem 1.1rem 1.1rem;
+  }
+
+  .admin-gallery-modal-actions button {
+    flex: 1 1 auto;
+    min-width: 0;
   }
 
   .reviews-section {

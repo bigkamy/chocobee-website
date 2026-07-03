@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 type Category = {
   id: string;
@@ -89,6 +89,22 @@ function GalleryStackIcon() {
   );
 }
 
+function PlusIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2.2" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2.2" />
+    </svg>
+  );
+}
+
 export function GalleryManager({
   initialCategories,
   initialImages,
@@ -107,9 +123,12 @@ export function GalleryManager({
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [message, setMessage] = useState("");
   const [isCategoryListOpen, setIsCategoryListOpen] = useState(false);
+  const [isHomeGroupListOpen, setIsHomeGroupListOpen] = useState(false);
+  const [isSubcategoryListOpen, setIsSubcategoryListOpen] = useState(false);
   const [uploadStatus, setUploadStatus] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [formVersion, setFormVersion] = useState(0);
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const categorySubcategoryGroups = initialCategories
     .map((category) => ({
       ...category,
@@ -156,15 +175,53 @@ export function GalleryManager({
     setImageUrl(image.imageUrl);
     setPreview(image.imageUrl);
     setIsCategoryListOpen(false);
+    setIsHomeGroupListOpen(false);
+    setIsSubcategoryListOpen(false);
     setUploadStatus("");
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setMessage("");
+    setIsFormOpen(true);
   }
+
+  function startAdding() {
+    setEditing(null);
+    setImageUrl("");
+    setPreview("");
+    setIsCategoryListOpen(false);
+    setIsHomeGroupListOpen(false);
+    setIsSubcategoryListOpen(false);
+    setUploadStatus("");
+    setMessage("");
+    setFormVersion((version) => version + 1);
+    setIsFormOpen(true);
+  }
+
+  function closeForm() {
+    setIsFormOpen(false);
+    resetImageForm();
+  }
+
+  useEffect(() => {
+    if (!isFormOpen) return;
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeForm();
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isFormOpen]);
 
   function resetImageForm(statusMessage?: string) {
     setEditing(null);
     setImageUrl("");
     setPreview("");
     setIsCategoryListOpen(false);
+    setIsHomeGroupListOpen(false);
+    setIsSubcategoryListOpen(false);
     setUploadStatus("");
     setIsUploading(false);
     setFormVersion((version) => version + 1);
@@ -230,6 +287,7 @@ export function GalleryManager({
     const saved = await saveImage(payload, editing?.id);
     if (!saved) return;
 
+    setIsFormOpen(false);
     resetImageForm(editing ? "Image updated." : "Image added.");
     if (!editing) {
       setQuery("");
@@ -337,6 +395,10 @@ export function GalleryManager({
           <p>Gallery Images</p>
         </div>
         <div className="admin-header-actions">
+          <button type="button" className="admin-add-image-button" onClick={startAdding}>
+            <PlusIcon />
+            Add Image
+          </button>
           <button type="button" className="admin-publish-button" onClick={() => void publishGallery()}>
             Publish Gallery
           </button>
@@ -377,9 +439,15 @@ export function GalleryManager({
                   <p>Manage every cake photo shown across your website</p>
                 </div>
               </div>
-              <span className="admin-gallery-count-badge">
-                {filteredImages.length} {filteredImages.length === 1 ? "image" : "images"}
-              </span>
+              <div className="admin-gallery-heading-actions">
+                <span className="admin-gallery-count-badge">
+                  {filteredImages.length} {filteredImages.length === 1 ? "image" : "images"}
+                </span>
+                <button type="button" className="admin-add-image-button admin-add-image-button--soft" onClick={startAdding}>
+                  <PlusIcon />
+                  Add Image
+                </button>
+              </div>
             </div>
 
             <div className="admin-gallery-rows">
@@ -390,6 +458,10 @@ export function GalleryManager({
                   </span>
                   <h3>No cake images to show</h3>
                   <p>Upload your first cake photo, or adjust your search and category filters to see results.</p>
+                  <button type="button" className="admin-add-image-button" onClick={startAdding}>
+                    <PlusIcon />
+                    Add Image
+                  </button>
                 </div>
               ) : (
                 filteredImages.map((image) => (
@@ -490,8 +562,27 @@ export function GalleryManager({
           </section>
         </div>
 
-        <form key={editing?.id ?? `new-image-${formVersion}`} onSubmit={handleSubmit} className="admin-resource-card admin-category-form admin-gallery-form-panel">
-          <h2>{editing ? "Edit Cake Image" : "Add Cake Image"}</h2>
+      </section>
+
+      {isFormOpen ? (
+        <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-label={editing ? "Edit cake image" : "Add cake image"} onClick={closeForm}>
+          <div className="admin-gallery-modal" onClick={(event) => event.stopPropagation()}>
+            <header className="admin-gallery-modal-header">
+              <div className="admin-gallery-modal-heading">
+                <span className="admin-gallery-modal-heading-icon" aria-hidden="true">
+                  <GalleryStackIcon />
+                </span>
+                <div>
+                  <h2>{editing ? "Edit Cake Image" : "Add Cake Image"}</h2>
+                  <p>{editing ? "Update this cake photo and its details." : "Upload a new cake photo and fill in its details."}</p>
+                </div>
+              </div>
+              <button type="button" className="admin-gallery-modal-close" onClick={closeForm} aria-label="Close">
+                <CloseIcon />
+              </button>
+            </header>
+
+            <form key={editing?.id ?? `new-image-${formVersion}`} onSubmit={handleSubmit} className="admin-gallery-modal-form admin-category-form">
           <div className="admin-upload-control">
             <label>
               Upload Image
@@ -555,43 +646,69 @@ export function GalleryManager({
             )}
           </div>
           <div className="admin-category-field">
-            <button type="button" className="admin-category-toggle" aria-expanded="true" aria-controls="admin-home-gallery-group-list">
+            <button
+              type="button"
+              className="admin-category-toggle"
+              onClick={() => setIsHomeGroupListOpen((isOpen) => !isOpen)}
+              aria-expanded={isHomeGroupListOpen}
+              aria-controls="admin-home-gallery-group-list"
+            >
               <span>Home Page Cake Gallery</span>
-              <span>{selectedEditingHomeGroups.length || "No"} selected</span>
+              <span>{isHomeGroupListOpen ? "Hide list" : `${selectedEditingHomeGroups.length || "No"} selected`}</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true" className={isHomeGroupListOpen ? "admin-category-chevron-open" : ""}>
+                <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
+              </svg>
             </button>
-            <div className="admin-category-checklist" id="admin-home-gallery-group-list" role="group" aria-label="Select home page cake gallery groups">
-              {homeGalleryGroups.map((group) => (
-                <label className="admin-category-check-option" key={group}>
-                  <input name="homeGroups" type="checkbox" value={group} defaultChecked={selectedEditingHomeGroups.includes(group)} />
-                  <span>{group}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-          <div className="admin-category-field">
-            <button type="button" className="admin-category-toggle" aria-expanded="true" aria-controls="admin-image-subcategory-list">
-              <span>Sub Categories</span>
-              <span>{selectedEditingSubcategories.length || "No"} selected</span>
-            </button>
-            {categorySubcategoryGroups.length ? (
-              <div className="admin-category-checklist admin-subcategory-checklist" id="admin-image-subcategory-list" role="group" aria-label="Select cake subcategories">
-                {categorySubcategoryGroups.map((category) => (
-                  <div className="admin-subcategory-group" key={category.id}>
-                    <strong>{category.name}</strong>
-                    {category.subcategoryCtas.map((subcategory) => (
-                      <label className="admin-category-check-option" key={subcategory.id}>
-                        <input name="subcategoryCtaIds" type="checkbox" value={subcategory.id} defaultChecked={selectedEditingSubcategories.includes(subcategory.id)} />
-                        <span>{subcategory.label}</span>
-                      </label>
-                    ))}
-                  </div>
+            {isHomeGroupListOpen ? (
+              <div className="admin-category-checklist" id="admin-home-gallery-group-list" role="group" aria-label="Select home page cake gallery groups">
+                {homeGalleryGroups.map((group) => (
+                  <label className="admin-category-check-option" key={group}>
+                    <input name="homeGroups" type="checkbox" value={group} defaultChecked={selectedEditingHomeGroups.includes(group)} />
+                    <span>{group}</span>
+                  </label>
                 ))}
               </div>
             ) : (
-              <p className="admin-upload-status">Add subcategory CTAs from Categories first.</p>
+              selectedEditingHomeGroups.map((group) => <input key={group} name="homeGroups" type="hidden" value={group} />)
             )}
           </div>
-          <label>
+          {categorySubcategoryGroups.length ? (
+            <div className="admin-category-field">
+              <button
+                type="button"
+                className="admin-category-toggle"
+                onClick={() => setIsSubcategoryListOpen((isOpen) => !isOpen)}
+                aria-expanded={isSubcategoryListOpen}
+                aria-controls="admin-image-subcategory-list"
+              >
+                <span>Sub Categories</span>
+                <span>{isSubcategoryListOpen ? "Hide list" : `${selectedEditingSubcategories.length || "No"} selected`}</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true" className={isSubcategoryListOpen ? "admin-category-chevron-open" : ""}>
+                  <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
+                </svg>
+              </button>
+              {isSubcategoryListOpen ? (
+                <div className="admin-category-checklist admin-subcategory-checklist" id="admin-image-subcategory-list" role="group" aria-label="Select cake subcategories">
+                  {categorySubcategoryGroups.map((category) => (
+                    <div className="admin-subcategory-group" key={category.id}>
+                      <strong>{category.name}</strong>
+                      {category.subcategoryCtas.map((subcategory) => (
+                        <label className="admin-category-check-option" key={subcategory.id}>
+                          <input name="subcategoryCtaIds" type="checkbox" value={subcategory.id} defaultChecked={selectedEditingSubcategories.includes(subcategory.id)} />
+                          <span>{subcategory.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                selectedEditingSubcategories.map((subcategoryId) => <input key={subcategoryId} name="subcategoryCtaIds" type="hidden" value={subcategoryId} />)
+              )}
+            </div>
+          ) : (
+            selectedEditingSubcategories.map((subcategoryId) => <input key={subcategoryId} name="subcategoryCtaIds" type="hidden" value={subcategoryId} />)
+          )}
+          <label className="admin-gallery-modal-full">
             Short Description
             <textarea name="description" defaultValue={editing?.description ?? ""} placeholder="Short cake description" />
           </label>
@@ -603,7 +720,7 @@ export function GalleryManager({
             SEO Title
             <input name="seoTitle" defaultValue={editing?.seoTitle ?? ""} placeholder="Meta title" />
           </label>
-          <label>
+          <label className="admin-gallery-modal-full">
             Meta Description
             <textarea name="metaDescription" defaultValue={editing?.metaDescription ?? ""} placeholder="SEO meta description" />
           </label>
@@ -626,21 +743,17 @@ export function GalleryManager({
             <input name="featured" type="checkbox" defaultChecked={editing?.featured ?? false} />
             Featured Image
           </label>
-          <button type="submit">{editing ? "Update Image" : "Add Image"}</button>
-          {editing ? (
-            <button
-              type="button"
-              className="admin-secondary-button"
-              onClick={() => {
-                resetImageForm();
-              }}
-            >
-              Cancel Edit
-            </button>
-          ) : null}
-          {message ? <p role="status">{message}</p> : null}
-        </form>
-      </section>
+              {message ? <p className="admin-gallery-modal-message" role="status">{message}</p> : null}
+              <div className="admin-gallery-modal-actions">
+                <button type="button" className="admin-secondary-button" onClick={closeForm}>
+                  Cancel
+                </button>
+                <button type="submit">{editing ? "Update Image" : "Add Image"}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }
