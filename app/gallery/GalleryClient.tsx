@@ -387,18 +387,17 @@ export function GalleryClient() {
                         />
                       </div>
                     </div>
-                    <div className="p-3">
-                      <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-[#be1919]">{item.category}</p>
-                      <h3 className="mt-1 text-sm font-extrabold text-[#5d4037]">{item.title}</h3>
+                    <div className="p-3 text-center">
+                      <h3 className="text-sm font-extrabold text-[#5d4037]">{item.title}</h3>
                       <p className="mt-1 inline-flex items-center gap-1 rounded-full bg-[#fff5f0] px-2 py-0.5 text-[0.68rem] font-bold text-[#7d5b4f]">
                         Min. {item.minCakeSizeKg ?? 0.5} kg
                       </p>
                       <a
                         href={`/cakes/${item.slug}`}
                         aria-label={`View details for ${item.title}`}
-                        className="mt-1.5 inline-flex text-xs font-extrabold text-[#be1919] transition group-hover:text-[#8f0f0f] after:absolute after:inset-0 after:content-[''] after:rounded-[24px] focus-visible:outline-none"
+                        className="absolute inset-0 rounded-[24px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#be1919]/40"
                       >
-                        View Details
+                        <span className="sr-only">View {item.title}</span>
                       </a>
                     </div>
                   </article>
