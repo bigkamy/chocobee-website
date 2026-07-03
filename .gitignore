@@ -36,6 +36,10 @@ yarn-error.log*
 # admin password override + reset tokens (no database)
 /data/admin-auth.json
 
+# local source cake images — uploaded to S3, not served from the repo
+# (keeps the repo light and avoids bloating the Amplify build)
+/public/Images/Cake Image/
+
 # vercel
 .vercel
 
