@@ -464,9 +464,10 @@ export function GalleryManager({
                   </button>
                 </div>
               ) : (
-                filteredImages.map((image) => (
+                filteredImages.map((image, index) => (
                 <article className="admin-gallery-row" key={image.id}>
                   <div className="admin-gallery-thumb">
+                    <span className="admin-gallery-index" aria-label={`Image number ${index + 1}`}>{index + 1}</span>
                     <Image src={image.imageUrl} alt={image.altText} fill sizes="88px" className="object-cover" />
                   </div>
 

@@ -4033,6 +4033,23 @@ tr.is-drag-over td {
   box-shadow: 0 0.7rem 1.4rem rgba(93, 64, 55, 0.12);
 }
 
+.admin-gallery-index {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  min-width: 1.4rem;
+  padding: 0.12rem 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1.25;
+  color: #fff;
+  text-align: center;
+  background: #be1919;
+  border-bottom-right-radius: 0.6rem;
+  box-shadow: 0 0.2rem 0.5rem rgba(93, 64, 55, 0.28);
+}
+
 .admin-gallery-empty {
   display: grid;
   justify-items: center;
