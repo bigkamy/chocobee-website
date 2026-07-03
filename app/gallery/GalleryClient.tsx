@@ -362,7 +362,7 @@ export function GalleryClient() {
                 {visibleItems.map((item) => (
                   <article
                     key={item.id}
-                    className="group overflow-hidden rounded-[24px] bg-white shadow-[0_16px_40px_rgba(93,64,55,0.12)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_58px_rgba(93,64,55,0.18)]"
+                    className="group relative cursor-pointer overflow-hidden rounded-[24px] bg-white shadow-[0_16px_40px_rgba(93,64,55,0.12)] transition duration-300 hover:-translate-y-1.5 hover:shadow-[0_24px_58px_rgba(93,64,55,0.18)] focus-within:ring-2 focus-within:ring-[#be1919]/40"
                   >
                     <div className="relative aspect-[4/5] overflow-hidden">
                       <Image
@@ -373,7 +373,7 @@ export function GalleryClient() {
                         className="object-cover transition duration-500 group-hover:scale-110"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#2d1611]/70 via-[#2d1611]/10 to-transparent opacity-0 transition duration-300 group-hover:opacity-100" />
-                      <div className="absolute inset-x-4 bottom-4 flex translate-y-4 items-center justify-center gap-3 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+                      <div className="pointer-events-none absolute inset-x-4 bottom-4 z-20 flex translate-y-4 items-center justify-center gap-3 opacity-0 transition duration-300 group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100">
                         <WhatsAppEnquiryButton
                           variant="icon"
                           cakeTitle={item.title}
@@ -389,7 +389,11 @@ export function GalleryClient() {
                     <div className="p-3">
                       <p className="text-[0.62rem] font-extrabold uppercase tracking-[0.18em] text-[#be1919]">{item.category}</p>
                       <h3 className="mt-1 text-sm font-extrabold text-[#5d4037]">{item.title}</h3>
-                      <a href={`/cakes/${item.slug}`} className="mt-1.5 inline-flex text-xs font-extrabold text-[#be1919]">
+                      <a
+                        href={`/cakes/${item.slug}`}
+                        aria-label={`View details for ${item.title}`}
+                        className="mt-1.5 inline-flex text-xs font-extrabold text-[#be1919] transition group-hover:text-[#8f0f0f] after:absolute after:inset-0 after:content-[''] after:rounded-[24px] focus-visible:outline-none"
+                      >
                         View Details
                       </a>
                     </div>
