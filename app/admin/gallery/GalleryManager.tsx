@@ -476,8 +476,6 @@ export function GalleryManager({
                   <div className="admin-gallery-row-main">
                     <div className="admin-gallery-row-title">
                       <h2>{image.title}</h2>
-                      <p>/cakes/{image.slug}</p>
-                      <small>{image.description}</small>
                     </div>
 
                     <div className="admin-gallery-row-badges">
