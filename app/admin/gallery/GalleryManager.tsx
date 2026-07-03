@@ -502,6 +502,13 @@ export function GalleryManager({
                           )}
                         </div>
                       </div>
+
+                      <div className="admin-gallery-home-groups" aria-label={`Minimum cake size for ${image.title}`}>
+                        <span>Min. Cake Size</span>
+                        <div>
+                          <strong>{image.minCakeSizeKg ?? 0.5} kg</strong>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
