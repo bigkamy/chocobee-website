@@ -13,6 +13,7 @@ type SubcategoryCta = {
   href: string;
   displayOrder: number;
   status: "ACTIVE" | "INACTIVE";
+  showInFilter?: boolean;
 };
 
 type Category = {
@@ -340,7 +341,7 @@ export function GalleryClient() {
                   {categories.map((category) => {
                     const isActive = activeCategory === category.name;
                     const subcategoryCtas = category.subcategoryCtas
-                      ?.filter((cta) => cta.status === "ACTIVE")
+                      ?.filter((cta) => cta.status === "ACTIVE" && cta.showInFilter !== false)
                       .sort((a, b) => a.displayOrder - b.displayOrder || a.label.localeCompare(b.label)) ?? [];
                     const hasSubcategories = subcategoryCtas.length > 0;
                     const isExpanded = expandedCategories.includes(category.slug);

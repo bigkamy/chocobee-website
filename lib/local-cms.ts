@@ -11,6 +11,7 @@ export type CmsSubcategoryCta = {
   href: string;
   displayOrder: number;
   status: CmsStatus;
+  showInFilter?: boolean;
 };
 
 export type CmsCategory = {
@@ -1003,6 +1004,7 @@ function normalizeSubcategoryCtas(ctas: CmsSubcategoryCta[] | undefined) {
       href: cta.href || "#",
       displayOrder: cta.displayOrder ?? index + 1,
       status: cta.status ?? "ACTIVE",
+      showInFilter: cta.showInFilter ?? true,
     }))
     .sort((a, b) => a.displayOrder - b.displayOrder || a.label.localeCompare(b.label));
 }

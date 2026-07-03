@@ -934,10 +934,10 @@ img {
 .admin-subcategory-grid-head,
 .admin-subcategory-grid-row {
   display: grid;
-  grid-template-columns: 2rem minmax(0, 2fr) minmax(0, 2fr) minmax(0, 0.6fr) 2.3rem;
+  grid-template-columns: 2rem minmax(0, 2fr) minmax(0, 1.7fr) minmax(0, 0.7fr) minmax(0, 0.7fr) 2.3rem;
   align-items: center;
   gap: 0.5rem;
-  min-width: 28rem;
+  min-width: 32rem;
   padding: 0.4rem 0.55rem;
 }
 

@@ -19,6 +19,7 @@ type SubcategoryCta = {
   href: string;
   displayOrder: number;
   status: "ACTIVE" | "INACTIVE";
+  showInFilter?: boolean;
 };
 
 function slugify(value: string) {
@@ -103,6 +104,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
           href: "/gallery",
           displayOrder: nextIndex,
           status: "ACTIVE",
+          showInFilter: true,
         },
       ];
     });
@@ -239,6 +241,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
                   <span role="columnheader">Label</span>
                   <span role="columnheader">Link</span>
                   <span role="columnheader">Status</span>
+                  <span role="columnheader">Filter</span>
                   <span role="columnheader" aria-label="Delete" />
                 </div>
                 {subcategoryCtas.map((cta, index) => (
@@ -277,6 +280,10 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
                     <select aria-label="Status" value={cta.status} onChange={(event) => updateSubcategoryCta(index, { status: event.currentTarget.value as SubcategoryCta["status"] })}>
                       <option value="ACTIVE">Active</option>
                       <option value="INACTIVE">Inactive</option>
+                    </select>
+                    <select aria-label="Show in filter" value={cta.showInFilter === false ? "no" : "yes"} onChange={(event) => updateSubcategoryCta(index, { showInFilter: event.currentTarget.value === "yes" })}>
+                      <option value="yes">Show</option>
+                      <option value="no">Hide</option>
                     </select>
                     <button type="button" className="admin-action-icon admin-subcategory-delete" onClick={() => deleteSubcategoryCta(index)} aria-label="Delete subcategory CTA" title="Delete">
                       <TrashIcon />

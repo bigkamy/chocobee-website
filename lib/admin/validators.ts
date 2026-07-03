@@ -15,6 +15,7 @@ export const categorySchema = z.object({
         href: z.string().min(1),
         displayOrder: z.coerce.number().int().default(0),
         status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
+        showInFilter: z.coerce.boolean().optional(),
       }),
     )
     .optional()
