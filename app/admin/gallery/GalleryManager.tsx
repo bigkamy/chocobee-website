@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { GALLERY_AGE_GROUPS, GALLERY_FILTER_FIELDS, GALLERY_FILTERS_ENABLED, GALLERY_FLAVOURS, GALLERY_GENDERS, GALLERY_TIERS } from "@/lib/gallery-filters";
+import { GALLERY_FILTER_FIELDS, GALLERY_FILTERS_ENABLED } from "@/lib/gallery-filters";
 
 type Category = {
   id: string;
@@ -323,10 +323,6 @@ export function GalleryManager({
       altText: String(form.get("altText") || title),
       keywords: String(form.get("keywords") ?? ""),
       minCakeSizeKg: Number(form.get("minCakeSizeKg")) > 0 ? Number(form.get("minCakeSizeKg")) : 0.5,
-      gender: String(form.get("gender") ?? ""),
-      ageGroup: String(form.get("ageGroup") ?? ""),
-      flavour: String(form.get("flavour") ?? ""),
-      tier: String(form.get("tier") ?? ""),
       featured: form.get("featured") === "on",
       status: String(form.get("status") ?? "ACTIVE") as GalleryImage["status"],
     };
@@ -803,42 +799,6 @@ export function GalleryManager({
               />
               <span className="admin-size-unit">kg</span>
             </span>
-          </label>
-          <label>
-            Gender
-            <select name="gender" defaultValue={editing?.gender ?? ""}>
-              <option value="">Not set</option>
-              {GALLERY_GENDERS.map((value) => (
-                <option key={value} value={value}>{value}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Age Group
-            <select name="ageGroup" defaultValue={editing?.ageGroup ?? ""}>
-              <option value="">All</option>
-              {GALLERY_AGE_GROUPS.map((value) => (
-                <option key={value} value={value}>{value}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Flavour
-            <select name="flavour" defaultValue={editing?.flavour ?? ""}>
-              <option value="">All</option>
-              {GALLERY_FLAVOURS.map((value) => (
-                <option key={value} value={value}>{value}</option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Tier
-            <select name="tier" defaultValue={editing?.tier ?? ""}>
-              <option value="">All</option>
-              {GALLERY_TIERS.map((value) => (
-                <option key={value} value={value}>{value}</option>
-              ))}
-            </select>
           </label>
           <label className="admin-gallery-modal-full">
             Short Description
