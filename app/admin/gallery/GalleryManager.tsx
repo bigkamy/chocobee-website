@@ -691,6 +691,33 @@ export function GalleryManager({
             <button
               type="button"
               className="admin-category-toggle"
+              onClick={() => setIsHomeGroupListOpen((isOpen) => !isOpen)}
+              aria-expanded={isHomeGroupListOpen}
+              aria-controls="admin-home-gallery-group-list"
+            >
+              <span>Home Page Cake Gallery</span>
+              <span>{isHomeGroupListOpen ? "Hide list" : `${selectedEditingHomeGroups.length || "No"} selected`}</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true" className={isHomeGroupListOpen ? "admin-category-chevron-open" : ""}>
+                <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
+              </svg>
+            </button>
+            {isHomeGroupListOpen ? (
+              <div className="admin-category-checklist" id="admin-home-gallery-group-list" role="group" aria-label="Select home page cake gallery groups">
+                {homeGalleryGroups.map((group) => (
+                  <label className="admin-category-check-option" key={group}>
+                    <input name="homeGroups" type="checkbox" value={group} defaultChecked={selectedEditingHomeGroups.includes(group)} />
+                    <span>{group}</span>
+                  </label>
+                ))}
+              </div>
+            ) : (
+              selectedEditingHomeGroups.map((group) => <input key={group} name="homeGroups" type="hidden" value={group} />)
+            )}
+          </div>
+          <div className="admin-category-field">
+            <button
+              type="button"
+              className="admin-category-toggle"
               onClick={() => setIsCategoryListOpen((isOpen) => !isOpen)}
               aria-expanded={isCategoryListOpen}
               aria-controls="admin-image-category-list"
@@ -714,33 +741,6 @@ export function GalleryManager({
               </div>
             ) : (
               selectedEditingCategories.map((categoryId) => <input key={categoryId} name="categoryIds" type="hidden" value={categoryId} />)
-            )}
-          </div>
-          <div className="admin-category-field">
-            <button
-              type="button"
-              className="admin-category-toggle"
-              onClick={() => setIsHomeGroupListOpen((isOpen) => !isOpen)}
-              aria-expanded={isHomeGroupListOpen}
-              aria-controls="admin-home-gallery-group-list"
-            >
-              <span>Home Page Cake Gallery</span>
-              <span>{isHomeGroupListOpen ? "Hide list" : `${selectedEditingHomeGroups.length || "No"} selected`}</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true" className={isHomeGroupListOpen ? "admin-category-chevron-open" : ""}>
-                <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
-              </svg>
-            </button>
-            {isHomeGroupListOpen ? (
-              <div className="admin-category-checklist" id="admin-home-gallery-group-list" role="group" aria-label="Select home page cake gallery groups">
-                {homeGalleryGroups.map((group) => (
-                  <label className="admin-category-check-option" key={group}>
-                    <input name="homeGroups" type="checkbox" value={group} defaultChecked={selectedEditingHomeGroups.includes(group)} />
-                    <span>{group}</span>
-                  </label>
-                ))}
-              </div>
-            ) : (
-              selectedEditingHomeGroups.map((group) => <input key={group} name="homeGroups" type="hidden" value={group} />)
             )}
           </div>
           {categorySubcategoryGroups.length ? (
