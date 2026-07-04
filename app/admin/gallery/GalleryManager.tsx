@@ -280,8 +280,16 @@ export function GalleryManager({
     const savedImage = data.item;
 
     setImages((currentImages) => {
-      const withoutSavedImage = currentImages.filter((image) => image.id !== savedImage.id);
-      return [savedImage, ...withoutSavedImage];
+      // Keep an edited image in its existing position so the gallery doesn't
+      // jump to the top; only brand-new images are added at the front. `id` is
+      // the previous id when editing (also covers a changed slug).
+      const existingIndex = currentImages.findIndex((image) => image.id === (id ?? savedImage.id));
+      if (existingIndex === -1) {
+        return [savedImage, ...currentImages];
+      }
+      const nextImages = currentImages.slice();
+      nextImages[existingIndex] = savedImage;
+      return nextImages;
     });
 
     void refreshImages(savedImage);
