@@ -16,6 +16,7 @@ export const categorySchema = z.object({
         displayOrder: z.coerce.number().int().default(0),
         status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
         showInFilter: z.coerce.boolean().optional(),
+        filterFields: z.array(z.string()).optional(),
       }),
     )
     .optional()

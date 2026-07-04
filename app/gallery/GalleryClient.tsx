@@ -14,6 +14,7 @@ type SubcategoryCta = {
   displayOrder: number;
   status: "ACTIVE" | "INACTIVE";
   showInFilter?: boolean;
+  filterFields?: string[];
 };
 
 type Category = {
@@ -260,7 +261,31 @@ export function GalleryClient() {
     };
   }, [activeCategory, categories]);
 
-  const hasAttributeFilters = Boolean(genderFilter || ageFilter || sizeFilter || flavourFilter || tierFilter);
+  const activeSubcategory = useMemo(() => {
+    if (!activeSubcategoryId) return null;
+    for (const category of categories) {
+      const found = category.subcategoryCtas?.find((cta) => cta.id === activeSubcategoryId);
+      if (found) return found;
+    }
+    return null;
+  }, [activeSubcategoryId, categories]);
+
+  // When a subcategory is selected, only show the attribute filters it opts into
+  // (e.g. hide Gender under Birthday > Boy). Always intersect with the globally enabled fields.
+  const visibleFilterFields = useMemo(() => {
+    const ctaFields = activeSubcategory?.filterFields;
+    if (!ctaFields) return enabledFilterFields;
+    return enabledFilterFields.filter((key) => ctaFields.includes(key));
+  }, [enabledFilterFields, activeSubcategory]);
+
+  // A hidden field's selection must not silently narrow results, so treat it as unset.
+  const activeGender = visibleFilterFields.includes("gender") ? genderFilter : "";
+  const activeAge = visibleFilterFields.includes("age") ? ageFilter : "";
+  const activeSize = visibleFilterFields.includes("size") ? sizeFilter : "";
+  const activeFlavour = visibleFilterFields.includes("flavour") ? flavourFilter : "";
+  const activeTier = visibleFilterFields.includes("tier") ? tierFilter : "";
+
+  const hasAttributeFilters = Boolean(activeGender || activeAge || activeSize || activeFlavour || activeTier);
 
   const applyFilter = (setter: (value: string) => void) => (value: string) => {
     setter(value);
@@ -274,13 +299,13 @@ export function GalleryClient() {
         : items.filter((item) => item.category === activeCategory || item.categorySlugs?.includes(toSlug(activeCategory)));
 
     if (activeSubcategoryId) list = list.filter((item) => item.subcategoryCtaIds?.includes(activeSubcategoryId));
-    if (genderFilter) list = list.filter((item) => item.gender === genderFilter);
-    if (ageFilter) list = list.filter((item) => item.ageGroup === ageFilter);
-    if (flavourFilter) list = list.filter((item) => item.flavour === flavourFilter);
-    if (tierFilter) list = list.filter((item) => item.tier === tierFilter);
-    if (sizeFilter) list = list.filter((item) => sizeBucketOf(item.minCakeSizeKg) === sizeFilter);
+    if (activeGender) list = list.filter((item) => item.gender === activeGender);
+    if (activeAge) list = list.filter((item) => item.ageGroup === activeAge);
+    if (activeFlavour) list = list.filter((item) => item.flavour === activeFlavour);
+    if (activeTier) list = list.filter((item) => item.tier === activeTier);
+    if (activeSize) list = list.filter((item) => sizeBucketOf(item.minCakeSizeKg) === activeSize);
     return list;
-  }, [activeCategory, activeSubcategoryId, items, genderFilter, ageFilter, sizeFilter, flavourFilter, tierFilter]);
+  }, [activeCategory, activeSubcategoryId, items, activeGender, activeAge, activeSize, activeFlavour, activeTier]);
 
   const clearAttributeFilters = () => {
     setGenderFilter("");
@@ -319,6 +344,7 @@ export function GalleryClient() {
     categories.forEach((category) => category.subcategoryCtas?.forEach((cta) => map.set(cta.id, cta.label)));
     return map;
   }, [categories]);
+
 
   const subCategoryLabel = (item: GalleryItem) =>
     item.subcategoryCtaIds
@@ -425,7 +451,7 @@ export function GalleryClient() {
             </aside>
 
             <section aria-live="polite">
-              {enabledFilterFields.length ? (
+              {visibleFilterFields.length ? (
               <div className="mb-4 rounded-[20px] border border-white/70 bg-white/80 p-3 shadow-[0_10px_30px_rgba(93,64,55,0.08)] backdrop-blur">
                 <div className="mb-2 flex items-center justify-between">
                   <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#5d4037]">Filter Cakes</p>
@@ -436,11 +462,11 @@ export function GalleryClient() {
                   ) : null}
                 </div>
                 <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
-                  {enabledFilterFields.includes("gender") ? <FilterSelect label="Gender" value={genderFilter} onChange={applyFilter(setGenderFilter)} options={GALLERY_GENDERS} /> : null}
-                  {enabledFilterFields.includes("age") ? <FilterSelect label="Age" value={ageFilter} onChange={applyFilter(setAgeFilter)} options={GALLERY_AGE_GROUPS} /> : null}
-                  {enabledFilterFields.includes("size") ? <FilterSelect label="Size" value={sizeFilter} onChange={applyFilter(setSizeFilter)} options={GALLERY_SIZE_BUCKETS} /> : null}
-                  {enabledFilterFields.includes("flavour") ? <FilterSelect label="Flavour" value={flavourFilter} onChange={applyFilter(setFlavourFilter)} options={GALLERY_FLAVOURS} /> : null}
-                  {enabledFilterFields.includes("tier") ? <FilterSelect label="Tier" value={tierFilter} onChange={applyFilter(setTierFilter)} options={GALLERY_TIERS} /> : null}
+                  {visibleFilterFields.includes("gender") ? <FilterSelect label="Gender" value={genderFilter} onChange={applyFilter(setGenderFilter)} options={GALLERY_GENDERS} /> : null}
+                  {visibleFilterFields.includes("age") ? <FilterSelect label="Age" value={ageFilter} onChange={applyFilter(setAgeFilter)} options={GALLERY_AGE_GROUPS} /> : null}
+                  {visibleFilterFields.includes("size") ? <FilterSelect label="Size" value={sizeFilter} onChange={applyFilter(setSizeFilter)} options={GALLERY_SIZE_BUCKETS} /> : null}
+                  {visibleFilterFields.includes("flavour") ? <FilterSelect label="Flavour" value={flavourFilter} onChange={applyFilter(setFlavourFilter)} options={GALLERY_FLAVOURS} /> : null}
+                  {visibleFilterFields.includes("tier") ? <FilterSelect label="Tier" value={tierFilter} onChange={applyFilter(setTierFilter)} options={GALLERY_TIERS} /> : null}
                 </div>
               </div>
               ) : null}

@@ -934,10 +934,10 @@ img {
 .admin-subcategory-grid-head,
 .admin-subcategory-grid-row {
   display: grid;
-  grid-template-columns: 2rem minmax(0, 2fr) minmax(0, 1.7fr) minmax(0, 0.7fr) minmax(0, 0.7fr) 2.3rem;
+  grid-template-columns: 2rem minmax(0, 1.7fr) minmax(0, 1.4fr) minmax(0, 0.7fr) minmax(0, 0.7fr) minmax(0, 1.9fr) 2.3rem;
   align-items: center;
   gap: 0.5rem;
-  min-width: 32rem;
+  min-width: 42rem;
   padding: 0.4rem 0.55rem;
 }
 
@@ -977,6 +977,35 @@ img {
   border-color: rgba(190, 25, 25, 0.5);
   outline: none;
   box-shadow: 0 0 0 3px rgba(190, 25, 25, 0.09);
+}
+
+.admin-subcategory-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem 0.5rem;
+}
+
+.admin-subcategory-fields label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #7a4a3f;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.admin-subcategory-grid-row .admin-subcategory-fields input[type="checkbox"] {
+  width: auto;
+  min-width: 0;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  accent-color: #be1919;
+  cursor: pointer;
 }
 
 .admin-category-actions {

@@ -13,6 +13,7 @@ export type CmsSubcategoryCta = {
   displayOrder: number;
   status: CmsStatus;
   showInFilter?: boolean;
+  filterFields?: string[];
 };
 
 export type CmsCategory = {
@@ -1020,6 +1021,9 @@ function normalizeSubcategoryCtas(ctas: CmsSubcategoryCta[] | undefined) {
       displayOrder: cta.displayOrder ?? index + 1,
       status: cta.status ?? "ACTIVE",
       showInFilter: cta.showInFilter ?? true,
+      filterFields: cta.filterFields
+        ? GALLERY_FILTER_KEYS.filter((key) => cta.filterFields!.includes(key))
+        : undefined,
     }))
     .sort((a, b) => a.displayOrder - b.displayOrder || a.label.localeCompare(b.label));
 }
