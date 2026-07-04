@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useState } from "react";
-import { GALLERY_AGE_GROUPS, GALLERY_FILTER_FIELDS, GALLERY_FLAVOURS, GALLERY_GENDERS, GALLERY_TIERS } from "@/lib/gallery-filters";
+import { GALLERY_AGE_GROUPS, GALLERY_FILTER_FIELDS, GALLERY_FILTERS_ENABLED, GALLERY_FLAVOURS, GALLERY_GENDERS, GALLERY_TIERS } from "@/lib/gallery-filters";
 
 type Category = {
   id: string;
@@ -449,6 +449,7 @@ export function GalleryManager({
         </div>
       </header>
 
+      {GALLERY_FILTERS_ENABLED ? (
       <article className="admin-resource-card admin-gallery-filter-fields">
         <h2>Gallery Filter Fields</h2>
         <p className="admin-muted">Choose which filter dropdowns appear in the public gallery filter bar.</p>
@@ -467,6 +468,7 @@ export function GalleryManager({
           {filterFieldsMessage ? <span role="status">{filterFieldsMessage}</span> : null}
         </div>
       </article>
+      ) : null}
 
       <section className="admin-gallery-control-layout">
         <div className="admin-gallery-left-panel">

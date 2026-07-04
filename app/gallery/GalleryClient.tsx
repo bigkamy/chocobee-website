@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Breadcrumb } from "../Breadcrumb";
 import { NavBar } from "../NavBar";
 import { WhatsAppEnquiryButton } from "../WhatsAppEnquiryButton";
-import { GALLERY_AGE_GROUPS, GALLERY_FILTER_KEYS, GALLERY_FLAVOURS, GALLERY_GENDERS, GALLERY_SIZE_BUCKETS, GALLERY_TIERS, sizeBucketOf } from "@/lib/gallery-filters";
+import { GALLERY_AGE_GROUPS, GALLERY_FILTER_KEYS, GALLERY_FILTERS_ENABLED, GALLERY_FLAVOURS, GALLERY_GENDERS, GALLERY_SIZE_BUCKETS, GALLERY_TIERS, sizeBucketOf } from "@/lib/gallery-filters";
 
 type SubcategoryCta = {
   id: string;
@@ -451,7 +451,7 @@ export function GalleryClient() {
             </aside>
 
             <section aria-live="polite">
-              {visibleFilterFields.length ? (
+              {GALLERY_FILTERS_ENABLED && visibleFilterFields.length ? (
               <div className="mb-4 rounded-[20px] border border-white/70 bg-white/80 p-3 shadow-[0_10px_30px_rgba(93,64,55,0.08)] backdrop-blur">
                 <div className="mb-2 flex items-center justify-between">
                   <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-[#5d4037]">Filter Cakes</p>

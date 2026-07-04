@@ -28,6 +28,11 @@ export const GALLERY_TIERS = ["Single Tier", "2-Tier", "3-Tier", "Multi-Tier"] a
 
 export const GALLERY_SIZE_BUCKETS = ["Up to 1 kg", "1-2 kg", "2-3 kg", "3 kg & above"] as const;
 
+// Master switch for the gallery attribute-filter feature. Temporarily disabled —
+// hides the public "Filter Cakes" bar and the "Gallery Filter Fields" admin
+// checklist. Flip back to true to re-enable both. Underlying data/config is kept.
+export const GALLERY_FILTERS_ENABLED = false;
+
 // The toggleable gallery filter fields (admin can turn each on/off).
 export const GALLERY_FILTER_FIELDS = [
   { key: "gender", label: "Gender" },
