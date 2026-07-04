@@ -59,7 +59,7 @@ export default async function CakeDetailPage({ params }: PageProps) {
   return (
     <>
       <NavBar />
-      <main className="min-h-screen bg-[#fff5f0] px-5 pb-16 pt-44 text-[#5d4037] sm:px-8 lg:px-10 lg:pt-48">
+      <main className="min-h-screen bg-[#fff5f0] px-5 pb-16 pt-44 text-[#5d4037] sm:px-8 lg:px-10 lg:pt-52">
         <div className="mx-auto mb-8 max-w-6xl">
           <Breadcrumb items={[{ label: "Gallery", href: "/gallery" }, { label: cake.title }]} />
         </div>

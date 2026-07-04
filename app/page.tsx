@@ -108,10 +108,12 @@ function renderHeroTitle(title: string) {
 }
 
 export default async function Home() {
-  const homeSections = await listLocalHomePageSections({ activeOnly: true });
-  const customOrderSettings = await getLocalCustomOrderSettings();
-  const reviews = await listLocalReviews({ activeOnly: true });
-  const categories = await listLocalCategories({ activeOnly: true });
+  const [homeSections, customOrderSettings, reviews, categories] = await Promise.all([
+    listLocalHomePageSections({ activeOnly: true }),
+    getLocalCustomOrderSettings(),
+    listLocalReviews({ activeOnly: true }),
+    listLocalCategories({ activeOnly: true }),
+  ]);
   const categoryNameBySlug = new Map(categories.map((category) => [category.slug, category.name]));
   const subcategoryLabelById = new Map(
     categories.flatMap((category) => (category.subcategoryCtas ?? []).map((cta) => [cta.id, cta.label] as const)),

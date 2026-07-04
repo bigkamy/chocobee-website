@@ -1,8 +1,13 @@
 "use client";
 
 import { ReactNode, useState } from "react";
-import { CakeOrderGalleryImage, CakeOrderModal } from "./CakeOrderModal";
+import dynamic from "next/dynamic";
+import type { CakeOrderGalleryImage } from "./CakeOrderModal";
 import type { CmsCustomOrderSettings } from "@/lib/local-cms";
+
+// Load the ~500-line order modal (image upload, gallery picker, form) only
+// after the trigger is first clicked, keeping it out of every page's first load.
+const CakeOrderModal = dynamic(() => import("./CakeOrderModal").then((mod) => mod.CakeOrderModal), { ssr: false });
 
 export function CakeOrderTrigger({
   children,
@@ -16,13 +21,23 @@ export function CakeOrderTrigger({
   settings?: CmsCustomOrderSettings;
 }) {
   const [open, setOpen] = useState(false);
+  const [everOpened, setEverOpened] = useState(false);
 
   return (
     <>
-      <button type="button" className={className} onClick={() => setOpen(true)}>
+      <button
+        type="button"
+        className={className}
+        onClick={() => {
+          setEverOpened(true);
+          setOpen(true);
+        }}
+      >
         {children}
       </button>
-      <CakeOrderModal open={open} onClose={() => setOpen(false)} galleryImages={galleryImages} settings={settings} />
+      {everOpened ? (
+        <CakeOrderModal open={open} onClose={() => setOpen(false)} galleryImages={galleryImages} settings={settings} />
+      ) : null}
     </>
   );
 }

@@ -262,7 +262,7 @@ export default async function AboutPage() {
   return (
     <>
       <NavBar />
-      <main className="about-page-shell min-h-screen bg-[#fff5f0] pt-32 text-[#5d4037]">
+      <main className="about-page-shell min-h-screen bg-[#fff5f0] pt-44 text-[#5d4037] lg:pt-52">
         <div className="mx-auto max-w-7xl px-5 pt-8 sm:px-8 lg:px-10">
           <Breadcrumb items={[{ label: "About" }]} />
         </div>

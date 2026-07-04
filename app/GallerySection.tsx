@@ -195,7 +195,7 @@ export function GallerySection({ eyebrow, title, ctaLabel, ctaHref, images }: Ga
 
         <div className="gallery-grid">
           {visibleImages.map((image, index) => (
-            <figure className={`gallery-card gallery-card-${(index % 9) + 1} reveal`} key={image.label}>
+            <figure className={`gallery-card gallery-card-${(index % 9) + 1} reveal`} key={`${image.slug}-${index}`}>
               <Image
                 src={image.src}
                 alt={image.alt}

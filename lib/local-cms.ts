@@ -1,4 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
+import { cache } from "react";
 import path from "node:path";
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
@@ -1216,7 +1217,7 @@ function normalizeReviews(reviews: CmsReview[] | undefined) {
     .sort((a, b) => a.displayOrder - b.displayOrder || a.name.localeCompare(b.name));
 }
 
-async function ensureCmsFile() {
+async function loadCmsData() {
   const source = await readRawCmsData();
 
   if (source) {
@@ -1308,6 +1309,13 @@ async function ensureCmsFile() {
   await persistCmsDataQuietly(initialData);
   return initialData;
 }
+
+// Per-request memoized reader: React `cache()` dedupes calls within a single
+// server render/request, so a page that needs the footer + categories +
+// gallery + sections reads and normalizes the (large) CMS document ONCE
+// instead of 6+ times. The cache is request-scoped, so admin writes still read
+// fresh data at the start of each write request.
+const ensureCmsFile = cache(loadCmsData);
 
 // Reads the CMS document from Postgres, falling back to the bundled
 // data/cms.json (used to seed the database on first boot and for local dev
@@ -1401,6 +1409,20 @@ export async function updateLocalCategory(id: string, input: Partial<Omit<CmsCat
     };
     return updated;
   });
+
+  // The category id/slug IS the reference key gallery images store, so a slug
+  // change must be migrated across every image or those images silently drop
+  // out of the category on the gallery and home pages.
+  if (updated && updated.id !== id) {
+    const nextId = updated.id;
+    data.galleryImages = data.galleryImages.map((image) => ({
+      ...image,
+      categoryId: image.categoryId === id ? nextId : image.categoryId,
+      categorySlug: image.categorySlug === id ? nextId : image.categorySlug,
+      categoryIds: (image.categoryIds ?? []).map((categoryId) => (categoryId === id ? nextId : categoryId)),
+      categorySlugs: (image.categorySlugs ?? []).map((categorySlug) => (categorySlug === id ? nextId : categorySlug)),
+    }));
+  }
 
   await writeCmsData(data);
   return updated;

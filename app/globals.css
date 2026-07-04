@@ -3610,6 +3610,10 @@ tr.is-drag-over td {
   gap: 0.9rem 1rem;
   overflow-y: auto;
   padding: 1.4rem;
+  /* Let the scrollable form shrink inside the flex modal so the action row
+     below it stays reachable on short/landscape phone screens. */
+  min-height: 0;
+  flex: 1 1 auto;
 }
 
 .admin-gallery-modal-form > .admin-upload-control,

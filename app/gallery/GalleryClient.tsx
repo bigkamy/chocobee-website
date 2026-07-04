@@ -199,7 +199,9 @@ export function GalleryClient() {
           setCategories([{ name: "All", slug: "all", subcategoryCtas: [] }, ...nextCategories]);
         }
       } catch {
-        setCategories(fallbackCategories);
+        // Only fall back if this effect is still current — a stale rejected
+        // request must not clobber categories loaded by a newer run.
+        if (isMounted) setCategories(fallbackCategories);
       }
     }
 
@@ -211,6 +213,10 @@ export function GalleryClient() {
   }, []);
 
   useEffect(() => {
+    // The attribute-filter bar is disabled behind GALLERY_FILTERS_ENABLED, so
+    // skip this request entirely while the feature is off. Flipping the flag
+    // back on restores the fetch automatically.
+    if (!GALLERY_FILTERS_ENABLED) return;
     let active = true;
     fetch("/api/gallery-filters", { cache: "no-store" })
       .then((response) => (response.ok ? response.json() : null))
@@ -246,11 +252,13 @@ export function GalleryClient() {
             };
           }) ?? [];
 
-        if (isMounted && nextItems.length) {
+        if (isMounted) {
           setItems(nextItems);
         }
       } catch {
-        setItems(galleryItems);
+        // Guard against a stale rejected request replacing the live grid with
+        // the hard-coded demo images after the user switched category.
+        if (isMounted) setItems(galleryItems);
       }
     }
 

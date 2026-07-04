@@ -43,6 +43,7 @@ export function ContactForm({ section }: { section?: CmsContactPageSection }) {
     const replyTo = emailField ? String(formData.get(emailField.id) ?? "") : "";
 
     setErrorMessage("");
+    setSuccessMessage("");
     setSubmitting(true);
 
     try {
