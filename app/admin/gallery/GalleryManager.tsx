@@ -763,12 +763,14 @@ export function GalleryManager({
                   {categorySubcategoryGroups.map((category) => (
                     <div className="admin-subcategory-group" key={category.id}>
                       <strong>{category.name}</strong>
-                      {category.subcategoryCtas.map((subcategory) => (
-                        <label className="admin-category-check-option" key={subcategory.id}>
-                          <input name="subcategoryCtaIds" type="checkbox" value={subcategory.id} defaultChecked={selectedEditingSubcategories.includes(subcategory.id)} />
-                          <span>{subcategory.label}</span>
-                        </label>
-                      ))}
+                      <div className="admin-subcategory-options">
+                        {category.subcategoryCtas.map((subcategory) => (
+                          <label className="admin-category-check-option" key={subcategory.id}>
+                            <input name="subcategoryCtaIds" type="checkbox" value={subcategory.id} defaultChecked={selectedEditingSubcategories.includes(subcategory.id)} />
+                            <span>{subcategory.label}</span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>

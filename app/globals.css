@@ -3946,6 +3946,24 @@ tr.is-drag-over td {
   font-weight: 850;
 }
 
+/* Subcategory options: 3 columns, capped at 6 rows (items) per column with a
+   vertical scrollbar when a group has more than 18 options. */
+.admin-subcategory-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: max-content;
+  gap: 0.3rem 0.5rem;
+  max-height: 12.6rem; /* 6 rows * 1.85rem + 5 gaps * 0.3rem */
+  overflow-y: auto;
+  padding-right: 0.15rem;
+}
+
+@media (max-width: 560px) {
+  .admin-subcategory-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 .admin-category-check-option input {
   width: 0.82rem;
   min-height: 0.82rem;
