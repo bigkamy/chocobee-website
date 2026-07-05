@@ -39,6 +39,7 @@ export type CmsReview = {
 
 export type CmsGalleryImage = {
   id: string;
+  cakeId?: string;
   title: string;
   slug: string;
   description?: string | null;
@@ -1236,6 +1237,7 @@ async function loadCmsData() {
       })),
       galleryImages: (parsed.galleryImages ?? defaultGalleryImages).map((image) => ({
         ...image,
+        cakeId: image.cakeId || deriveCakeId(image),
         categoryIds: image.categoryIds?.length ? image.categoryIds : image.categoryId ? [image.categoryId] : [],
         categorySlugs: image.categorySlugs?.length ? image.categorySlugs : image.categorySlug ? [image.categorySlug] : [],
         subcategoryCtaIds: image.subcategoryCtaIds ?? [],
@@ -1534,16 +1536,32 @@ export async function getLocalGalleryImageBySlug(slug: string) {
   return data.galleryImages.find((image) => image.slug === slug && image.status === "ACTIVE") ?? null;
 }
 
+// Stable, human-readable "Cake ID" (e.g. CB-1A2B3C4) for a gallery image. Derived
+// deterministically from the upload's unique image URL so it stays constant across
+// reads without a migration, and is preserved once stored (see normalization).
+function deriveCakeId(image: Pick<CmsGalleryImage, "imageUrl" | "id" | "slug" | "createdAt">) {
+  const seed = `${image.imageUrl ?? ""}|${image.id ?? image.slug ?? ""}|${image.createdAt ?? ""}`;
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < seed.length; i += 1) {
+    hash ^= seed.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  const code = (hash >>> 0).toString(36).toUpperCase().padStart(7, "0").slice(-7);
+  return `CB-${code}`;
+}
+
 export async function createLocalGalleryImage(input: Omit<CmsGalleryImage, "id" | "createdAt">) {
   const data = await ensureCmsFile();
   const slug = input.slug || slugify(input.title);
   const categories = resolveImageCategories(data.categories, input.categoryIds, input.categoryId);
+  const createdAt = new Date().toISOString();
   const image: CmsGalleryImage = {
     ...input,
     id: slug,
     slug,
+    cakeId: input.cakeId || deriveCakeId({ imageUrl: input.imageUrl, id: slug, slug, createdAt }),
     ...categories,
-    createdAt: new Date().toISOString(),
+    createdAt,
   };
 
   data.galleryImages = [...data.galleryImages.filter((item) => item.id !== image.id), image];

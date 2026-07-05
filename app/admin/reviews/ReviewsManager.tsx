@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import { EditIcon, TrashIcon } from "../ActionIcons";
+import { notifyPublished } from "../AdminToast";
 
 type Review = {
   id: string;
@@ -52,6 +53,7 @@ export function ReviewsManager({ initialReviews, embedded = false }: { initialRe
     formElement.reset();
     setEditing(null);
     setMessage(editing ? "Review updated." : "Review added.");
+    notifyPublished();
     await loadReviews();
   }
 

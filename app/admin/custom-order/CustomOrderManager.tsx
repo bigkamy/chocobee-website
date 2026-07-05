@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FormEvent, useState } from "react";
 import type { CmsCustomOrderOption, CmsCustomOrderOptionGroup, CmsCustomOrderSettings } from "@/lib/local-cms";
+import { notifyPublished } from "../AdminToast";
 
 const optionGroups: { key: CmsCustomOrderOptionGroup; label: string }[] = [
   { key: "occasion", label: "Occasions" },
@@ -132,6 +133,7 @@ export function CustomOrderManager({ initialSettings, embedded = false }: { init
     setSavedSettings(data.item);
     setIsEditing(false);
     setMessage("Custom order popup updated successfully.");
+    notifyPublished();
     window.setTimeout(() => setMessage(""), 2600);
   }
 

@@ -410,6 +410,69 @@ img {
     linear-gradient(145deg, #d94848 0%, #be1919 48%, #6d1212 100%);
 }
 
+/* Global "New Changes Published" bar shown at the top of the admin panel after a
+   successful publish/update/save (see AdminToast + notifyPublished). */
+.admin-toast-viewport {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  padding-top: 1rem;
+  pointer-events: none;
+}
+
+.admin-toast {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  max-width: calc(100vw - 2rem);
+  padding: 0.72rem 1.3rem;
+  border-radius: 999px;
+  background: #16a34a;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  box-shadow: 0 14px 34px rgba(22, 163, 74, 0.34);
+  transform: translateY(-160%);
+  opacity: 0;
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.32s ease;
+}
+
+.admin-toast-visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.admin-toast-check {
+  display: inline-grid;
+  place-items: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.admin-toast-check svg {
+  width: 0.8rem;
+  height: 0.8rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-toast {
+    transition: opacity 0.2s ease;
+    transform: none;
+  }
+}
+
 .admin-shell {
   position: relative;
   z-index: 4;
@@ -959,10 +1022,10 @@ img {
 .admin-subcategory-grid-head,
 .admin-subcategory-grid-row {
   display: grid;
-  grid-template-columns: 2rem minmax(0, 1.7fr) minmax(0, 1.4fr) minmax(0, 0.7fr) minmax(0, 0.7fr) minmax(0, 1.9fr) 2.3rem;
+  grid-template-columns: 2rem minmax(0, 1.7fr) minmax(0, 1.4fr) minmax(0, 0.7fr) minmax(0, 0.7fr) 2.3rem;
   align-items: center;
   gap: 0.5rem;
-  min-width: 42rem;
+  min-width: 30rem;
   padding: 0.4rem 0.55rem;
 }
 
@@ -1002,35 +1065,6 @@ img {
   border-color: rgba(190, 25, 25, 0.5);
   outline: none;
   box-shadow: 0 0 0 3px rgba(190, 25, 25, 0.09);
-}
-
-.admin-subcategory-fields {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.2rem 0.5rem;
-}
-
-.admin-subcategory-fields label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.62rem;
-  font-weight: 700;
-  color: #7a4a3f;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  cursor: pointer;
-}
-
-.admin-subcategory-grid-row .admin-subcategory-fields input[type="checkbox"] {
-  width: auto;
-  min-width: 0;
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-  accent-color: #be1919;
-  cursor: pointer;
 }
 
 .admin-category-actions {
@@ -4316,6 +4350,20 @@ tr.is-drag-over td {
   color: #43251d;
   font-size: 0.95rem;
   font-weight: 900;
+}
+
+.admin-gallery-cake-id {
+  justify-self: start;
+  padding: 0.12rem 0.5rem;
+  border: 1px solid #f1d6d6;
+  border-radius: 999px;
+  background: #fbeaea;
+  color: #a3160f;
+  font-family: ui-monospace, "SFMono-Regular", "Cascadia Code", Menlo, Consolas, monospace;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .admin-gallery-row-title p {

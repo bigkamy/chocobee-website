@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import type { CmsFooterSettings } from "@/lib/local-cms";
+import { notifyPublished } from "../AdminToast";
 
 // Locale-independent date format (dd/mm/yyyy) so SSR and client output match and avoid hydration mismatches.
 function formatDate(value: string) {
@@ -71,6 +72,7 @@ export function BrochureManager({ initialSettings }: { initialSettings: CmsFoote
 
     setSettings(data.item);
     setMessage("Brochure published successfully.");
+    notifyPublished();
     window.setTimeout(() => setMessage(""), 2600);
   }
 

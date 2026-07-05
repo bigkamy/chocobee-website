@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AdminNav } from "./AdminNav";
+import { AdminToast } from "./AdminToast";
 
 const inter = Inter({
   variable: "--font-admin",
@@ -22,6 +23,7 @@ export const dynamic = "force-dynamic";
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={`admin-shell ${inter.variable}`}>
+      <AdminToast />
       <AdminNav />
       <div className="admin-main">{children}</div>
     </div>

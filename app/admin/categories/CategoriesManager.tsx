@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { EditIcon, GripIcon, TrashIcon } from "../ActionIcons";
-import { GALLERY_FILTER_FIELDS, GALLERY_FILTER_KEYS } from "@/lib/gallery-filters";
+import { notifyPublished } from "../AdminToast";
 
 type Category = {
   id: string;
@@ -76,6 +76,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
     setEditing(null);
     setSubcategoryCtas([]);
     setMessage(editing ? "Category updated." : "Category added.");
+    notifyPublished();
     await loadCategories();
   }
 
@@ -122,19 +123,6 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
           ...patch,
           id: patch.id ?? cta.id ?? slugify(label),
         };
-      }),
-    );
-  }
-
-  function toggleSubcategoryFilterField(index: number, key: string) {
-    setSubcategoryCtas((current) =>
-      current.map((cta, ctaIndex) => {
-        if (ctaIndex !== index) return cta;
-        const currentFields = cta.filterFields ?? [...GALLERY_FILTER_KEYS];
-        const nextFields = currentFields.includes(key)
-          ? currentFields.filter((field) => field !== key)
-          : GALLERY_FILTER_KEYS.filter((field) => currentFields.includes(field) || field === key);
-        return { ...cta, filterFields: nextFields };
       }),
     );
   }
@@ -200,6 +188,7 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
   async function publishCategories() {
     await loadCategories();
     setMessage("Categories published to the live website.");
+    notifyPublished();
   }
 
   return (
@@ -257,7 +246,6 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
                   <span role="columnheader">Link</span>
                   <span role="columnheader">Status</span>
                   <span role="columnheader">Filter</span>
-                  <span role="columnheader">Filter Fields</span>
                   <span role="columnheader" aria-label="Delete" />
                 </div>
                 {subcategoryCtas.map((cta, index) => (
@@ -301,21 +289,6 @@ export function CategoriesManager({ initialCategories }: { initialCategories: Ca
                       <option value="yes">Show</option>
                       <option value="no">Hide</option>
                     </select>
-                    <div className="admin-subcategory-fields" role="group" aria-label={`Filter fields shown when ${cta.label || "this subcategory"} is selected`}>
-                      {GALLERY_FILTER_FIELDS.map((field) => {
-                        const checked = cta.filterFields ? cta.filterFields.includes(field.key) : true;
-                        return (
-                          <label key={field.key} title={`Show the ${field.label} filter when this subcategory is selected`}>
-                            <input
-                              type="checkbox"
-                              checked={checked}
-                              onChange={() => toggleSubcategoryFilterField(index, field.key)}
-                            />
-                            {field.label}
-                          </label>
-                        );
-                      })}
-                    </div>
                     <button type="button" className="admin-action-icon admin-subcategory-delete" onClick={() => deleteSubcategoryCta(index)} aria-label="Delete subcategory CTA" title="Delete">
                       <TrashIcon />
                     </button>

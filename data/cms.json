@@ -10,17 +10,19 @@
       "subcategoryCtas": [
         {
           "id": "subcategory-cta-1",
-          "label": "vgggvgf",
+          "label": "sdsss",
           "href": "/gallery",
           "displayOrder": 1,
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "showInFilter": true
         },
         {
           "id": "subcategory-cta-2",
           "label": "jghjgjjj",
           "href": "/gallery",
           "displayOrder": 2,
-          "status": "ACTIVE"
+          "status": "ACTIVE",
+          "showInFilter": true
         }
       ]
     },
@@ -134,7 +136,11 @@
       "status": "ACTIVE",
       "createdAt": "2026-06-30T08:19:04.224Z",
       "subcategoryCtaIds": [],
-      "minCakeSizeKg": 0.5
+      "minCakeSizeKg": 0.5,
+      "gender": null,
+      "ageGroup": null,
+      "flavour": null,
+      "tier": null
     },
     {
       "id": "royal-wedding-lace-cake",
@@ -163,7 +169,11 @@
       "status": "ACTIVE",
       "createdAt": "2026-06-30T08:19:04.224Z",
       "subcategoryCtaIds": [],
-      "minCakeSizeKg": 0.5
+      "minCakeSizeKg": 0.5,
+      "gender": null,
+      "ageGroup": null,
+      "flavour": null,
+      "tier": null
     },
     {
       "id": "kids-candy-theme-cake",
@@ -191,7 +201,11 @@
       "status": "ACTIVE",
       "createdAt": "2026-06-30T08:19:04.224Z",
       "subcategoryCtaIds": [],
-      "minCakeSizeKg": 0.5
+      "minCakeSizeKg": 0.5,
+      "gender": null,
+      "ageGroup": null,
+      "flavour": null,
+      "tier": null
     },
     {
       "title": "sadsadasdasd",
@@ -221,7 +235,11 @@
         "birthday-cakes"
       ],
       "createdAt": "2026-06-30T08:33:20.596Z",
-      "minCakeSizeKg": 0.5
+      "minCakeSizeKg": 0.5,
+      "gender": null,
+      "ageGroup": null,
+      "flavour": null,
+      "tier": null
     }
   ],
   "homePageSections": [
@@ -1064,6 +1082,8 @@
     "formErrorMessage": "Please fill all required details correctly.",
     "copyrightText": "© 2026 Chocobee Cake Studio. All Rights Reserved.",
     "creditText": "Designed with love by Chocobee",
+    "brochurePdfUrl": "/CB_Brochure.pdf",
+    "brochurePdfName": "CB_Brochure.pdf",
     "updatedAt": "2026-06-30T08:19:04.225Z"
   },
   "customOrderSettings": {
@@ -1416,5 +1436,12 @@
       "displayOrder": 10,
       "status": "ACTIVE"
     }
+  ],
+  "galleryFilterFields": [
+    "gender",
+    "age",
+    "size",
+    "flavour",
+    "tier"
   ]
 }

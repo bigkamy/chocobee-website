@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { notifyPublished } from "../AdminToast";
 import { GALLERY_FILTER_FIELDS, GALLERY_FILTERS_ENABLED } from "@/lib/gallery-filters";
 
 type Category = {
@@ -21,6 +22,7 @@ type SubcategoryCta = {
 
 type GalleryImage = {
   id: string;
+  cakeId?: string;
   title: string;
   slug: string;
   description?: string | null;
@@ -179,6 +181,7 @@ export function GalleryManager({
   async function publishGallery() {
     await refreshImages();
     setMessage("Image gallery published to the live website.");
+    notifyPublished();
   }
 
   function toggleFilterField(key: string) {
@@ -332,6 +335,7 @@ export function GalleryManager({
 
     setIsFormOpen(false);
     resetImageForm(editing ? "Image updated." : "Image added.");
+    notifyPublished();
     if (!editing) {
       setQuery("");
       setCategoryFilter("all");
@@ -543,6 +547,11 @@ export function GalleryManager({
                   <div className="admin-gallery-row-main">
                     <div className="admin-gallery-row-title">
                       <h2>{image.title}</h2>
+                      {image.cakeId ? (
+                        <span className="admin-gallery-cake-id" title="Unique Cake ID">
+                          ID: {image.cakeId}
+                        </span>
+                      ) : null}
                     </div>
 
                     <div className="admin-gallery-row-badges">
