@@ -157,7 +157,7 @@ export default async function Home() {
       <NavBar customOrderSettings={customOrderSettings} />
 
       {heroSection ? (
-      <section id="hero" className="relative pt-20 sm:pt-24">
+      <section id="hero" className="relative pt-24">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 pb-0 sm:px-8 md:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:pb-0">
           <div className="reveal relative z-10 mx-auto max-w-2xl text-center md:mx-0 md:text-left">
             <h1 className="font-heading text-[2.35rem] leading-[0.95] text-[#5D4037] sm:text-[3.35rem] lg:text-[4.1rem]">

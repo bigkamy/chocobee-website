@@ -1,7 +1,6 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import { ChangeEvent, DragEvent, FormEvent, ReactNode, useEffect, useMemo, useReducer, useState } from "react";
 import { createPortal } from "react-dom";
 import type { CmsCustomOrderOptionGroup, CmsCustomOrderSettings } from "@/lib/local-cms";
@@ -16,6 +15,9 @@ export type CakeOrderGalleryImage = {
 };
 
 type FormState = {
+  name: string;
+  phone: string;
+  email: string;
   occasion: string;
   size: string;
   tier: string;
@@ -35,6 +37,9 @@ type FieldName = keyof FormState;
 type Action = { field: FieldName; value: string } | { type: "reset" };
 
 const initialState: FormState = {
+  name: "",
+  phone: "",
+  email: "",
   occasion: "",
   size: "",
   tier: "Single Tier",
@@ -110,26 +115,33 @@ function todayDate() {
 }
 
 function validateField(field: FieldName, value: string) {
+  if (field === "name" && value.trim().length < 2) return "Name is required.";
+  if (field === "phone" && value.replace(/\D/g, "").length < 10) return "Enter a valid phone number.";
+  if (field === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) return "Enter a valid email address.";
   if (field === "occasion" && !value) return "Cake occasion is required.";
   if (field === "size" && !value) return "Cake size is required.";
   if (field === "flavour" && !value) return "Cake flavour is required.";
+  if (field === "theme" && !value.trim()) return "Cake theme is required.";
   if (field === "address" && value.trim().length < 10) return "Delivery address should be at least 10 characters.";
   if (field === "date" && (!value || value <= todayDate())) return "Delivery date must be a future date.";
+  if (field === "time" && !value) return "Delivery time is required.";
   return "";
 }
 
 function FormInput({
   label,
   error,
+  required,
   children,
 }: {
   label: string;
   error?: string;
+  required?: boolean;
   children: ReactNode;
 }) {
   return (
     <label className="cake-order-field">
-      <span>{label}</span>
+      <span>{label}{required ? <em className="cake-order-required" aria-hidden="true"> *</em> : null}</span>
       {children}
       {error ? <small>{error}</small> : null}
     </label>
@@ -142,7 +154,7 @@ function activeOptions(settings: CmsCustomOrderSettings, group: CmsCustomOrderOp
     .sort((a, b) => a.displayOrder - b.displayOrder || a.label.localeCompare(b.label));
 }
 
-function buildMessage(state: FormState, selectedGallery: CakeOrderGalleryImage[], uploadedImageUrls: string[], settings: CmsCustomOrderSettings) {
+function buildMessage(state: FormState, selectedGallery: CakeOrderGalleryImage[], uploadedImageUrls: string[]) {
   const imageLines = [
     ...selectedGallery.map((image) => `${image.label}: ${image.src}`),
     ...uploadedImageUrls.map((url) => `Uploaded reference: ${url}`),
@@ -151,9 +163,9 @@ function buildMessage(state: FormState, selectedGallery: CakeOrderGalleryImage[]
   return [
     "Custom Cake Order",
     "",
-    `Customer: ${settings.userName}`,
-    `Phone: ${settings.userPhone}`,
-    `Email: ${settings.userEmail}`,
+    `Customer: ${state.name}`,
+    `Phone: ${state.phone}`,
+    `Email: ${state.email}`,
     "",
     `Occasion: ${state.occasion}`,
     `Size: ${state.size}`,
@@ -200,7 +212,7 @@ export function CakeOrderModal({
   const filePreviews = useMemo(() => files.map((file) => ({ file, src: URL.createObjectURL(file) })), [files]);
 
   const errors = useMemo(() => {
-    const fields: FieldName[] = ["occasion", "size", "flavour", "address", "date"];
+    const fields: FieldName[] = ["name", "phone", "email", "occasion", "size", "flavour", "theme", "address", "date", "time"];
     return fields.reduce<Partial<Record<FieldName, string>>>((result, field) => {
       const error = validateField(field, state[field]);
       if (error) result[field] = error;
@@ -308,7 +320,7 @@ export function CakeOrderModal({
     event.preventDefault();
     setAttempted(true);
     setSubmitError("");
-    setTouched({ occasion: true, size: true, flavour: true, address: true, date: true });
+    setTouched({ name: true, phone: true, email: true, occasion: true, size: true, flavour: true, theme: true, address: true, date: true, time: true });
 
     if (Object.keys(errors).length) return;
 
@@ -318,15 +330,15 @@ export function CakeOrderModal({
     try {
       setSubmitting(true);
       const uploadedImageUrls = await uploadReferenceImages();
-      const message = buildMessage(state, selectedGallery, uploadedImageUrls, popupSettings);
+      const message = buildMessage(state, selectedGallery, uploadedImageUrls);
       const whatsappLink = `https://wa.me/${STUDIO_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
       const response = await fetch("/api/send-whatsapp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: popupSettings.userName,
-          phone: popupSettings.userPhone,
+          name: state.name,
+          phone: state.phone,
           cake: [state.occasion, state.size, state.tier, state.flavour].filter(Boolean).join(" | "),
           message,
         }),
@@ -384,14 +396,20 @@ export function CakeOrderModal({
               <div className="cake-order-section-heading">
                 <span>1</span>
                 <h3>{popupSettings.userSectionTitle}</h3>
-                <em>Auto-filled</em>
               </div>
-              <div className="cake-order-user-grid">
-                <article><span>Name</span><strong>{popupSettings.userName}</strong></article>
-                <article><span>Phone</span><strong>{popupSettings.userPhone}</strong></article>
-                <article><span>Email</span><strong>{popupSettings.userEmail}</strong></article>
+              <div className="cake-order-grid">
+                <FormInput label="Name" required error={showError("name")}>
+                  <input value={state.name} onBlur={() => markTouched("name")} onChange={(event) => update("name", event.currentTarget.value)} placeholder="Your full name" />
+                </FormInput>
+                <FormInput label="Phone" required error={showError("phone")}>
+                  <input value={state.phone} type="tel" onBlur={() => markTouched("phone")} onChange={(event) => update("phone", event.currentTarget.value)} placeholder="e.g., +91 98765 43210" />
+                </FormInput>
+                <div className="cake-order-full-row">
+                  <FormInput label="Email" required error={showError("email")}>
+                    <input value={state.email} type="email" onBlur={() => markTouched("email")} onChange={(event) => update("email", event.currentTarget.value)} placeholder="you@example.com" />
+                  </FormInput>
+                </div>
               </div>
-              <Link href={popupSettings.switchAccountHref} className="cake-order-switch">{popupSettings.switchAccountLabel}</Link>
             </section>
 
             <section className="cake-order-section">
@@ -400,13 +418,13 @@ export function CakeOrderModal({
                 <h3>{popupSettings.cakeSectionTitle}</h3>
               </div>
               <div className="cake-order-grid">
-                <FormInput label="Cake Occasion" error={showError("occasion")}>
+                <FormInput label="Cake Occasion" required error={showError("occasion")}>
                   <select value={state.occasion} onBlur={() => markTouched("occasion")} onChange={(event) => update("occasion", event.currentTarget.value)}>
                     <option value="">Select occasion</option>
                     {activeOptions(popupSettings, "occasion").map((item) => <option value={item.value} key={item.id}>{item.label}</option>)}
                   </select>
                 </FormInput>
-                <FormInput label="Cake Size" error={showError("size")}>
+                <FormInput label="Cake Size" required error={showError("size")}>
                   <select value={state.size} onBlur={() => markTouched("size")} onChange={(event) => update("size", event.currentTarget.value)}>
                     <option value="">Select size</option>
                     {activeOptions(popupSettings, "size").map((item) => <option value={item.value} key={item.id}>{item.label}</option>)}
@@ -417,14 +435,14 @@ export function CakeOrderModal({
                     {activeOptions(popupSettings, "tier").map((item) => <option value={item.value} key={item.id}>{item.label}</option>)}
                   </select>
                 </FormInput>
-                <FormInput label="Cake Flavour" error={showError("flavour")}>
+                <FormInput label="Cake Flavour" required error={showError("flavour")}>
                   <select value={state.flavour} onBlur={() => markTouched("flavour")} onChange={(event) => update("flavour", event.currentTarget.value)}>
                     <option value="">Select flavour</option>
                     {activeOptions(popupSettings, "flavour").map((item) => <option value={item.value} key={item.id}>{item.label}</option>)}
                   </select>
                 </FormInput>
-                <FormInput label="Cake Theme">
-                  <input value={state.theme} onChange={(event) => update("theme", event.currentTarget.value)} placeholder={popupSettings.themePlaceholder} />
+                <FormInput label="Cake Theme" required error={showError("theme")}>
+                  <input value={state.theme} onBlur={() => markTouched("theme")} onChange={(event) => update("theme", event.currentTarget.value)} placeholder={popupSettings.themePlaceholder} />
                 </FormInput>
                 <div className="cake-order-grid">
                   <FormInput label={`Text on Cake ${state.cakeText.length}/${popupSettings.cakeTextMaxLength}`}>
@@ -435,16 +453,16 @@ export function CakeOrderModal({
                   </FormInput>
                 </div>
                 <div className="cake-order-full-row">
-                  <FormInput label="Delivery Address" error={showError("address")}>
+                  <FormInput label="Delivery Address" required error={showError("address")}>
                     <textarea rows={3} value={state.address} onBlur={() => markTouched("address")} onChange={(event) => update("address", event.currentTarget.value)} placeholder={popupSettings.addressPlaceholder} />
                   </FormInput>
                 </div>
                 <div className="cake-order-delivery-stack">
-                  <FormInput label="Delivery Date" error={showError("date")}>
+                  <FormInput label="Delivery Date" required error={showError("date")}>
                     <input type="date" min={todayDate()} value={state.date} onBlur={() => markTouched("date")} onChange={(event) => update("date", event.currentTarget.value)} />
                   </FormInput>
-                  <FormInput label="Delivery Time">
-                    <select value={state.time} onChange={(event) => update("time", event.currentTarget.value)}>
+                  <FormInput label="Delivery Time" required error={showError("time")}>
+                    <select value={state.time} onBlur={() => markTouched("time")} onChange={(event) => update("time", event.currentTarget.value)}>
                       <option value="">Select time</option>
                       {activeOptions(popupSettings, "time").map((item) => <option value={item.value} key={item.id}>{item.label}</option>)}
                     </select>
@@ -515,7 +533,6 @@ export function CakeOrderModal({
               >
                 {submitting ? popupSettings.submittingLabel : popupSettings.submitLabel}
               </button>
-              <p>{popupSettings.footerNote}</p>
             </footer>
           </form>
         )}

@@ -3048,6 +3048,12 @@ tr.is-drag-over td {
   font-weight: 800;
 }
 
+.cake-order-required {
+  color: #be1919;
+  font-style: normal;
+  font-weight: 800;
+}
+
 .cake-order-user-grid strong {
   display: block;
   margin-top: 0.05rem;
@@ -5117,7 +5123,7 @@ button.admin-action-icon.is-manage.is-open {
 .categories-section {
   position: relative;
   content-visibility: auto;
-  contain-intrinsic-size: 52rem;
+  contain-intrinsic-size: auto 52rem;
   padding: 8rem 1.25rem 6.5rem;
   background:
     radial-gradient(circle at 12% 14%, rgba(255, 215, 0, 0.24), transparent 18rem),
@@ -5367,7 +5373,7 @@ button.admin-action-icon.is-manage.is-open {
   overflow: hidden;
   isolation: isolate;
   content-visibility: auto;
-  contain-intrinsic-size: 46rem;
+  contain-intrinsic-size: auto 46rem;
   padding: 5.75rem 1.25rem;
   background:
     radial-gradient(circle at 12% 16%, rgba(255, 183, 197, 0.22), transparent 18rem),
@@ -5640,7 +5646,7 @@ button.admin-action-icon.is-manage.is-open {
   position: relative;
   overflow: hidden;
   content-visibility: auto;
-  contain-intrinsic-size: 58rem;
+  contain-intrinsic-size: auto 58rem;
   padding: 5.5rem 1.25rem;
   background:
     radial-gradient(circle at 16% 16%, rgba(255, 183, 197, 0.42), transparent 17rem),
@@ -7243,7 +7249,9 @@ button.admin-action-icon.is-manage.is-open {
 
   .cake-order-grid > .cake-order-field,
   .cake-order-grid > .cake-order-grid,
-  .cake-order-field {
+  .cake-order-field,
+  .cake-order-delivery-stack,
+  .cake-order-full-row {
     grid-column: auto;
   }
 
@@ -7314,7 +7322,8 @@ button.admin-action-icon.is-manage.is-open {
 
   .cupcake-photo {
     border-width: 0;
-    height: min(54vh, 28.6rem);
+    height: auto;
+    width: min(88vw, 24rem);
     max-width: min(88vw, 24rem);
   }
 
@@ -7334,12 +7343,69 @@ button.admin-action-icon.is-manage.is-open {
 
 @keyframes navbarLogoCompactMobile {
   from {
-    width: 9rem;
-    height: 6.6rem;
+    width: 6.3rem;
+    height: 4.6rem;
   }
   to {
-    width: 5.5rem;
-    height: 4.1rem;
+    width: 5rem;
+    height: 3.7rem;
+  }
+}
+
+/* Compact the fixed navbar on all phone/small-tablet widths (< md, where the
+   hamburger menu is used). The desktop logo is ~235x172px, which on a phone
+   overlaps the hero heading and crowds the CTA — shrink it, tighten the bar
+   height, and keep the CTA on one line so the header reads cleanly. */
+@media (max-width: 767px) {
+  .site-navbar-inner {
+    min-height: 4.4rem !important;
+    padding-top: 0.35rem !important;
+    padding-bottom: 0.35rem !important;
+  }
+
+  .nav-logo-frame {
+    width: 6.3rem;
+    height: 4.6rem;
+  }
+
+  .nav-logo-frame-scrolled {
+    width: 5rem;
+    height: 3.7rem;
+  }
+
+  .site-navbar-cta {
+    gap: 0.35rem;
+    padding: 0.45rem 0.7rem !important;
+    font-size: 0.72rem !important;
+    white-space: nowrap;
+  }
+
+  /* Mobile hero: lift the cake image so it sits directly under the navbar, with
+     the heading/copy below it. Also drop the desktop negative-margin overlap so
+     the Why-Us cards stack cleanly instead of covering the hero buttons. */
+  #hero > div {
+    gap: 1.4rem;
+  }
+
+  #hero .hero-image-static {
+    order: -1;
+  }
+
+  #why-us {
+    margin-top: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .site-navbar-inner {
+      animation: none !important;
+    }
+    .site-navbar-cta {
+      animation: none !important;
+    }
+    .site-navbar .nav-logo-frame {
+      animation-name: navbarLogoCompactMobile;
+    }
   }
 }
 
