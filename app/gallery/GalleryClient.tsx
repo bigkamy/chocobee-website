@@ -171,6 +171,8 @@ export function GalleryClient() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeSubcategoryId, setActiveSubcategoryId] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+  // Categories panel starts minimized on mobile/tablet; always shown on desktop (lg).
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>(fallbackCategories);
   const [items, setItems] = useState<GalleryItem[]>(galleryItems);
   const [visibleCount, setVisibleCount] = useState(initialVisible);
@@ -364,7 +366,7 @@ export function GalleryClient() {
     <>
       <NavBar />
       <main className="min-h-screen bg-[#fff5f0] text-[#5d4037]">
-        <section className="relative overflow-hidden px-4 pb-16 pt-48 sm:px-6 lg:px-8 lg:pb-20 lg:pt-56">
+        <section className="relative overflow-hidden px-4 pb-16 pt-24 sm:px-6 md:pt-48 lg:px-8 lg:pb-20 lg:pt-56">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_8%,rgba(255,183,197,0.5),transparent_20rem),radial-gradient(circle_at_92%_15%,rgba(255,215,0,0.22),transparent_18rem),linear-gradient(120deg,rgba(255,255,255,0.58),transparent)]" />
           <div className="relative mx-auto max-w-7xl">
             <Breadcrumb items={[{ label: "Gallery" }]} />
@@ -373,7 +375,7 @@ export function GalleryClient() {
             <h1 className="mt-3 font-heading text-4xl leading-tight text-[#5d4037] sm:text-5xl lg:text-6xl">
               Our Delicious Creations
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[#7d5b4f] sm:text-base">
+            <p className="mx-auto mt-4 hidden max-w-2xl text-sm leading-7 text-[#7d5b4f] sm:block sm:text-base">
               Browse signature cakes, custom themes, elegant wedding tiers, and handcrafted cookies made for sweet celebrations.
             </p>
           </div>
@@ -381,11 +383,21 @@ export function GalleryClient() {
           <div className="grid gap-6 lg:grid-cols-[minmax(220px,25%)_1fr]">
             <aside className="lg:sticky lg:top-24 lg:self-start">
               <div className="rounded-[28px] border border-white/70 bg-white/78 p-4 shadow-[0_18px_44px_rgba(93,64,55,0.1)] backdrop-blur">
-                <div className="mb-4 flex items-center gap-2 text-[#be1919]">
+                <button
+                  type="button"
+                  onClick={() => setCategoriesOpen((open) => !open)}
+                  className="flex w-full items-center gap-2 rounded-2xl bg-[#be1919] px-4 py-3 text-white lg:pointer-events-none"
+                  aria-expanded={categoriesOpen}
+                  aria-controls="gallery-category-list"
+                >
                   <CakeIcon />
-                  <h2 className="text-lg font-extrabold text-[#5d4037]">Categories</h2>
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
+                  <h2 className="flex-1 text-left text-lg font-extrabold text-white">Categories</h2>
+                  <ChevronIcon className={`h-5 w-5 transition-transform duration-200 lg:hidden ${categoriesOpen ? "rotate-180" : ""}`} />
+                </button>
+                <div
+                  id="gallery-category-list"
+                  className={`mt-4 gap-2 sm:grid-cols-2 lg:grid lg:grid-cols-1 ${categoriesOpen ? "grid" : "hidden"}`}
+                >
                   {categories.map((category) => {
                     const isActive = activeCategory === category.name;
                     const subcategoryCtas = category.subcategoryCtas
@@ -487,7 +499,7 @@ export function GalleryClient() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-3 2xl:grid-cols-4">
                 {visibleItems.map((item) => (
                   <article
                     key={item.id}
