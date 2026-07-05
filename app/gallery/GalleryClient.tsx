@@ -167,7 +167,7 @@ function FilterSelect({
   );
 }
 
-export function GalleryClient() {
+export function GalleryClient({ brochureUrl, brochureName }: { brochureUrl?: string; brochureName?: string } = {}) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [activeSubcategoryId, setActiveSubcategoryId] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
@@ -364,9 +364,9 @@ export function GalleryClient() {
 
   return (
     <>
-      <NavBar />
+      <NavBar brochureUrl={brochureUrl} brochureName={brochureName} />
       <main className="min-h-screen bg-[#fff5f0] text-[#5d4037]">
-        <section className="relative overflow-hidden px-4 pb-16 pt-24 sm:px-6 md:pt-48 lg:px-8 lg:pb-20 lg:pt-56">
+        <section className="relative overflow-hidden px-4 pb-16 pt-24 sm:px-6 md:pt-44 lg:px-8 lg:pb-20">
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_8%,rgba(255,183,197,0.5),transparent_20rem),radial-gradient(circle_at_92%_15%,rgba(255,215,0,0.22),transparent_18rem),linear-gradient(120deg,rgba(255,255,255,0.58),transparent)]" />
           <div className="relative mx-auto max-w-7xl">
             <Breadcrumb items={[{ label: "Gallery" }]} />

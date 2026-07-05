@@ -6,7 +6,7 @@ import { HeroOrderActions } from "./HeroOrderActions";
 import { NavBar } from "./NavBar";
 import { ReviewsSection } from "./ReviewsSection";
 import { getPublicImageDimensions } from "@/lib/image-dimensions";
-import { getLocalCustomOrderSettings, listLocalCategories, listLocalGalleryImages, listLocalHomePageSections, listLocalReviews, type CmsHomePageSection } from "@/lib/local-cms";
+import { getLocalBrochureSettings, getLocalCustomOrderSettings, listLocalCategories, listLocalGalleryImages, listLocalHomePageSections, listLocalReviews, type CmsHomePageSection } from "@/lib/local-cms";
 
 export const dynamic = "force-dynamic";
 
@@ -108,11 +108,12 @@ function renderHeroTitle(title: string) {
 }
 
 export default async function Home() {
-  const [homeSections, customOrderSettings, reviews, categories] = await Promise.all([
+  const [homeSections, customOrderSettings, reviews, categories, brochure] = await Promise.all([
     listLocalHomePageSections({ activeOnly: true }),
     getLocalCustomOrderSettings(),
     listLocalReviews({ activeOnly: true }),
     listLocalCategories({ activeOnly: true }),
+    getLocalBrochureSettings(),
   ]);
   const categoryNameBySlug = new Map(categories.map((category) => [category.slug, category.name]));
   const subcategoryLabelById = new Map(
@@ -154,7 +155,7 @@ export default async function Home() {
     <main className="site-shell min-h-screen overflow-hidden text-[#5D4037]">
       <DecorativeSprinkles />
 
-      <NavBar customOrderSettings={customOrderSettings} />
+      <NavBar customOrderSettings={customOrderSettings} brochureUrl={brochure.url} brochureName={brochure.name} />
 
       {heroSection ? (
       <section id="hero" className="relative pt-24">

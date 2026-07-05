@@ -1491,6 +1491,71 @@ tr.is-drag-over td {
   }
 }
 
+.admin-footer-brochure {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.admin-footer-brochure-current {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid #ececf1;
+  border-radius: 0.75rem;
+  background: #f8f9fb;
+}
+
+.admin-footer-brochure-file {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  font-weight: 600;
+}
+
+.admin-footer-brochure-file svg {
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+  fill: none;
+  stroke: #be1919;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.admin-footer-brochure-file a {
+  overflow: hidden;
+  color: #1f2430;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-footer-brochure-empty {
+  color: #8a8f9c;
+  font-size: 0.85rem;
+}
+
+.admin-footer-brochure-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  align-items: end;
+}
+
+.admin-footer-brochure-fields .admin-upload-control {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .admin-footer-brochure-fields {
+    grid-template-columns: 1fr;
+  }
+}
+
 .admin-footer-danger-button {
   border-color: rgba(190, 25, 25, 0.22);
   color: #be1919;
@@ -6544,8 +6609,42 @@ body:has(.admin-shell) .site-notice-band {
 }
 
 .footer-socials-brand {
-  justify-content: center;
+  justify-content: flex-start;
   margin-top: 0.48rem;
+}
+
+/* Download-brochure pill in the footer brand column: white outline variant of
+   the navbar CTA, left-aligned with the socials. */
+.footer-brochure {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  width: fit-content;
+  margin-top: 0.6rem;
+  padding: 0.5rem 1.2rem;
+  border: 1.5px solid #fff;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 800;
+  transition: background 0.22s ease, color 0.22s ease, transform 0.22s ease;
+}
+
+.footer-brochure:hover {
+  background: #fff;
+  color: #be1919;
+  transform: translateY(-0.14rem);
+}
+
+.footer-brochure svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
 }
 
 .footer-socials a,

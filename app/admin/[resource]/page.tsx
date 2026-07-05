@@ -19,8 +19,13 @@ const helpMap: Record<AdminResourceKey, string[]> = {
   settings: ["Upload logo and footer content.", "Update social links used around the site."],
 };
 
+// These admin sections were removed; 404 these paths instead of falling back to
+// the generic placeholder scaffold below.
+const removedResourcePages = new Set(["about", "contact", "home-page", "team", "settings"]);
+
 export default async function AdminResourcePage({ params }: { params: Promise<{ resource: string }> }) {
   const { resource: resourceParam } = await params;
+  if (removedResourcePages.has(resourceParam)) notFound();
   const resource = adminResources[resourceParam as AdminResourceKey];
   if (!resource) notFound();
 

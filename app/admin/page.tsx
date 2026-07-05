@@ -3,18 +3,12 @@ import Link from "next/link";
 const metrics = [
   ["Total Categories", "5", "Birthday, Wedding, Designer, Kids, Cookies"],
   ["Gallery Images", "0", "Upload cake photos from Gallery"],
-  ["Team Members", "0", "Manage About page team"],
 ];
 
 const quickActions = [
-  ["Manage Home Page", "/admin/home-page"],
   ["Add Category", "/admin/categories"],
   ["Upload Gallery Images", "/admin/gallery"],
-  ["Control Footer", "/admin/footer"],
-  ["Edit About Page", "/admin/about"],
-  ["Manage Team Members", "/admin/team"],
-  ["Update Contact Details", "/admin/contact"],
-  ["Website Settings", "/admin/settings"],
+  ["Manage Brochure", "/admin/footer"],
 ];
 
 export default function AdminDashboardPage() {

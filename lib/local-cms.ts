@@ -140,6 +140,8 @@ export type CmsFooterSettings = {
   formErrorMessage: string;
   copyrightText: string;
   creditText: string;
+  brochurePdfUrl: string;
+  brochurePdfName: string;
   updatedAt: string;
 };
 
@@ -919,6 +921,8 @@ export const defaultFooterSettings: CmsFooterSettings = {
   formErrorMessage: "Please fill all required details correctly.",
   copyrightText: "© 2026 Chocobee Cake Studio. All Rights Reserved.",
   creditText: "Designed with love by Chocobee",
+  brochurePdfUrl: "/CB_Brochure.pdf",
+  brochurePdfName: "CB_Brochure.pdf",
   updatedAt: new Date().toISOString(),
 };
 
@@ -1054,6 +1058,8 @@ function normalizeFooterSettings(settings?: Partial<CmsFooterSettings>): CmsFoot
     quickLinks: normalizeFooterLinks(settings?.quickLinks, defaultFooterSettings.quickLinks),
     categoryLinks: normalizeFooterLinks(settings?.categoryLinks, defaultFooterSettings.categoryLinks),
     socialLinks: normalizeFooterSocialLinks(settings?.socialLinks, defaultFooterSettings.socialLinks),
+    brochurePdfUrl: settings?.brochurePdfUrl ?? defaultFooterSettings.brochurePdfUrl,
+    brochurePdfName: settings?.brochurePdfName ?? defaultFooterSettings.brochurePdfName,
     updatedAt: settings?.updatedAt ?? new Date().toISOString(),
   };
 }
@@ -1740,6 +1746,17 @@ export async function deleteLocalContactPageSection(id: string) {
 export async function getLocalFooterSettings() {
   const data = await ensureCmsFile();
   return data.footerSettings;
+}
+
+// Brochure PDF wired to the "Download Brochure" buttons in the navbar and
+// footer. Stored on the footer settings doc; exposed here for the navbar, which
+// otherwise does not receive the full footer settings.
+export async function getLocalBrochureSettings() {
+  const data = await ensureCmsFile();
+  return {
+    url: data.footerSettings.brochurePdfUrl,
+    name: data.footerSettings.brochurePdfName,
+  };
 }
 
 export async function updateLocalFooterSettings(input: Partial<CmsFooterSettings>) {

@@ -48,7 +48,15 @@ const navItems = [
   },
 ];
 
-export function NavBar({ customOrderSettings }: { customOrderSettings?: CmsCustomOrderSettings }) {
+export function NavBar({
+  customOrderSettings,
+  brochureUrl = "/CB_Brochure.pdf",
+  brochureName = "CB_Brochure.pdf",
+}: {
+  customOrderSettings?: CmsCustomOrderSettings;
+  brochureUrl?: string;
+  brochureName?: string;
+}) {
   const [hasScrolled, setHasScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -118,6 +126,25 @@ export function NavBar({ customOrderSettings }: { customOrderSettings?: CmsCusto
         </div>
 
         <div className="flex items-center gap-2 sm:gap-3">
+          {brochureUrl ? (
+            <a
+              href={brochureUrl}
+              download={brochureName || undefined}
+              className={`site-navbar-brochure hidden items-center gap-2 rounded-full border border-[#be1919] font-bold text-[#be1919] transition hover:-translate-y-0.5 hover:bg-[#be1919] hover:text-white lg:inline-flex ${
+                hasScrolled ? "px-3 py-2 text-sm sm:px-4" : "px-4 py-2.5 text-sm sm:px-5"
+              }`}
+            >
+              <span className="nav-menu-icon nav-cta-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <path d="M12 4v9" />
+                  <path d="m8 11 4 4 4-4" />
+                  <path d="M5 19h14" />
+                </svg>
+              </span>
+              Download Brochure
+            </a>
+          ) : null}
+
           <CakeOrderTrigger
             settings={customOrderSettings}
             className={`site-navbar-cta rounded-full bg-[#be1919] text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#a91515] ${
@@ -166,6 +193,23 @@ export function NavBar({ customOrderSettings }: { customOrderSettings?: CmsCusto
                 {item.label}
               </Link>
             ))}
+            {brochureUrl ? (
+              <a
+                href={brochureUrl}
+                download={brochureName || undefined}
+                onClick={() => setMenuOpen(false)}
+                className="mt-1 flex items-center justify-center gap-2 rounded-xl bg-[#be1919] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#a91515]"
+              >
+                <span className="nav-menu-icon nav-cta-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 4v9" />
+                    <path d="m8 11 4 4 4-4" />
+                    <path d="M5 19h14" />
+                  </svg>
+                </span>
+                Download Brochure
+              </a>
+            ) : null}
           </nav>
         </div>
       ) : null}

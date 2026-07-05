@@ -115,6 +115,16 @@ export function FooterClient({ settings }: { settings: CmsFooterSettings }) {
                 </FooterLink>
               ))}
             </div>
+            {settings.brochurePdfUrl ? (
+              <a href={settings.brochurePdfUrl} download={settings.brochurePdfName || undefined} className="footer-brochure">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 4v9" />
+                  <path d="m8 11 4 4 4-4" />
+                  <path d="M5 19h14" />
+                </svg>
+                Download Brochure
+              </a>
+            ) : null}
           </section>
 
           <nav className="footer-links" aria-label="Footer quick links">

@@ -232,6 +232,8 @@ export const footerSettingsSchema = z.object({
   formErrorMessage: z.string().min(1),
   copyrightText: z.string().min(1),
   creditText: z.string().min(1),
+  brochurePdfUrl: z.string().default(""),
+  brochurePdfName: z.string().default(""),
 });
 
 const customOrderOptionSchema = z.object({

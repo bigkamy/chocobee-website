@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Footer } from "../Footer";
 import { GalleryClient } from "./GalleryClient";
+import { getLocalBrochureSettings } from "@/lib/local-cms";
 
 export const metadata: Metadata = {
   title: "Cakes & Cookies Gallery | Chocobee Cake Studio",
@@ -8,10 +9,12 @@ export const metadata: Metadata = {
     "Explore Chocobee Cake Studio's premium cakes and cookies gallery, including birthday cakes, wedding cakes, kids theme cakes, designer cakes, and custom cookies.",
 };
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const brochure = await getLocalBrochureSettings();
+
   return (
     <>
-      <GalleryClient />
+      <GalleryClient brochureUrl={brochure.url} brochureName={brochure.name} />
       <Footer />
     </>
   );

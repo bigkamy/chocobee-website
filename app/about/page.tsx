@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Breadcrumb } from "../Breadcrumb";
 import { Footer } from "../Footer";
 import { NavBar } from "../NavBar";
-import { listLocalAboutPageSections } from "@/lib/local-cms";
+import { getLocalBrochureSettings, listLocalAboutPageSections } from "@/lib/local-cms";
 import type { CmsAboutPageSection, CmsAboutSectionItem } from "@/lib/local-cms";
 
 export const metadata: Metadata = {
@@ -47,9 +47,9 @@ function StorySection({ section }: { section: CmsAboutPageSection }) {
   const slides = orderedActiveItems(section.items);
 
   return (
-    <section id={section.sectionKey} className="px-5 pb-16 pt-3 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
+    <section id={section.sectionKey} className="px-5 pb-16 pt-3 sm:px-8 sm:pb-20 sm:pt-6 lg:px-10 lg:pb-24 lg:pt-6">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-10">
+        <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr] lg:items-start lg:gap-10">
           <SectionIntro section={section} />
           {slides.length ? (
             <div className="about-story-slider order-first lg:order-none">
@@ -257,13 +257,16 @@ function AboutSection({ section }: { section: CmsAboutPageSection }) {
 }
 
 export default async function AboutPage() {
-  const sections = await listLocalAboutPageSections({ activeOnly: true });
+  const [sections, brochure] = await Promise.all([
+    listLocalAboutPageSections({ activeOnly: true }),
+    getLocalBrochureSettings(),
+  ]);
 
   return (
     <>
-      <NavBar />
-      <main className="about-page-shell min-h-screen bg-[#fff5f0] pt-24 text-[#5d4037] md:pt-44 lg:pt-52">
-        <div className="mx-auto max-w-7xl px-5 pt-2 sm:px-8 md:pt-8 lg:px-10">
+      <NavBar brochureUrl={brochure.url} brochureName={brochure.name} />
+      <main className="about-page-shell min-h-screen bg-[#fff5f0] pt-24 text-[#5d4037] md:pt-40">
+        <div className="mx-auto max-w-7xl px-5 pt-2 sm:px-8 md:pt-4 lg:px-10">
           <Breadcrumb items={[{ label: "About" }]} />
         </div>
         {sections.map((section) => (

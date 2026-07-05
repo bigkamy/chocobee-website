@@ -1,8 +1,8 @@
 import { getLocalFooterSettings } from "@/lib/local-cms";
-import { FooterManager } from "./FooterManager";
+import { BrochureManager } from "./BrochureManager";
 
-export default async function AdminFooterPage() {
+export default async function AdminBrochurePage() {
   const settings = await getLocalFooterSettings();
 
-  return <FooterManager initialSettings={settings} />;
+  return <BrochureManager initialSettings={settings} />;
 }

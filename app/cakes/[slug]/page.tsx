@@ -7,7 +7,7 @@ import { CakeShareActions } from "@/app/CakeShareActions";
 import { Footer } from "@/app/Footer";
 import { NavBar } from "@/app/NavBar";
 import { WhatsAppEnquiryButton } from "@/app/WhatsAppEnquiryButton";
-import { getLocalGalleryImageBySlug, listLocalCategories } from "@/lib/local-cms";
+import { getLocalBrochureSettings, getLocalGalleryImageBySlug, listLocalCategories } from "@/lib/local-cms";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -41,7 +41,10 @@ export default async function CakeDetailPage({ params }: PageProps) {
 
   if (!cake) notFound();
 
-  const categories = await listLocalCategories({ activeOnly: true });
+  const [categories, brochure] = await Promise.all([
+    listLocalCategories({ activeOnly: true }),
+    getLocalBrochureSettings(),
+  ]);
   const primarySlug = cake.categorySlug ?? cake.categorySlugs?.[0] ?? null;
   const categoryName = categories.find((category) => category.slug === primarySlug)?.name ?? primarySlug ?? null;
   const subCategory =
@@ -58,7 +61,7 @@ export default async function CakeDetailPage({ params }: PageProps) {
 
   return (
     <>
-      <NavBar />
+      <NavBar brochureUrl={brochure.url} brochureName={brochure.name} />
       <main className="min-h-screen bg-[#fff5f0] px-5 pb-16 pt-44 text-[#5d4037] sm:px-8 lg:px-10 lg:pt-52">
         <div className="mx-auto mb-8 max-w-6xl">
           <Breadcrumb items={[{ label: "Gallery", href: "/gallery" }, { label: cake.title }]} />
