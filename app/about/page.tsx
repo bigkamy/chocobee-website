@@ -47,12 +47,12 @@ function StorySection({ section }: { section: CmsAboutPageSection }) {
   const slides = orderedActiveItems(section.items);
 
   return (
-    <section id={section.sectionKey} className="px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
+    <section id={section.sectionKey} className="px-5 pb-16 pt-3 sm:px-8 sm:py-20 lg:px-10 lg:py-24">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-10 lg:grid-cols-[1fr_0.9fr] lg:items-center">
+        <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr] lg:items-center lg:gap-10">
           <SectionIntro section={section} />
           {slides.length ? (
-            <div className="about-story-slider">
+            <div className="about-story-slider order-first lg:order-none">
               <div className="about-story-slider-track">
                 {slides.slice(0, 6).map((item, index) => (
                   <article key={item.id} className={`about-story-slide about-story-slide-${index + 1}`}>
@@ -262,8 +262,8 @@ export default async function AboutPage() {
   return (
     <>
       <NavBar />
-      <main className="about-page-shell min-h-screen bg-[#fff5f0] pt-44 text-[#5d4037] lg:pt-52">
-        <div className="mx-auto max-w-7xl px-5 pt-8 sm:px-8 lg:px-10">
+      <main className="about-page-shell min-h-screen bg-[#fff5f0] pt-24 text-[#5d4037] md:pt-44 lg:pt-52">
+        <div className="mx-auto max-w-7xl px-5 pt-2 sm:px-8 md:pt-8 lg:px-10">
           <Breadcrumb items={[{ label: "About" }]} />
         </div>
         {sections.map((section) => (

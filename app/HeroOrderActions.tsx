@@ -25,12 +25,12 @@ export function HeroOrderActions({
   customOrderSettings?: CmsCustomOrderSettings;
 }) {
   const primaryClass =
-    "inline-flex min-h-12 items-center justify-center rounded-full bg-[#be1919] px-8 text-sm font-bold text-white shadow-[0_18px_30px_rgba(190,25,25,0.28)] transition hover:-translate-y-1 hover:bg-[#a91515]";
+    "inline-flex min-h-12 flex-1 items-center justify-center whitespace-nowrap rounded-full bg-[#be1919] px-5 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-[#a91515] sm:flex-none sm:px-8";
   const secondaryClass =
-    "inline-flex min-h-12 items-center justify-center rounded-full border-2 border-[#be1919] bg-white/55 px-8 text-sm font-bold text-[#be1919] transition hover:-translate-y-1 hover:bg-[#fff2ba]";
+    "inline-flex min-h-12 flex-1 items-center justify-center whitespace-nowrap rounded-full border-2 border-[#be1919] bg-white/55 px-5 text-sm font-bold text-[#be1919] transition hover:-translate-y-1 hover:bg-[#fff2ba] sm:flex-none sm:px-8";
 
   return (
-    <div className="mt-8 flex flex-col items-center gap-5 sm:flex-row sm:gap-7 md:items-start">
+    <div className="mt-8 flex flex-row items-center justify-center gap-3 sm:gap-7 md:items-start md:justify-start">
       {isCustomOrderAction(primaryLabel, primaryHref) ? (
         <CakeOrderTrigger className={primaryClass} galleryImages={galleryImages} settings={customOrderSettings}>
           {primaryLabel ?? "Custom Orders"}

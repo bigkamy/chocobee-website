@@ -120,7 +120,7 @@ export function NavBar({ customOrderSettings }: { customOrderSettings?: CmsCusto
         <div className="flex items-center gap-2 sm:gap-3">
           <CakeOrderTrigger
             settings={customOrderSettings}
-            className={`site-navbar-cta rounded-full bg-[#be1919] text-sm font-bold text-white shadow-[0_12px_22px_rgba(190,25,25,0.28)] transition hover:-translate-y-0.5 hover:bg-[#a91515] ${
+            className={`site-navbar-cta rounded-full bg-[#be1919] text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-[#a91515] ${
               hasScrolled ? "px-3 py-2 sm:px-4" : "px-4 py-2.5 sm:px-5"
             }`}
           >

@@ -201,7 +201,7 @@ export function GallerySection({ eyebrow, title, ctaLabel, ctaHref, images }: Ga
                 alt={image.alt}
                 width={image.width ?? 900}
                 height={image.height ?? 760}
-                sizes="(max-width: 640px) 92vw, (max-width: 1024px) 23vw, 18vw"
+                sizes="(max-width: 640px) 46vw, (max-width: 1024px) 23vw, 18vw"
                 className="gallery-image"
               />
               <div className="gallery-card-actions" aria-label={`${image.label} actions`}>

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { CategoriesCarousel } from "./CategoriesCarousel";
 
 const defaultCategories = [
   {
@@ -101,38 +101,7 @@ export function CategoriesSection({ eyebrow, title, content, ctaLabel, ctaHref, 
           </p>
         </div>
 
-        <div className="categories-grid-static">
-          {visibleCards.map((category) => (
-            <article className="category-card" key={category.title}>
-              <div className="category-image-shell">
-                <Image
-                  src={category.imageUrl}
-                  alt={category.imageAlt}
-                  width={900}
-                  height={720}
-                  sizes="(max-width: 640px) 86vw, (max-width: 1024px) 42vw, 360px"
-                  className="category-image"
-                />
-              </div>
-
-              <div className="category-card-heading">{category.title}</div>
-              <span className="category-card-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2L12 17.3l-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z" />
-                </svg>
-              </span>
-
-              <div className="category-content">
-                <div className="category-desc-wrap">
-                  <p>{category.description}</p>
-                </div>
-                <a href={category.ctaHref ?? ctaHref ?? "#contact"} className="category-more">
-                  {category.ctaLabel ?? ctaLabel ?? "Explore More"}
-                </a>
-              </div>
-            </article>
-          ))}
-        </div>
+        <CategoriesCarousel cards={visibleCards} ctaLabel={ctaLabel} ctaHref={ctaHref} />
       </div>
     </section>
   );

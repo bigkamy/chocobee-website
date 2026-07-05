@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Pacifico, Poppins } from "next/font/google";
+import { SiteNoticeBand } from "./SiteNoticeBand";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -62,6 +63,7 @@ export default function RootLayout({
       className={`${poppins.variable} ${pacifico.variable} h-full scroll-smooth antialiased`}
     >
       <body suppressHydrationWarning className="min-h-full flex flex-col">
+        <SiteNoticeBand />
         <div className="bakery-icon-layer" aria-hidden="true">
           <span className="bakery-icon bakery-icon-cupcake bakery-icon-1" />
           <span className="bakery-icon bakery-icon-cookie bakery-icon-2" />
