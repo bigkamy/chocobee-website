@@ -104,7 +104,7 @@ const galleryItems: GalleryItem[] = [
   },
 ];
 
-const initialVisible = 9;
+const initialVisible = 12;
 
 function toSlug(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
@@ -546,7 +546,7 @@ export function GalleryClient({ brochureUrl, brochureName }: { brochureUrl?: str
                 <div className="mt-8 flex justify-center">
                   <button
                     type="button"
-                    onClick={() => setVisibleCount((count) => count + 6)}
+                    onClick={() => setVisibleCount((count) => count + 12)}
                     className="rounded-full border border-[#be1919]/20 bg-white px-7 py-3 text-sm font-extrabold text-[#be1919] shadow-[0_12px_30px_rgba(93,64,55,0.1)] transition hover:-translate-y-0.5 hover:bg-[#be1919] hover:text-white"
                   >
                     Load More

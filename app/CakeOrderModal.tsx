@@ -19,6 +19,7 @@ type FormState = {
   phone: string;
   email: string;
   occasion: string;
+  occasionOther: string;
   size: string;
   tier: string;
   flavour: string;
@@ -41,6 +42,7 @@ const initialState: FormState = {
   phone: "",
   email: "",
   occasion: "",
+  occasionOther: "",
   size: "",
   tier: "Single Tier",
   flavour: "",
@@ -154,6 +156,11 @@ function activeOptions(settings: CmsCustomOrderSettings, group: CmsCustomOrderOp
     .sort((a, b) => a.displayOrder - b.displayOrder || a.label.localeCompare(b.label));
 }
 
+// When "Other" is picked, the free-text value the customer typed is the real occasion.
+function resolveOccasion(state: FormState) {
+  return state.occasion === "Other" && state.occasionOther.trim() ? state.occasionOther.trim() : state.occasion;
+}
+
 function buildMessage(state: FormState, selectedGallery: CakeOrderGalleryImage[], uploadedImageUrls: string[]) {
   const imageLines = [
     ...selectedGallery.map((image) => `${image.label}: ${image.src}`),
@@ -167,7 +174,7 @@ function buildMessage(state: FormState, selectedGallery: CakeOrderGalleryImage[]
     `Phone: ${state.phone}`,
     `Email: ${state.email}`,
     "",
-    `Occasion: ${state.occasion}`,
+    `Occasion: ${resolveOccasion(state)}`,
     `Size: ${state.size}`,
     `Tier: ${state.tier}`,
     `Flavour: ${state.flavour}`,
@@ -213,11 +220,16 @@ export function CakeOrderModal({
 
   const errors = useMemo(() => {
     const fields: FieldName[] = ["name", "phone", "email", "occasion", "size", "flavour", "theme", "address", "date", "time"];
-    return fields.reduce<Partial<Record<FieldName, string>>>((result, field) => {
+    const result = fields.reduce<Partial<Record<FieldName, string>>>((acc, field) => {
       const error = validateField(field, state[field]);
-      if (error) result[field] = error;
-      return result;
+      if (error) acc[field] = error;
+      return acc;
     }, {});
+    // A custom occasion must be filled in when "Other" is selected.
+    if (state.occasion === "Other" && !state.occasionOther.trim()) {
+      result.occasionOther = "Please specify the occasion.";
+    }
+    return result;
   }, [state]);
 
   useEffect(() => {
@@ -320,7 +332,7 @@ export function CakeOrderModal({
     event.preventDefault();
     setAttempted(true);
     setSubmitError("");
-    setTouched({ name: true, phone: true, email: true, occasion: true, size: true, flavour: true, theme: true, address: true, date: true, time: true });
+    setTouched({ name: true, phone: true, email: true, occasion: true, occasionOther: true, size: true, flavour: true, theme: true, address: true, date: true, time: true });
 
     if (Object.keys(errors).length) return;
 
@@ -339,7 +351,7 @@ export function CakeOrderModal({
         body: JSON.stringify({
           name: state.name,
           phone: state.phone,
-          cake: [state.occasion, state.size, state.tier, state.flavour].filter(Boolean).join(" | "),
+          cake: [resolveOccasion(state), state.size, state.tier, state.flavour].filter(Boolean).join(" | "),
           message,
         }),
       });
@@ -418,11 +430,20 @@ export function CakeOrderModal({
                 <h3>{popupSettings.cakeSectionTitle}</h3>
               </div>
               <div className="cake-order-grid">
-                <FormInput label="Cake Occasion" required error={showError("occasion")}>
+                <FormInput label="Cake Occasion" required error={showError("occasion") || showError("occasionOther")}>
                   <select value={state.occasion} onBlur={() => markTouched("occasion")} onChange={(event) => update("occasion", event.currentTarget.value)}>
                     <option value="">Select occasion</option>
                     {activeOptions(popupSettings, "occasion").map((item) => <option value={item.value} key={item.id}>{item.label}</option>)}
                   </select>
+                  {state.occasion === "Other" ? (
+                    <input
+                      value={state.occasionOther}
+                      onBlur={() => markTouched("occasionOther")}
+                      onChange={(event) => update("occasionOther", event.currentTarget.value)}
+                      placeholder="Type your occasion (e.g., Farewell, Housewarming)"
+                      aria-label="Specify occasion"
+                    />
+                  ) : null}
                 </FormInput>
                 <FormInput label="Cake Size" required error={showError("size")}>
                   <select value={state.size} onBlur={() => markTouched("size")} onChange={(event) => update("size", event.currentTarget.value)}>
