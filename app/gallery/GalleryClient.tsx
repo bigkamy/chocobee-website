@@ -332,15 +332,13 @@ export function GalleryClient({ brochureUrl, brochureName }: { brochureUrl?: str
     setActiveCategory(category.name);
     setActiveSubcategoryId("");
     setVisibleCount(initialVisible);
-    setExpandedCategories((current) =>
-      current.includes(category.slug) ? current : [...current, category.slug],
-    );
+    // Accordion: opening a category collapses any other expanded one.
+    setExpandedCategories([category.slug]);
   };
 
   const toggleCategoryExpanded = (slug: string) => {
-    setExpandedCategories((current) =>
-      current.includes(slug) ? current.filter((value) => value !== slug) : [...current, slug],
-    );
+    // Accordion: only one category stays expanded at a time.
+    setExpandedCategories((current) => (current.includes(slug) ? [] : [slug]));
   };
 
   const handleSubcategoryChange = (category: Category, subcategoryId: string) => {
