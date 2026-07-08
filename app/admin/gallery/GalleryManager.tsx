@@ -667,39 +667,72 @@ export function GalleryManager({
             </header>
 
             <form key={editing?.id ?? `new-image-${formVersion}`} onSubmit={handleSubmit} className="admin-gallery-modal-form admin-category-form">
-          <div className="admin-upload-control">
-            <label>
-              Upload Image
-              <input
-                type="file"
-                accept="image/*"
-                onChange={(event) => {
-                  void handleImageUpload(event.currentTarget.files?.[0]);
-                  event.currentTarget.value = "";
-                }}
-              />
-            </label>
-            {imageUrl ? (
-              <button type="button" className="admin-upload-delete" onClick={() => void clearSelectedImage()}>
-                Delete Image
-              </button>
-            ) : null}
-          </div>
-          {uploadStatus ? <p className="admin-upload-status">{uploadStatus}</p> : null}
-          {isUploading ? <p className="admin-upload-status">Please wait while the cake image is saved.</p> : null}
-          {preview ? (
-            <div className="admin-gallery-preview">
-              <Image src={preview} alt="Cake preview" fill sizes="320px" className="object-cover" />
+          <div className="admin-gallery-modal-identity">
+            <div className="admin-gallery-modal-identity-media">
+              {editing?.cakeId ? (
+                <div className="admin-gallery-modal-cakeid">
+                  <span>Cake ID</span>
+                  <span className="admin-section-id">{editing.cakeId}</span>
+                </div>
+              ) : null}
+              {preview ? (
+                <div className="admin-gallery-preview admin-gallery-preview-vertical">
+                  <Image src={preview} alt="Cake preview" fill sizes="200px" className="object-contain" />
+                </div>
+              ) : null}
             </div>
-          ) : null}
-          <label>
-            Cake Title
-            <input name="title" defaultValue={editing?.title} placeholder="Chocolate Truffle Cake" required />
-          </label>
-          <label>
-            URL Slug
-            <input name="slug" defaultValue={editing?.slug} placeholder="chocolate-truffle-cake" required />
-          </label>
+            <div className="admin-gallery-modal-identity-fields">
+              <div className="admin-upload-control">
+                <label>
+                  Upload Image
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) => {
+                      void handleImageUpload(event.currentTarget.files?.[0]);
+                      event.currentTarget.value = "";
+                    }}
+                  />
+                </label>
+                {imageUrl ? (
+                  <button type="button" className="admin-upload-delete" onClick={() => void clearSelectedImage()}>
+                    Delete Image
+                  </button>
+                ) : null}
+              </div>
+              {uploadStatus ? <p className="admin-upload-status">{uploadStatus}</p> : null}
+              {isUploading ? <p className="admin-upload-status">Please wait while the cake image is saved.</p> : null}
+              <label>
+                Cake Title
+                <input name="title" defaultValue={editing?.title} placeholder="Chocolate Truffle Cake" required />
+              </label>
+              <label>
+                URL Slug
+                <input name="slug" defaultValue={editing?.slug} placeholder="chocolate-truffle-cake" required />
+              </label>
+              <label>
+                Minimum Cake Size Required
+                <span className="admin-size-field">
+                  <input
+                    name="minCakeSizeKg"
+                    type="number"
+                    inputMode="decimal"
+                    step="0.5"
+                    min="0.5"
+                    defaultValue={editing?.minCakeSizeKg ?? 0.5}
+                    required
+                  />
+                  <span className="admin-size-unit">kg</span>
+                </span>
+              </label>
+              <label>
+                Short Description
+                <textarea name="description" defaultValue={editing?.description ?? ""} placeholder="Short cake description" />
+              </label>
+            </div>
+          </div>
+          <div className="admin-gallery-modal-taxonomy">
+          <p className="admin-gallery-modal-taxonomy-title">Category Listing</p>
           <div className="admin-category-field">
             <button
               type="button"
@@ -794,25 +827,9 @@ export function GalleryManager({
           ) : (
             selectedEditingSubcategories.map((subcategoryId) => <input key={subcategoryId} name="subcategoryCtaIds" type="hidden" value={subcategoryId} />)
           )}
-          <label>
-            Minimum Cake Size Required
-            <span className="admin-size-field">
-              <input
-                name="minCakeSizeKg"
-                type="number"
-                inputMode="decimal"
-                step="0.5"
-                min="0.5"
-                defaultValue={editing?.minCakeSizeKg ?? 0.5}
-                required
-              />
-              <span className="admin-size-unit">kg</span>
-            </span>
-          </label>
-          <label className="admin-gallery-modal-full">
-            Short Description
-            <textarea name="description" defaultValue={editing?.description ?? ""} placeholder="Short cake description" />
-          </label>
+          </div>
+          <div className="admin-gallery-modal-seo">
+          <p className="admin-gallery-modal-seo-title">TAGGING / SEO / Meta</p>
           <label>
             Tags
             <input name="tags" defaultValue={editing?.tags ?? ""} placeholder="chocolate, birthday, kids" />
@@ -840,6 +857,7 @@ export function GalleryManager({
               <option value="INACTIVE">Hide Image</option>
             </select>
           </label>
+          </div>
           <label className="admin-checkbox-label">
             <input name="featured" type="checkbox" defaultChecked={editing?.featured ?? false} />
             Featured Image

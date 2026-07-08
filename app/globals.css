@@ -3749,6 +3749,10 @@ tr.is-drag-over td {
 .admin-gallery-modal-form > .admin-upload-control,
 .admin-gallery-modal-form > .admin-upload-status,
 .admin-gallery-modal-form > .admin-gallery-preview,
+.admin-gallery-modal-form > .admin-gallery-modal-identity,
+.admin-gallery-modal-form > .admin-gallery-modal-divider,
+.admin-gallery-modal-form > .admin-gallery-modal-taxonomy,
+.admin-gallery-modal-form > .admin-gallery-modal-seo,
 .admin-gallery-modal-form > .admin-category-field,
 .admin-gallery-modal-form > .admin-checkbox-label,
 .admin-gallery-modal-form > .admin-gallery-modal-full,
@@ -3839,6 +3843,108 @@ tr.is-drag-over td {
 .admin-gallery-modal-form .admin-gallery-preview {
   border: 1px solid rgba(190, 25, 25, 0.12);
   background: #fff5f0;
+}
+
+/* Image + identity fields side by side: small vertical image on the left,
+   Cake Title / Cake ID / URL Slug stacked on the right. */
+.admin-gallery-modal-identity {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.admin-gallery-modal-divider {
+  height: 0;
+  margin: 0.25rem 0;
+  border: 0;
+  border-top: 1px solid rgba(190, 25, 25, 0.16);
+}
+
+/* Taxonomy grouping: Home Page Cake Gallery / Category / Sub Categories
+   share their own tinted panel to set them apart from the plain fields. */
+.admin-gallery-modal-taxonomy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  padding: 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(190, 25, 25, 0.14);
+  background: #fff4ef;
+}
+
+.admin-gallery-modal-taxonomy-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #be1919;
+}
+
+/* Tagging / SEO / Meta grouping: its own tinted panel with a 2-col field grid. */
+.admin-gallery-modal-seo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.9rem 1rem;
+  padding: 1rem;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(37, 99, 235, 0.16);
+  background: #eef4ff;
+}
+
+.admin-gallery-modal-seo-title {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #2563eb;
+  letter-spacing: 0.02em;
+}
+
+.admin-gallery-modal-seo > .admin-gallery-modal-full {
+  grid-column: 1 / -1;
+}
+
+.admin-gallery-modal-identity-media {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.admin-gallery-modal-identity-media:empty {
+  display: none;
+}
+
+.admin-gallery-modal-identity .admin-gallery-preview-vertical {
+  flex: 0 0 auto;
+  width: 10rem;
+  min-height: 0;
+  aspect-ratio: 3 / 4;
+  border-radius: 0.9rem;
+}
+
+.admin-gallery-modal-identity-fields {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.admin-gallery-modal-identity-fields > label {
+  margin: 0;
+}
+
+.admin-gallery-modal-cakeid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #3a2a26;
+}
+
+.admin-gallery-modal-cakeid .admin-section-id {
+  align-self: flex-start;
 }
 
 .admin-size-field {
@@ -7307,6 +7413,26 @@ body:has(.admin-shell) .site-notice-band {
 
   .admin-gallery-modal-form {
     padding: 1.1rem;
+  }
+
+  .admin-gallery-modal-identity {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-gallery-modal-identity-media {
+    align-self: center;
+    align-items: center;
+  }
+
+  .admin-gallery-modal-identity .admin-gallery-preview-vertical {
+    width: 100%;
+    max-width: 12rem;
+    align-self: center;
+  }
+
+  .admin-gallery-modal-seo {
+    grid-template-columns: 1fr;
   }
 
   .admin-gallery-modal-actions {
