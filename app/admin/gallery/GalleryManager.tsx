@@ -113,6 +113,14 @@ function CloseIcon() {
   );
 }
 
+function ChevronIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" className="admin-gallery-card-field-chevron">
+      <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
+    </svg>
+  );
+}
+
 export function GalleryManager({
   initialCategories,
   initialImages,
@@ -153,6 +161,7 @@ export function GalleryManager({
   const subcategoryLabelById = new Map(
     categorySubcategoryGroups.flatMap((category) => category.subcategoryCtas.map((subcategory) => [subcategory.id, subcategory.label] as const)),
   );
+  const categoryNameById = new Map(initialCategories.map((category) => [category.id, category.name] as const));
 
   const filteredImages = useMemo(() => {
     const q = query.toLowerCase().trim();
@@ -555,27 +564,39 @@ export function GalleryManager({
                     </div>
 
                     <div className="admin-gallery-row-badges">
-                      <div className="admin-gallery-home-groups" aria-label={`Home page gallery groups for ${image.title}`}>
-                        <span>Home Page</span>
-                        <div>
+                      <details className="admin-gallery-card-field" aria-label={`Home page gallery groups for ${image.title}`}>
+                        <summary>
+                          <span>Home Page</span>
+                          <span className="admin-gallery-card-field-count">
+                            {image.homeGroups?.length ? `${image.homeGroups.length} selected` : "None"}
+                          </span>
+                          <ChevronIcon />
+                        </summary>
+                        <div className="admin-gallery-card-field-values">
                           {image.homeGroups?.length ? (
                             image.homeGroups.map((group) => <strong key={group}>{group}</strong>)
                           ) : (
                             <em>Not on homepage</em>
                           )}
                         </div>
-                      </div>
+                      </details>
 
-                      <div className="admin-gallery-home-groups" aria-label={`Selected subcategories for ${image.title}`}>
-                        <span>Subcategories</span>
-                        <div>
+                      <details className="admin-gallery-card-field" aria-label={`Selected subcategories for ${image.title}`}>
+                        <summary>
+                          <span>Subcategories</span>
+                          <span className="admin-gallery-card-field-count">
+                            {image.subcategoryCtaIds?.length ? `${image.subcategoryCtaIds.length} selected` : "None"}
+                          </span>
+                          <ChevronIcon />
+                        </summary>
+                        <div className="admin-gallery-card-field-values">
                           {image.subcategoryCtaIds?.length ? (
                             image.subcategoryCtaIds.map((subcategoryId) => <strong key={subcategoryId}>{subcategoryLabelById.get(subcategoryId) ?? subcategoryId}</strong>)
                           ) : (
                             <em>None selected</em>
                           )}
                         </div>
-                      </div>
+                      </details>
 
                       <div className="admin-gallery-home-groups" aria-label={`Minimum cake size for ${image.title}`}>
                         <span>Min. Cake Size</span>
@@ -587,25 +608,32 @@ export function GalleryManager({
                   </div>
 
                   <div className="admin-gallery-row-controls">
-                    <label>
-                      Category
-                      <select
-                        value={image.categoryId ?? ""}
-                        onChange={(event) =>
-                          updateImageQuick(image.id, {
-                            categoryId: event.currentTarget.value,
-                            categoryIds: event.currentTarget.value ? [event.currentTarget.value] : [],
-                          })
-                        }
-                      >
-                        <option value="">No category</option>
-                        {initialCategories.map((category) => (
-                          <option value={category.id} key={category.id}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
+                    {(() => {
+                      const savedCategoryIds = image.categoryIds?.length
+                        ? image.categoryIds
+                        : image.categoryId
+                          ? [image.categoryId]
+                          : [];
+                      const savedCategoryNames = savedCategoryIds.map((categoryId) => categoryNameById.get(categoryId) ?? categoryId);
+                      return (
+                        <details className="admin-gallery-card-field" aria-label={`Categories for ${image.title}`}>
+                          <summary>
+                            <span>Category</span>
+                            <span className="admin-gallery-card-field-count">
+                              {savedCategoryNames.length ? `${savedCategoryNames.length} selected` : "None"}
+                            </span>
+                            <ChevronIcon />
+                          </summary>
+                          <div className="admin-gallery-card-field-values">
+                            {savedCategoryNames.length ? (
+                              savedCategoryNames.map((name) => <strong key={name}>{name}</strong>)
+                            ) : (
+                              <em>No category</em>
+                            )}
+                          </div>
+                        </details>
+                      );
+                    })()}
 
                     <div className="admin-gallery-status-column">
                       <div className="admin-gallery-row-actions">

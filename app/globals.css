@@ -4533,6 +4533,87 @@ tr.is-drag-over td {
   color: #765447;
 }
 
+/* Collapsible card fields (Home Page, Subcategories, Category): chevron toggle
+   that reveals only the values saved for that image. */
+.admin-gallery-card-field {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+  align-content: start;
+}
+
+.admin-gallery-card-field > summary {
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  align-items: center;
+  column-gap: 0.35rem;
+  row-gap: 0.15rem;
+  cursor: pointer;
+  list-style: none;
+  color: #7d5b4f;
+}
+
+.admin-gallery-card-field > summary::-webkit-details-marker {
+  display: none;
+}
+
+.admin-gallery-card-field > summary > span:first-child {
+  grid-column: 1;
+  grid-row: 1;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.admin-gallery-card-field-count {
+  grid-column: 1;
+  grid-row: 2;
+  color: #9a7a6f;
+  font-size: 0.66rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.admin-gallery-card-field > summary svg {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  width: 0.85rem;
+  height: 0.85rem;
+  transition: transform 0.18s ease;
+}
+
+.admin-gallery-card-field[open] > summary svg {
+  transform: rotate(180deg);
+}
+
+.admin-gallery-card-field-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.admin-gallery-card-field-values strong,
+.admin-gallery-card-field-values em {
+  border-radius: 999px;
+  padding: 0.34rem 0.55rem;
+  font-size: 0.7rem;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.admin-gallery-card-field-values strong {
+  background: rgba(37, 99, 235, 0.1);
+  color: #1d4ed8;
+}
+
+.admin-gallery-card-field-values em {
+  background: rgba(93, 64, 55, 0.08);
+  color: #765447;
+}
+
 .admin-gallery-row-controls {
   display: grid;
   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
@@ -4546,6 +4627,11 @@ tr.is-drag-over td {
   align-content: end;
   gap: 0.5rem;
   min-width: 0;
+}
+
+/* Bottom-align the Category field so it lines up with the Featured/Visibility row. */
+.admin-gallery-row-controls > .admin-gallery-card-field {
+  align-self: end;
 }
 
 .admin-gallery-row label {

@@ -140,7 +140,8 @@
       "gender": null,
       "ageGroup": null,
       "flavour": null,
-      "tier": null
+      "tier": null,
+      "cakeId": "CB-10ROMJ2"
     },
     {
       "id": "royal-wedding-lace-cake",
@@ -173,7 +174,8 @@
       "gender": null,
       "ageGroup": null,
       "flavour": null,
-      "tier": null
+      "tier": null,
+      "cakeId": "CB-1OA5AUM"
     },
     {
       "id": "kids-candy-theme-cake",
@@ -205,7 +207,8 @@
       "gender": null,
       "ageGroup": null,
       "flavour": null,
-      "tier": null
+      "tier": null,
+      "cakeId": "CB-0Z6IZV9"
     },
     {
       "title": "sadsadasdasd",
@@ -214,7 +217,9 @@
       "imageUrl": "https://chocobee-uploads-556311299862.s3.ap-south-1.amazonaws.com/cakes/1782808377983-a5cd0819-fccb-4124-9fae-51b0afb61dca.png",
       "categoryId": "birthday-cakes",
       "categoryIds": [
-        "birthday-cakes"
+        "birthday-cakes",
+        "designer-cakes",
+        "kids-cakes"
       ],
       "subcategoryCtaIds": [],
       "homeGroups": [
@@ -232,14 +237,17 @@
       "categorySlug": "birthday-cakes",
       "id": "asdasdasd",
       "categorySlugs": [
-        "birthday-cakes"
+        "birthday-cakes",
+        "designer-cakes",
+        "kids-cakes"
       ],
       "createdAt": "2026-06-30T08:33:20.596Z",
       "minCakeSizeKg": 0.5,
       "gender": null,
       "ageGroup": null,
       "flavour": null,
-      "tier": null
+      "tier": null,
+      "cakeId": "CB-03YEG2K"
     }
   ],
   "homePageSections": [
