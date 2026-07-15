@@ -57,6 +57,10 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+function toggleValue(list: string[], value: string) {
+  return list.includes(value) ? list.filter((entry) => entry !== value) : [...list, value];
+}
+
 function EyeIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -135,9 +139,11 @@ export function GalleryManager({
   const [savingFilterFields, setSavingFilterFields] = useState(false);
   const [filterFieldsMessage, setFilterFieldsMessage] = useState("");
   const [editing, setEditing] = useState<GalleryImage | null>(null);
-  const selectedEditingCategories = editing?.categoryIds ?? (editing?.categoryId ? [editing.categoryId] : []);
-  const selectedEditingSubcategories = editing?.subcategoryCtaIds ?? [];
-  const selectedEditingHomeGroups = editing?.homeGroups ?? [];
+  // Controlled selection state so edits survive collapsing/re-opening the
+  // accordions and are always submitted, regardless of which list is open.
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [selectedSubcategoryIds, setSelectedSubcategoryIds] = useState<string[]>([]);
+  const [selectedHomeGroups, setSelectedHomeGroups] = useState<string[]>([]);
   const [imageUrl, setImageUrl] = useState(editing?.imageUrl ?? "");
   const [preview, setPreview] = useState(editing?.imageUrl ?? "");
   const [query, setQuery] = useState("");
@@ -218,6 +224,9 @@ export function GalleryManager({
 
   function startEditing(image: GalleryImage) {
     setEditing(image);
+    setSelectedCategoryIds(image.categoryIds?.length ? image.categoryIds : image.categoryId ? [image.categoryId] : []);
+    setSelectedSubcategoryIds(image.subcategoryCtaIds ?? []);
+    setSelectedHomeGroups(image.homeGroups ?? []);
     setImageUrl(image.imageUrl);
     setPreview(image.imageUrl);
     setIsCategoryListOpen(false);
@@ -230,6 +239,9 @@ export function GalleryManager({
 
   function startAdding() {
     setEditing(null);
+    setSelectedCategoryIds([]);
+    setSelectedSubcategoryIds([]);
+    setSelectedHomeGroups([]);
     setImageUrl("");
     setPreview("");
     setIsCategoryListOpen(false);
@@ -263,6 +275,9 @@ export function GalleryManager({
 
   function resetImageForm(statusMessage?: string) {
     setEditing(null);
+    setSelectedCategoryIds([]);
+    setSelectedSubcategoryIds([]);
+    setSelectedHomeGroups([]);
     setImageUrl("");
     setPreview("");
     setIsCategoryListOpen(false);
@@ -317,9 +332,9 @@ export function GalleryManager({
     const form = new FormData(event.currentTarget);
     const title = String(form.get("title") ?? "");
     const slug = String(form.get("slug") || slugify(title));
-    const categoryIds = form.getAll("categoryIds").map(String).filter(Boolean);
-    const subcategoryCtaIds = form.getAll("subcategoryCtaIds").map(String).filter(Boolean);
-    const homeGroups = form.getAll("homeGroups").map(String).filter(Boolean);
+    const categoryIds = selectedCategoryIds;
+    const subcategoryCtaIds = selectedSubcategoryIds;
+    const homeGroups = selectedHomeGroups;
     const payload = {
       title,
       slug,
@@ -770,7 +785,7 @@ export function GalleryManager({
               aria-controls="admin-home-gallery-group-list"
             >
               <span>Home Page Cake Gallery</span>
-              <span>{isHomeGroupListOpen ? "Hide list" : `${selectedEditingHomeGroups.length || "No"} selected`}</span>
+              <span>{isHomeGroupListOpen ? "Hide list" : `${selectedHomeGroups.length || "No"} selected`}</span>
               <svg viewBox="0 0 24 24" aria-hidden="true" className={isHomeGroupListOpen ? "admin-category-chevron-open" : ""}>
                 <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
               </svg>
@@ -779,14 +794,16 @@ export function GalleryManager({
               <div className="admin-category-checklist" id="admin-home-gallery-group-list" role="group" aria-label="Select home page cake gallery groups">
                 {homeGalleryGroups.map((group) => (
                   <label className="admin-category-check-option" key={group}>
-                    <input name="homeGroups" type="checkbox" value={group} defaultChecked={selectedEditingHomeGroups.includes(group)} />
+                    <input
+                      type="checkbox"
+                      checked={selectedHomeGroups.includes(group)}
+                      onChange={() => setSelectedHomeGroups((list) => toggleValue(list, group))}
+                    />
                     <span>{group}</span>
                   </label>
                 ))}
               </div>
-            ) : (
-              selectedEditingHomeGroups.map((group) => <input key={group} name="homeGroups" type="hidden" value={group} />)
-            )}
+            ) : null}
           </div>
           <div className="admin-category-field">
             <button
@@ -797,7 +814,7 @@ export function GalleryManager({
               aria-controls="admin-image-category-list"
             >
               <span>Category</span>
-              <span>{isCategoryListOpen ? "Hide list" : `${selectedEditingCategories.length || "No"} selected`}</span>
+              <span>{isCategoryListOpen ? "Hide list" : `${selectedCategoryIds.length || "No"} selected`}</span>
               <svg viewBox="0 0 24 24" aria-hidden="true" className={isCategoryListOpen ? "admin-category-chevron-open" : ""}>
                 <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
               </svg>
@@ -807,15 +824,17 @@ export function GalleryManager({
                 {initialCategories.map((category) => {
                   return (
                     <label className="admin-category-check-option" key={category.id}>
-                      <input name="categoryIds" type="checkbox" value={category.id} defaultChecked={selectedEditingCategories.includes(category.id)} />
+                      <input
+                        type="checkbox"
+                        checked={selectedCategoryIds.includes(category.id)}
+                        onChange={() => setSelectedCategoryIds((list) => toggleValue(list, category.id))}
+                      />
                       <span>{category.name}</span>
                     </label>
                   );
                 })}
               </div>
-            ) : (
-              selectedEditingCategories.map((categoryId) => <input key={categoryId} name="categoryIds" type="hidden" value={categoryId} />)
-            )}
+            ) : null}
           </div>
           {categorySubcategoryGroups.length ? (
             <div className="admin-category-field">
@@ -827,7 +846,7 @@ export function GalleryManager({
                 aria-controls="admin-image-subcategory-list"
               >
                 <span>Sub Categories</span>
-                <span>{isSubcategoryListOpen ? "Hide list" : `${selectedEditingSubcategories.length || "No"} selected`}</span>
+                <span>{isSubcategoryListOpen ? "Hide list" : `${selectedSubcategoryIds.length || "No"} selected`}</span>
                 <svg viewBox="0 0 24 24" aria-hidden="true" className={isSubcategoryListOpen ? "admin-category-chevron-open" : ""}>
                   <path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" />
                 </svg>
@@ -840,7 +859,11 @@ export function GalleryManager({
                       <div className="admin-subcategory-options">
                         {category.subcategoryCtas.map((subcategory) => (
                           <label className="admin-category-check-option" key={subcategory.id}>
-                            <input name="subcategoryCtaIds" type="checkbox" value={subcategory.id} defaultChecked={selectedEditingSubcategories.includes(subcategory.id)} />
+                            <input
+                              type="checkbox"
+                              checked={selectedSubcategoryIds.includes(subcategory.id)}
+                              onChange={() => setSelectedSubcategoryIds((list) => toggleValue(list, subcategory.id))}
+                            />
                             <span>{subcategory.label}</span>
                           </label>
                         ))}
@@ -848,13 +871,9 @@ export function GalleryManager({
                     </div>
                   ))}
                 </div>
-              ) : (
-                selectedEditingSubcategories.map((subcategoryId) => <input key={subcategoryId} name="subcategoryCtaIds" type="hidden" value={subcategoryId} />)
-              )}
+              ) : null}
             </div>
-          ) : (
-            selectedEditingSubcategories.map((subcategoryId) => <input key={subcategoryId} name="subcategoryCtaIds" type="hidden" value={subcategoryId} />)
-          )}
+          ) : null}
           </div>
           <div className="admin-gallery-modal-seo">
           <p className="admin-gallery-modal-seo-title">TAGGING / SEO / Meta</p>
